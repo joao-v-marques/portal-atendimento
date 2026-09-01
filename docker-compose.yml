@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: portal-atendimento-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: portal_atendimento
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5433:5432"
+    volumes:
+      - portal_atendimento_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d portal_atendimento"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  portal_atendimento_data:

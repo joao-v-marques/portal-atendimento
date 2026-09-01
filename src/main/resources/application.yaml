@@ -1,0 +1,17 @@
+server:
+  servlet:
+    context-path: /portal-atendimento
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/portal_atendimento
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  application:
+    name: portal-atendimento
