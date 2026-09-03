@@ -1,4 +1,4 @@
-package com.joao_v_marques.portal_atendimento.user.user_roles;
+package com.joao_v_marques.portal_atendimento.users.user_roles;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
