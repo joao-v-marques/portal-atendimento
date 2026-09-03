@@ -1,5 +1,6 @@
 package com.joao_v_marques.portal_atendimento.users.user_roles;
 
+import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

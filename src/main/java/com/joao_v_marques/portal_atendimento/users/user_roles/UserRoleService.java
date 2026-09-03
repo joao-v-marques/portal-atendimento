@@ -1,5 +1,6 @@
 package com.joao_v_marques.portal_atendimento.users.user_roles;
 
+import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
