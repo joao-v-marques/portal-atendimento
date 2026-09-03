@@ -1,6 +1,7 @@
-CREATE TABLE roles (
+CREATE TABLE user_roles (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
+    name VARCHAR(255) NOT NULL UNIQUE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE users (
@@ -11,12 +12,12 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(255),
 
-    role_id INT NOT NULL, -- FK roles
+    role_id INT NOT NULL, -- FK user_roles
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
 
     -- Foreign keys
-    CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES roles(id)
+    CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES user_roles(id)
 );
 
 CREATE TABLE authorization_type (
@@ -37,7 +38,7 @@ CREATE TABLE authorization_requests (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     -- Dados do pedido para autorização
-    transaction_number VARCHAR(15) NOT NULL,
+    transaction_number VARCHAR(12) NOT NULL,
     request_date DATE NOT NULL DEFAULT CURRENT_DATE,
     authorization_type_id INT NOT NULL, -- FK authorization_type
     authorization_status_id INT NOT NULL, -- FK authorization_status
