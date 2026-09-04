@@ -33,11 +33,11 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
-    private UserRole roleId;
+    private UserRole role;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
     @Column(name = "is_active", nullable = false)
-    private boolean is_active = true;
+    private boolean isActive = true;
 }
