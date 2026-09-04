@@ -2,6 +2,14 @@ server:
   servlet:
     context-path: /portal-atendimento
 
+app:
+  jwt:
+    secret: ${JWT_SECRET:minha_chave_super_mega_hiper_secreta_trocar_quando_colocar_em_prod}
+    expiration: ${JWT_EXPIRATION:86400000}
+  security:
+    # em produção defina COOKIE_SECURE=true (exige HTTPS)
+    cookie-secure: ${COOKIE_SECURE:false}
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5433/portal_atendimento
