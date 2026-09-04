@@ -1,0 +1,40 @@
+package com.joao_v_marques.portal_atendimento.security;
+
+import com.joao_v_marques.portal_atendimento.exception.ApiError;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import tools.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+
+public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
+    private static final String LOGIN_REQUIRED = "login-necessario";
+
+    private static final String SESSION_EXPIRED = "sessao-expirada";
+
+    private final ObjectMapper objectMapper;
+
+    public RestAuthenticationEntryPoint(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+        if (request.getServletPath().startsWith("/api/")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding("UTF-8");
+            objectMapper.writeValue(response.getWriter(), ApiError.of("Você precisa estar autenticado para acessar este recurso."));
+            return;
+        }
+
+        boolean invalidToken = Boolean.TRUE.equals(request.getAttribute(JwtAuthenticationFilter.INVALID_TOKEN_ATTRIBUTE));
+        String reason = invalidToken ? SESSION_EXPIRED : LOGIN_REQUIRED;
+
+        response.sendRedirect(request.getContextPath() + "/login?erro=" + reason);
+    }
+}
