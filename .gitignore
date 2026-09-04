@@ -35,3 +35,4 @@ build/
 ### Documentation ###
 internal_documentation.md
 .claude
+frontend-documentation/
