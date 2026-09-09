@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
 import java.net.URI;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class UserRoleController {
     }
 
     // POST de uma nova role no sistema
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserRoleResponse> create(@Valid @RequestBody UserRoleRequest request) {
         UserRoleResponse created = userRoleService.create(request);
 
