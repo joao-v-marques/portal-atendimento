@@ -8,7 +8,6 @@ public record UserResponse(
         Integer id,
         String username,
         String name,
-        String passwordHash,
         String email,
         UserRole roleId,
         OffsetDateTime createdAt,

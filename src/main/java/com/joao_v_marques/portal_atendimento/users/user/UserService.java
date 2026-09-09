@@ -108,7 +108,6 @@ public class UserService {
                 user.getId(),
                 user.getUsername(),
                 user.getName(),
-                user.getPasswordHash(),
                 user.getEmail(),
                 user.getRole(),
                 user.getCreatedAt(),
