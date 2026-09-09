@@ -48,7 +48,7 @@ public class UserRoleController {
     }
 
     // PATCH para desativar uma role já existente
-    @PatchMapping(value = "/{id}")
+    @PatchMapping(value = "/{id}/deactivate")
     public ResponseEntity<UserRoleIsActiveResponse> deactivate(@PathVariable Integer id) {
         UserRoleIsActiveResponse deactivated = userRoleService.deactivate(id);
 
