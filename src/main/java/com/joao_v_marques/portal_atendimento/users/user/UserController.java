@@ -53,4 +53,12 @@ public class UserController {
 
         return ResponseEntity.ok(deactivatedUser);
     }
+
+    // PATCH reativar um usuário
+    @PatchMapping("/{id}/reactivate")
+    public ResponseEntity<UserIsActiveResponse> reactivate(@PathVariable Integer id) {
+        UserIsActiveResponse reactivatedUser = userService.reactivate(id);
+
+        return ResponseEntity.ok(reactivatedUser);
+    }
 }

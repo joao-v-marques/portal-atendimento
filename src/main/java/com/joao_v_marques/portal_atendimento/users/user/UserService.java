@@ -119,6 +119,21 @@ public class UserService {
         return toIsActiveResponse(user);
     }
 
+    @Transactional
+    public UserIsActiveResponse reactivate(Integer id) {
+        // Validação se o usuário realmente existe
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado usuário com o ID informado"));
+
+        if (user.isActive()) {
+            throw new IllegalArgumentException("Este usuário já está ativo");
+        }
+
+        user.setActive(true);
+
+        return toIsActiveResponse(user);
+    }
+
     private UserResponse toResponse(User user) {
         return new UserResponse(
                 user.getId(),
