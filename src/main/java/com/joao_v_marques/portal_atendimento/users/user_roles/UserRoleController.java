@@ -1,5 +1,6 @@
 package com.joao_v_marques.portal_atendimento.users.user_roles;
 
+import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleIsActiveResponse;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleRequest;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleResponse;
 import jakarta.validation.Valid;
@@ -43,5 +44,13 @@ public class UserRoleController {
         UserRoleResponse updated = userRoleService.update(id, request);
 
         return ResponseEntity.ok(updated);
+    }
+
+    // PATCH para desativar uma role já existente
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<UserRoleIsActiveResponse> deactivate(@PathVariable Integer id) {
+        UserRoleIsActiveResponse deactivated = userRoleService.deactivate(id);
+
+        return ResponseEntity.ok(deactivated);
     }
 }

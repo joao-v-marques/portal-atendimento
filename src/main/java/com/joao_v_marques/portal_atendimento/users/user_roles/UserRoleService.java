@@ -1,6 +1,6 @@
 package com.joao_v_marques.portal_atendimento.users.user_roles;
 
-import com.joao_v_marques.portal_atendimento.users.user.dto.UserResponse;
+import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleIsActiveResponse;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleRequest;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleResponse;
 import org.springframework.stereotype.Service;
@@ -62,9 +62,31 @@ public class UserRoleService {
         return toResponse(userRole);
     }
 
+    @Transactional
+    public UserRoleIsActiveResponse deactivate(Integer userRoleId) {
+        // Valida se a role desativada realmente existe
+        UserRole userRole = userRolesRepository.findById(userRoleId)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhuma função de usuário com o ID fornecido."));
+
+        if (!userRole.isActive()) {
+            throw new IllegalArgumentException("Esta função já está inativa.");
+        }
+
+        userRole.setActive(false);
+
+        return toIsActiveResponse(userRole);
+    }
+
     private UserRoleResponse toResponse(UserRole userRole) {
         return new UserRoleResponse(
                 userRole.getId(),
+                userRole.getName(),
+                userRole.isActive()
+        );
+    }
+
+    private UserRoleIsActiveResponse toIsActiveResponse(UserRole userRole) {
+        return new UserRoleIsActiveResponse(
                 userRole.getName(),
                 userRole.isActive()
         );
