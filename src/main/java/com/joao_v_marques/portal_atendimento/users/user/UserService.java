@@ -1,6 +1,7 @@
 package com.joao_v_marques.portal_atendimento.users.user;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.joao_v_marques.portal_atendimento.users.user.dto.UserIsActiveResponse;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserRequest;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserResponse;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserUpdateRequest;
@@ -103,6 +104,21 @@ public class UserService {
         return toResponse(user);
     }
 
+    @Transactional
+    public UserIsActiveResponse deactivate(Integer id) {
+        // Validação se o usuário realmente existe
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado usuário com o ID informado"));
+
+        if (!user.isActive()) {
+            throw new IllegalArgumentException("O usuário já está inativo");
+        }
+
+        user.setActive(false);
+
+        return toIsActiveResponse(user);
+    }
+
     private UserResponse toResponse(User user) {
         return new UserResponse(
                 user.getId(),
@@ -111,6 +127,15 @@ public class UserService {
                 user.getEmail(),
                 user.getRole(),
                 user.getCreatedAt(),
+                user.isActive()
+        );
+    }
+
+    private UserIsActiveResponse toIsActiveResponse(User user) {
+        return new UserIsActiveResponse(
+                user.getUsername(),
+                user.getName(),
+                user.getEmail(),
                 user.isActive()
         );
     }

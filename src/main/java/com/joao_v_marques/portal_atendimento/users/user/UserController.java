@@ -1,5 +1,6 @@
 package com.joao_v_marques.portal_atendimento.users.user;
 
+import com.joao_v_marques.portal_atendimento.users.user.dto.UserIsActiveResponse;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserRequest;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserResponse;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserUpdateRequest;
@@ -43,5 +44,13 @@ public class UserController {
         UserResponse updated = userService.update(id, request);
 
         return ResponseEntity.ok(updated);
+    }
+
+    // PATCH desativar usuário
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<UserIsActiveResponse> deactivate(@PathVariable Integer id) {
+        UserIsActiveResponse deactivatedUser = userService.deactivate(id);
+
+        return ResponseEntity.ok(deactivatedUser);
     }
 }
