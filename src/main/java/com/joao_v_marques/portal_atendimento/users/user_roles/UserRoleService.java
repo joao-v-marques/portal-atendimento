@@ -43,6 +43,25 @@ public class UserRoleService {
         return toResponse(saved);
     }
 
+    @Transactional
+    public UserRoleResponse update(Integer userRoleId, UserRoleRequest request) {
+        String name = request.name().trim();
+
+        // Valida se a role editada realmente existe
+        UserRole userRole = userRolesRepository.findById(userRoleId)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhuma função de usuário com o ID fornecido."));
+
+        // Validações que a DTO não cobre
+        if (!userRole.isActive()) {
+            throw new IllegalArgumentException("Não é possível editar uma ocorrência inativa.");
+        }
+
+        // Atualizar a entidade já existente
+        userRole.setName(name);
+
+        return toResponse(userRole);
+    }
+
     private UserRoleResponse toResponse(UserRole userRole) {
         return new UserRoleResponse(
                 userRole.getId(),
