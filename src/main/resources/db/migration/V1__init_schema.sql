@@ -8,7 +8,7 @@ CREATE TABLE users (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     username VARCHAR(255) NOT NULL UNIQUE,
-    name VARCHAR(255) UNIQUE,
+    name VARCHAR(255),
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(255),
 
