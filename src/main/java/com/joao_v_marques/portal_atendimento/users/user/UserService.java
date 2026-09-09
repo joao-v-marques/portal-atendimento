@@ -1,7 +1,9 @@
 package com.joao_v_marques.portal_atendimento.users.user;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserRequest;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserResponse;
+import com.joao_v_marques.portal_atendimento.users.user.dto.UserUpdateRequest;
 import com.joao_v_marques.portal_atendimento.users.user_roles.UserRole;
 import com.joao_v_marques.portal_atendimento.users.user_roles.UserRolesRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,6 +60,47 @@ public class UserService {
         User saved = userRepository.save(user);
 
         return toResponse(saved);
+    }
+
+    @Transactional
+    public UserResponse update(Integer id, UserUpdateRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum usuário com o ID passado."));
+
+        if (!user.isActive()) {
+            throw new IllegalArgumentException("Não é possível editar um usuário inativo.");
+        }
+
+        if (request.username() != null) {
+            String username = request.username().trim();
+
+            if (username.isEmpty()) {
+                throw new IllegalArgumentException("Preencha o campo de usuário.");
+            }
+
+            // Só valida duplicidade se o username realmente mudou
+            if (!username.equalsIgnoreCase(user.getUsername()) && userRepository.existsByUsernameIgnoreCase(username)) {
+                throw new IllegalArgumentException("Já existe um usuário com esse nome de usuário.");
+            }
+
+            user.setUsername(username);
+        }
+
+        if (request.name() != null) {
+            user.setName(StringUtils.hasText(request.name()) ? request.name().trim() : null);
+        }
+
+        if (request.email() != null) {
+            user.setEmail(StringUtils.hasText(request.email()) ? request.email().trim() : null);
+        }
+
+        if (request.roleId() != null) {
+            UserRole role = userRolesRepository.findById(request.roleId())
+                    .orElseThrow(() -> new IllegalArgumentException("Perfil de acesso não encontrado"));
+            user.setRole(role);
+        }
+
+        return toResponse(user);
     }
 
     private UserResponse toResponse(User user) {

@@ -2,6 +2,7 @@ package com.joao_v_marques.portal_atendimento.users.user;
 
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserRequest;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserResponse;
+import com.joao_v_marques.portal_atendimento.users.user.dto.UserUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +35,13 @@ public class UserController {
         URI location = URI.create("/api/users/" + created.id());
 
         return ResponseEntity.created(location).body(created);
+    }
+
+    // PUT de um usuário
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserResponse> update(@PathVariable Integer id, @Valid @RequestBody UserUpdateRequest request) {
+        UserResponse updated = userService.update(id, request);
+
+        return ResponseEntity.ok(updated);
     }
 }
