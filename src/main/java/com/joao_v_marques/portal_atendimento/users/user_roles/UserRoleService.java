@@ -1,5 +1,7 @@
 package com.joao_v_marques.portal_atendimento.users.user_roles;
 
+import com.joao_v_marques.portal_atendimento.users.user.dto.UserResponse;
+import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleRequest;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,23 @@ public class UserRoleService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    @Transactional
+    public UserRoleResponse create(UserRoleRequest request) {
+        String name = request.name().trim();
+
+        if (userRolesRepository.existsByNameIgnoreCase(name)) {
+            throw new IllegalArgumentException("A role que está tentando cadastrar já existe");
+        }
+
+        // Montar entidade com base na dto
+        UserRole userRole = new UserRole();
+        userRole.setName(name);
+
+        UserRole saved = userRolesRepository.save(userRole);
+
+        return toResponse(saved);
     }
 
     private UserRoleResponse toResponse(UserRole userRole) {

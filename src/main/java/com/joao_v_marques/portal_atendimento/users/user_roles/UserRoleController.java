@@ -1,10 +1,12 @@
 package com.joao_v_marques.portal_atendimento.users.user_roles;
 
+import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleRequest;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -21,5 +23,15 @@ public class UserRoleController {
     @GetMapping
     public List<UserRoleResponse> findAll() {
         return userRoleService.findAll();
+    }
+
+    // POST de uma nova role no sistema
+    @PostMapping
+    public ResponseEntity<UserRoleResponse> create(@Valid @RequestBody UserRoleRequest request) {
+        UserRoleResponse created = userRoleService.create(request);
+
+        URI location = URI.create("api/user-roles/" + created.id());
+
+        return ResponseEntity.created(location).body(created);
     }
 }
