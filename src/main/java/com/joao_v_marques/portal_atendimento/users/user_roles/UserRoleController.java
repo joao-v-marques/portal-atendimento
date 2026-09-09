@@ -4,6 +4,7 @@ import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleIsActi
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleRequest;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleResponse;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,5 +53,13 @@ public class UserRoleController {
         UserRoleIsActiveResponse deactivated = userRoleService.deactivate(id);
 
         return ResponseEntity.ok(deactivated);
+    }
+
+    // PATCH para reativar uma role já existente
+    @PatchMapping(value = "/{id}/reactivate")
+    public ResponseEntity<UserRoleIsActiveResponse> reactivate(@PathVariable Integer id) {
+        UserRoleIsActiveResponse reactivated = userRoleService.reactivate(id);
+
+        return ResponseEntity.ok(reactivated);
     }
 }

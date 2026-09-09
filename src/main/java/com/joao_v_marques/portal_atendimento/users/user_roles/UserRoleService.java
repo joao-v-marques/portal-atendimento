@@ -77,6 +77,21 @@ public class UserRoleService {
         return toIsActiveResponse(userRole);
     }
 
+    @Transactional
+    public UserRoleIsActiveResponse reactivate(Integer userRoleId) {
+        // Valida se a role desativada realmente existe
+        UserRole userRole = userRolesRepository.findById(userRoleId)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhuma função de usuário com o ID fornecido."));
+
+        if (userRole.isActive()) {
+            throw new IllegalArgumentException("Esta função já está ativa.");
+        }
+
+        userRole.setActive(true);
+
+        return toIsActiveResponse(userRole);
+    }
+
     private UserRoleResponse toResponse(UserRole userRole) {
         return new UserRoleResponse(
                 userRole.getId(),
