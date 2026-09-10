@@ -1,7 +1,7 @@
-package com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status;
+package com.joao_v_marques.portal_atendimento.authorization.authorization_status;
 
-import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusRequest;
-import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusResponse;
+import com.joao_v_marques.portal_atendimento.authorization.authorization_status.dto.AuthorizationStatusRequest;
+import com.joao_v_marques.portal_atendimento.authorization.authorization_status.dto.AuthorizationStatusResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

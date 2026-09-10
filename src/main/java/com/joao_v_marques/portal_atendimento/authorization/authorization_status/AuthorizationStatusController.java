@@ -1,9 +1,8 @@
-package com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status;
+package com.joao_v_marques.portal_atendimento.authorization.authorization_status;
 
-import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusRequest;
-import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusResponse;
+import com.joao_v_marques.portal_atendimento.authorization.authorization_status.dto.AuthorizationStatusRequest;
+import com.joao_v_marques.portal_atendimento.authorization.authorization_status.dto.AuthorizationStatusResponse;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

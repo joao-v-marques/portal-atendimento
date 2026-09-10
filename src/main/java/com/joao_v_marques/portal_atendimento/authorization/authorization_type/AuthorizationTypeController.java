@@ -1,7 +1,7 @@
-package com.joao_v_marques.portal_atendimento.authorization_requests.authorization_type;
+package com.joao_v_marques.portal_atendimento.authorization.authorization_type;
 
-import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_type.dto.AuthorizationTypeRequest;
-import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_type.dto.AuthorizationTypeResponse;
+import com.joao_v_marques.portal_atendimento.authorization.authorization_type.dto.AuthorizationTypeRequest;
+import com.joao_v_marques.portal_atendimento.authorization.authorization_type.dto.AuthorizationTypeResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

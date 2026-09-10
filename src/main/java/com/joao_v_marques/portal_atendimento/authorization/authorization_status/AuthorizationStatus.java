@@ -1,4 +1,4 @@
-package com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status;
+package com.joao_v_marques.portal_atendimento.authorization.authorization_status;
 
 import jakarta.persistence.*;
 import lombok.Getter;
