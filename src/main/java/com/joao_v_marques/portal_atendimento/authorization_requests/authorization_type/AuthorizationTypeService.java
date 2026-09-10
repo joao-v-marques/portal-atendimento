@@ -73,6 +73,20 @@ public class AuthorizationTypeService {
         return toResponse(authorizationType);
     }
 
+    @Transactional
+    public AuthorizationTypeResponse reactivate(Integer id) {
+        AuthorizationType authorizationType = authorizationTypeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum tipo de autorização com o ID informado."));
+
+        if (authorizationType.isActive()) {
+            throw new IllegalArgumentException("O tipo de autorização já está inativo");
+        }
+
+        authorizationType.setActive(true);
+
+        return toResponse(authorizationType);
+    }
+
     private AuthorizationTypeResponse toResponse(AuthorizationType authorizationType) {
         return new AuthorizationTypeResponse(
                 authorizationType.getId(),

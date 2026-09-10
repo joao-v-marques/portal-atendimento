@@ -51,4 +51,12 @@ public class AuthorizationTypeController {
 
         return ResponseEntity.ok(deactivated);
     }
+
+    // PATCH para reativar um tipo de autorização
+    @PatchMapping("/{id}/reactivate")
+    public ResponseEntity<AuthorizationTypeResponse> reactivate(@PathVariable Integer id) {
+        AuthorizationTypeResponse reactivated = authorizationTypeService.reactivate(id);
+
+        return ResponseEntity.ok(reactivated);
+    }
 }
