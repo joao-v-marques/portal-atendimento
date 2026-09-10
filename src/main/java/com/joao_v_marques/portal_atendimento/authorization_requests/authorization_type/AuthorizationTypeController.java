@@ -43,4 +43,12 @@ public class AuthorizationTypeController {
 
         return ResponseEntity.ok(updated);
     }
+
+    // PATCH para desativar um tipo de autorização
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<AuthorizationTypeResponse> deactivate(@PathVariable Integer id) {
+        AuthorizationTypeResponse deactivated = authorizationTypeService.deactivate(id);
+
+        return ResponseEntity.ok(deactivated);
+    }
 }
