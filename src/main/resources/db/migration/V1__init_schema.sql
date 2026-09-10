@@ -61,3 +61,22 @@ CREATE INDEX idx_users_role_id ON users(role_id);
 CREATE INDEX idx_authorization_requests_type_id ON authorization_requests(authorization_type_id);
 CREATE INDEX idx_authorization_requests_status_id ON authorization_requests(authorization_status_id);
 CREATE INDEX idx_authorization_requests_inserted_by ON authorization_requests(inserted_by);
+
+CREATE TABLE authorization_request_documents (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    original_filename VARCHAR(255) NOT NULL,
+    stored_path TEXT NOT NULL UNIQUE,
+    content_type VARCHAR(255) NOT NULL,
+    size_bytes BIGINT NOT NULL,
+    uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    uploaded_by INT NOT NULL, -- FK users
+    authorization_request_id INT NOT NULL, -- FK authorization_requests
+
+    CONSTRAINT fk_authorization_request_documents_user FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_authorization_request_documents_request FOREIGN KEY (authorization_request_id) REFERENCES authorization_requests(id) ON DELETE CASCADE
+);
+
+-- Índices da tabela de documentos
+CREATE INDEX idx_authorization_request_documents_request_id ON authorization_request_documents(authorization_request_id);
+CREATE INDEX idx_authorization_request_documents_uploaded_by ON authorization_request_documents(uploaded_by);
