@@ -75,6 +75,21 @@ public class AuthorizationStatusService {
         return toResponse(authorizationStatus);
     }
 
+    // Reativar uma AuthorizationStatus
+    @Transactional
+    public AuthorizationStatusResponse reactivate(Integer id) {
+        AuthorizationStatus authorizationStatus = authorizationStatusRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum status de autorização com o ID informado."));
+
+        if (authorizationStatus.isActive()) {
+            throw new IllegalArgumentException("Este status da autorização já está ativo");
+        }
+
+        authorizationStatus.setActive(true);
+
+        return toResponse(authorizationStatus);
+    }
+
     private AuthorizationStatusResponse toResponse(AuthorizationStatus authorizationStatus) {
         return new AuthorizationStatusResponse(
                 authorizationStatus.getId(),
