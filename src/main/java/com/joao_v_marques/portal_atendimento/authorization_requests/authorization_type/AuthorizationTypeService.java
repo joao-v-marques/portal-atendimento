@@ -1,6 +1,8 @@
 package com.joao_v_marques.portal_atendimento.authorization_requests.authorization_type;
 
+import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_type.dto.AuthorizationTypeRequest;
 import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_type.dto.AuthorizationTypeResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,23 @@ public class AuthorizationTypeService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    @Transactional
+    public AuthorizationTypeResponse create(AuthorizationTypeRequest request) {
+        String name = request.name().trim();
+
+        if (authorizationTypeRepository.existsByNameIgnoreCase(name)) {
+            throw new IllegalArgumentException("Já existe um tipo de autorização com o nome informado.");
+        }
+
+        // Montar entidade com base na DTO
+        AuthorizationType authorizationType = new AuthorizationType();
+        authorizationType.setName(name);
+
+        AuthorizationType saved = authorizationTypeRepository.save(authorizationType);
+
+        return toResponse(saved);
     }
 
     private AuthorizationTypeResponse toResponse(AuthorizationType authorizationType) {

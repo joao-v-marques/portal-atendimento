@@ -1,10 +1,13 @@
 package com.joao_v_marques.portal_atendimento.authorization_requests.authorization_type;
 
+import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_type.dto.AuthorizationTypeRequest;
 import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_type.dto.AuthorizationTypeResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -21,5 +24,15 @@ public class AuthorizationTypeController {
     @GetMapping
     public List<AuthorizationTypeResponse> findAll() {
         return authorizationTypeService.findAll();
+    }
+
+    // POST de um novo tipo de autorização
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AuthorizationTypeResponse> create(@Valid @RequestBody AuthorizationTypeRequest request) {
+        AuthorizationTypeResponse saved = authorizationTypeService.create(request);
+
+        URI location = URI.create("/api/authorization-types/" + saved.id());
+
+        return ResponseEntity.created(location).body(saved);
     }
 }
