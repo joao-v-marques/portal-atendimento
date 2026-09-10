@@ -3,7 +3,6 @@ package com.joao_v_marques.portal_atendimento.authorization_requests.authorizati
 import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusRequest;
 import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusResponse;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,5 +33,13 @@ public class AuthorizationStatusController {
         URI location = URI.create("/api/authorization-status/" + saved.id());
 
         return ResponseEntity.created(location).body(saved);
+    }
+
+    // PUT de um status de autorização
+    @PutMapping("/{id}")
+    public ResponseEntity<AuthorizationStatusResponse> update(@PathVariable Integer id, @Valid @RequestBody AuthorizationStatusRequest request) {
+        AuthorizationStatusResponse updated = authorizationStatusService.update(id, request);
+
+        return ResponseEntity.ok(updated);
     }
 }

@@ -3,6 +3,7 @@ package com.joao_v_marques.portal_atendimento.authorization_requests.authorizati
 import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusRequest;
 import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class AuthorizationStatusService {
     }
 
     // GET de todos AuthorizationStatus cadastrados no sistema
+    @Transactional(readOnly = true)
     public List<AuthorizationStatusResponse> findAll() {
         return authorizationStatusRepository.findAll()
                 .stream()
@@ -24,6 +26,7 @@ public class AuthorizationStatusService {
     }
 
     // POST de uma nova AuthorizationStatus na aplicação
+    @Transactional
     public AuthorizationStatusResponse create(AuthorizationStatusRequest request) {
         String name = request.name().trim();
 
@@ -38,6 +41,23 @@ public class AuthorizationStatusService {
         AuthorizationStatus saved = authorizationStatusRepository.save(authorizationStatus);
 
         return toResponse(saved);
+    }
+
+    // PUT de uma nova AuthorizationStatus
+    @Transactional
+    public AuthorizationStatusResponse update(Integer id, AuthorizationStatusRequest request) {
+        String name = request.name().trim();
+
+         AuthorizationStatus authorizationStatus = authorizationStatusRepository.findById(id)
+                 .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum status de autorização com o ID informado."));
+
+         if (!authorizationStatus.isActive()) {
+             throw new IllegalArgumentException("Não é possível editar um status de autorização inativo.");
+         }
+
+         authorizationStatus.setName(name);
+
+         return toResponse(authorizationStatus);
     }
 
     private AuthorizationStatusResponse toResponse(AuthorizationStatus authorizationStatus) {
