@@ -3,6 +3,7 @@ package com.joao_v_marques.portal_atendimento.authorization_requests.authorizati
 import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusRequest;
 import com.joao_v_marques.portal_atendimento.authorization_requests.authorization_status.dto.AuthorizationStatusResponse;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,5 +42,13 @@ public class AuthorizationStatusController {
         AuthorizationStatusResponse updated = authorizationStatusService.update(id, request);
 
         return ResponseEntity.ok(updated);
+    }
+
+    // PATCH para desativar um status de autorização
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<AuthorizationStatusResponse> deactivate(@PathVariable Integer id) {
+        AuthorizationStatusResponse deactivated = authorizationStatusService.deactivate(id);
+
+        return ResponseEntity.ok(deactivated);
     }
 }

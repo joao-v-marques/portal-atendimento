@@ -60,6 +60,21 @@ public class AuthorizationStatusService {
          return toResponse(authorizationStatus);
     }
 
+    // Desativar uma AuthorizationStatus
+    @Transactional
+    public AuthorizationStatusResponse deactivate(Integer id) {
+        AuthorizationStatus authorizationStatus = authorizationStatusRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum status de autorização com o ID informado."));
+
+        if (!authorizationStatus.isActive()) {
+            throw new IllegalArgumentException("Este status da autorização já está inativo.");
+        }
+
+        authorizationStatus.setActive(false);
+
+        return toResponse(authorizationStatus);
+    }
+
     private AuthorizationStatusResponse toResponse(AuthorizationStatus authorizationStatus) {
         return new AuthorizationStatusResponse(
                 authorizationStatus.getId(),
