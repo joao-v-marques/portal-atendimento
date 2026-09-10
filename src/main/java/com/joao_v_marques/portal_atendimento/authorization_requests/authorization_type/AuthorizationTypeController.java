@@ -35,4 +35,12 @@ public class AuthorizationTypeController {
 
         return ResponseEntity.created(location).body(saved);
     }
+
+    // PUT para editar um tipo de autorização
+    @PutMapping("/{id}")
+    public ResponseEntity<AuthorizationTypeResponse> update(@PathVariable Integer id, @Valid @RequestBody AuthorizationTypeRequest request) {
+        AuthorizationTypeResponse updated = authorizationTypeService.update(id, request);
+
+        return ResponseEntity.ok(updated);
+    }
 }
