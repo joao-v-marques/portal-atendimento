@@ -23,6 +23,23 @@ public class AuthorizationStatusService {
                 .toList();
     }
 
+    // POST de uma nova AuthorizationStatus na aplicação
+    public AuthorizationStatusResponse create(AuthorizationStatusRequest request) {
+        String name = request.name().trim();
+
+        if (authorizationStatusRepository.existsByNameIgnoreCase(name)) {
+            throw new IllegalArgumentException("O usuário que está tentando cadastrar já existe");
+        }
+
+        // Montar entidade com base na DTO
+        AuthorizationStatus authorizationStatus = new AuthorizationStatus();
+        authorizationStatus.setName(name);
+
+        AuthorizationStatus saved = authorizationStatusRepository.save(authorizationStatus);
+
+        return toResponse(saved);
+    }
+
     private AuthorizationStatusResponse toResponse(AuthorizationStatus authorizationStatus) {
         return new AuthorizationStatusResponse(
                 authorizationStatus.getId(),
