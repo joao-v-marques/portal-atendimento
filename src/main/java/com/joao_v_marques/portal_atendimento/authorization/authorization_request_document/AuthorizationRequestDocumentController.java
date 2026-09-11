@@ -9,18 +9,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/authorization-request-documents")
+    @RequestMapping("/api/authorization-requests/{requestId}/documents")
 public class AuthorizationRequestDocumentController {
 
-    private final AuthorizationRequestDocumentService authorizationRequestDocumentServiceService;
+    private final AuthorizationRequestDocumentService authorizationRequestDocumentService;
 
     public AuthorizationRequestDocumentController(AuthorizationRequestDocumentService authorizationRequestDocumentService) {
-        this.authorizationRequestDocumentServiceService = authorizationRequestDocumentService;
+        this.authorizationRequestDocumentService = authorizationRequestDocumentService;
     }
 
     // GET de todos os documentos com base na request
-    @GetMapping("/{id}")
-    public List<AuthorizationRequestDocumentResponse> findByRequest(@PathVariable Integer id) {
-        return authorizationRequestDocumentServiceService.findByRequest(id);
+    @GetMapping
+    public List<AuthorizationRequestDocumentResponse> findByRequest(@PathVariable Integer requestId) {
+        return authorizationRequestDocumentService.findByRequest(requestId);
     }
 }
