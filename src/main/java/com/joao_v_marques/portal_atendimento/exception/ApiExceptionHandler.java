@@ -1,6 +1,5 @@
 package com.joao_v_marques.portal_atendimento.exception;
 
-import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +39,13 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiError> handleUnreadableBody(HttpMessageNotReadableException ex) {
         return ResponseEntity.badRequest()
                 .body(ApiError.of("Não foi possível ler o corpo da requisição. Envie um JSON válido."));
+    }
+
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<ApiError> handleStorage(StorageException ex) {
+        log.error("Falha no armazenamento de documento", ex);
+        return ResponseEntity.internalServerError()
+                .body(ApiError.of("Não foi possível processar o arquivo. Tente novamente."));
     }
 
     private String messageOf(FieldError error) {
