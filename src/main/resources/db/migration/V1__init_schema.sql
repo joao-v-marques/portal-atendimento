@@ -38,7 +38,7 @@ CREATE TABLE authorization_requests (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     -- Dados do pedido para autorização
-    transaction_number VARCHAR(12) NOT NULL,
+    transaction_number VARCHAR(12) NOT NULL UNIQUE,
     request_date DATE NOT NULL DEFAULT CURRENT_DATE,
     authorization_type_id INT NOT NULL, -- FK authorization_type
     authorization_status_id INT NOT NULL, -- FK authorization_status
