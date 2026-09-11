@@ -4,7 +4,6 @@ import com.joao_v_marques.portal_atendimento.authorization.authorization_request
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request.dto.AuthorizationRequestResponse;
 import com.joao_v_marques.portal_atendimento.security.UserPrincipal;
 import jakarta.validation.Valid;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

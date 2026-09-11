@@ -22,7 +22,7 @@ public class AuthorizationRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "transaction_number", nullable = false)
+    @Column(name = "transaction_number", nullable = false, unique = true)
     private String transactionNumber;
 
     @Column(name = "request_date", nullable = false)

@@ -56,6 +56,11 @@ public class AuthorizationRequestService {
         }
 
         String transactionNumber = request.transactionNumber().trim();
+
+        if (authorizationRequestRepository.existsByTransactionNumber(transactionNumber)) {
+            throw new IllegalArgumentException("Já existe uma autorização com este número de transação.");
+        }
+
         LocalDate requestDate = request.requestDate();
         String beneficiaryName = request.beneficiaryName().trim();
         String beneficiaryPhone = request.beneficiaryPhone().trim();
