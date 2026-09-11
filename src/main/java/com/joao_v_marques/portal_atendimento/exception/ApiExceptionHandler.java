@@ -2,6 +2,8 @@ package com.joao_v_marques.portal_atendimento.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -41,11 +43,20 @@ public class ApiExceptionHandler {
                 .body(ApiError.of("Não foi possível ler o corpo da requisição. Envie um JSON válido."));
     }
 
+    // Exception para erros de armazenamento
     @ExceptionHandler(StorageException.class)
     public ResponseEntity<ApiError> handleStorage(StorageException ex) {
         log.error("Falha no armazenamento de documento", ex);
         return ResponseEntity.internalServerError()
                 .body(ApiError.of("Não foi possível processar o arquivo. Tente novamente."));
+    }
+
+    // Tratamento de erro para Violação de chave unique no banco
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex) {
+        log.warn("Violação de integridade: ", ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiError.of("A operação conflita com um registro já existente. Verifique os dados e tente novamente."));
     }
 
     private String messageOf(FieldError error) {
