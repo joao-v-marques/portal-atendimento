@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-    @RequestMapping("/api/authorization-requests/{requestId}/documents")
+@RequestMapping("/api/authorization-requests/{requestId}/documents")
 public class AuthorizationRequestDocumentController {
 
     private final AuthorizationRequestDocumentService authorizationRequestDocumentService;
