@@ -67,13 +67,10 @@ public class AuthorizationRequestDocumentService {
         );
     }
 
-    // Monta <beneficiário>/<transaction_number>/<nome original>.<extensão detectada>
+    // Monta <transaction_number>/<nome original>.<extensão detectada>
     private String buildRelativePath(AuthorizationRequest request, String originalFilename, AllowedFileType type) {
-        String beneficiary = PathSanitizer.sanitize(request.getBeneficiaryName());
-        String transaction = PathSanitizer.sanitize(request.getTransactionNumber());
+        String directory = PathSanitizer.sanitize(request.getTransactionNumber());
         String baseName = PathSanitizer.sanitize(baseNameOf(originalFilename));
-
-        String directory = beneficiary + "/" + transaction;
 
         return resolveCollision(directory, baseName, type.getExtension());
     }
