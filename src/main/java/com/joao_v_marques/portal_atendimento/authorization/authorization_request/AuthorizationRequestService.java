@@ -7,8 +7,10 @@ import com.joao_v_marques.portal_atendimento.authorization.authorization_status.
 import com.joao_v_marques.portal_atendimento.authorization.authorization_type.AuthorizationType;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_type.AuthorizationTypeRepository;
 import com.joao_v_marques.portal_atendimento.users.user.User;
+import com.joao_v_marques.portal_atendimento.authorization.authorization_request_document.AuthorizationRequestDocumentService;
 import com.joao_v_marques.portal_atendimento.users.user.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -21,12 +23,14 @@ public class AuthorizationRequestService {
     private final AuthorizationTypeRepository authorizationTypeRepository;
     private final AuthorizationStatusRepository authorizationStatusRepository;
     private final UserRepository userRepository;
+    private final AuthorizationRequestDocumentService authorizationRequestDocumentService;
 
-    public AuthorizationRequestService(AuthorizationRequestRepository authorizationRequestRepository, AuthorizationTypeRepository authorizationTypeRepository, AuthorizationStatusRepository authorizationStatusRepository, UserRepository userRepository) {
+    public AuthorizationRequestService(AuthorizationRequestRepository authorizationRequestRepository, AuthorizationTypeRepository authorizationTypeRepository, AuthorizationStatusRepository authorizationStatusRepository, UserRepository userRepository, AuthorizationRequestDocumentService authorizationRequestDocumentService) {
         this.authorizationRequestRepository = authorizationRequestRepository;
         this.authorizationTypeRepository = authorizationTypeRepository;
         this.authorizationStatusRepository = authorizationStatusRepository;
         this.userRepository = userRepository;
+        this.authorizationRequestDocumentService = authorizationRequestDocumentService;
     }
 
     // GET de todas as autorizações cadastradas
@@ -39,7 +43,7 @@ public class AuthorizationRequestService {
     }
 
     @Transactional
-    public AuthorizationRequestResponse create(AuthorizationRequestRequest request, Integer currentUserId) {
+    public AuthorizationRequestResponse create(AuthorizationRequestRequest request, List<MultipartFile> files, Integer currentUserId) {
         // Valida as FK's e retorna erro se não existir
         AuthorizationType authorizationType = authorizationTypeRepository.findById(request.authorizationTypeId())
                 .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado tipo de autorização com o ID informado."));
@@ -76,6 +80,9 @@ public class AuthorizationRequestService {
         authorizationRequest.setInsertedBy(user);
 
         AuthorizationRequest saved = authorizationRequestRepository.save(authorizationRequest);
+
+        // Mesma transação: se um documento falhar, a autorização não é criada
+        authorizationRequestDocumentService.attachAll(saved, files, user);
 
         return toResponse(saved);
     }

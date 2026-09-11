@@ -1,11 +1,14 @@
 package com.joao_v_marques.portal_atendimento.authorization.authorization_request_document;
 
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request_document.dto.AuthorizationRequestDocumentResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.joao_v_marques.portal_atendimento.security.UserPrincipal;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,5 +25,20 @@ public class AuthorizationRequestDocumentController {
     @GetMapping
     public List<AuthorizationRequestDocumentResponse> findByRequest(@PathVariable Integer requestId) {
         return authorizationRequestDocumentService.findByRequest(requestId);
+    }
+
+    // POST avulso, para o documento que chega depois da autorização já criada
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AuthorizationRequestDocumentResponse> upload(
+            @PathVariable Integer requestId,
+            @RequestPart("file") MultipartFile file,
+            @AuthenticationPrincipal UserPrincipal currentUser) {
+
+        AuthorizationRequestDocumentResponse created =
+                authorizationRequestDocumentService.upload(requestId, file, currentUser.getId());
+
+        URI location = URI.create("/api/authorization-requests/" + requestId + "/documents/" + created.id());
+
+        return ResponseEntity.created(location).body(created);
     }
 }

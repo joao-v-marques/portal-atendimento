@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import org.springframework.validation.BindException;
 import java.util.HashMap;
@@ -57,6 +58,12 @@ public class ApiExceptionHandler {
         log.warn("Violação de integridade: ", ex);
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ApiError.of("A operação conflita com um registro já existente. Verifique os dados e tente novamente."));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> handleUploadTooLarge(MaxUploadSizeExceededException ex) {
+        return ResponseEntity.badRequest()
+                .body(ApiError.of("O arquivo excede o tamanho máximo permitido."));
     }
 
     private String messageOf(FieldError error) {
