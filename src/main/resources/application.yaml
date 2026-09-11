@@ -9,6 +9,9 @@ app:
   security:
     # em produção defina COOKIE_SECURE=true (exige HTTPS)
     cookie-secure: ${COOKIE_SECURE:false}
+  storage:
+    documents-root: ${DOCUMENTS_ROOT:./uploads/documents}
+    max-files-per-request: 10
 
 spring:
   datasource:
@@ -23,3 +26,7 @@ spring:
     locations: classpath:db/migration
   application:
     name: portal-atendimento
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
