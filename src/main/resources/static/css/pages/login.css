@@ -1,0 +1,159 @@
+/* ==========================================================================
+   Login — mobile-first: uma coluna com a marca no topo;
+   a partir de 60em, painel de marca à esquerda e formulário à direita.
+   ========================================================================== */
+
+.l-login {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ── Painel de marca ───────────────────── */
+
+.l-login__brand {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-2) 0;
+  overflow: hidden;
+}
+
+.l-login__tagline,
+.l-login__footer,
+.l-login__decor {
+  display: none;
+}
+
+.l-login__brand .c-brand {
+  justify-self: center;
+}
+
+/* ── Área do formulário ────────────────── */
+
+.l-login__main {
+  display: grid;
+  place-items: start center;
+  padding: var(--space-3) var(--space-2) var(--space-6);
+}
+
+.l-login__main:focus {
+  outline: none;
+}
+
+.l-login__card {
+  width: 100%;
+  max-width: var(--container-auth-max);
+  padding: var(--space-3);
+}
+
+.l-login__header {
+  display: grid;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+.l-login__subtitle {
+  color: var(--color-text-secondary);
+}
+
+.l-login__form {
+  display: grid;
+  gap: var(--space-2);
+}
+
+@media (min-width: 37.5em) {
+  .l-login__main {
+    place-items: center;
+    padding-block: var(--space-4) var(--space-8);
+  }
+
+  .l-login__card {
+    padding: var(--space-5);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+/* ── Desktop: duas colunas ─────────────── */
+
+@media (min-width: 60em) {
+  .l-login {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-rows: none;
+  }
+
+  .l-login__brand {
+    align-content: space-between;
+    padding: var(--space-6);
+    background: var(--color-structure);
+  }
+
+  /* No painel teal a marca usa as cores invertidas (mesmo efeito do c-brand--inverse) */
+  .l-login__brand .c-brand {
+    --brand-ring: var(--color-structure);
+    --brand-name-color: var(--color-text-inverse);
+    justify-self: start;
+  }
+
+  .l-login__tagline {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--space-2);
+    max-width: 28rem;
+  }
+
+  .l-login__tagline-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-2xl);
+    color: var(--color-text-inverse);
+  }
+
+  .l-login__tagline-text {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+    color: var(--color-structure-text-muted);
+  }
+
+  .l-login__footer {
+    position: relative;
+    z-index: 1;
+    display: block;
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-structure-text-muted);
+  }
+
+  /* Formas decorativas com as cores da marca */
+  .l-login__decor {
+    position: absolute;
+    right: calc(var(--space-12) * -1);
+    bottom: calc(var(--space-12) * -1);
+    display: block;
+    width: 24rem;
+    height: 24rem;
+    border: var(--space-6) solid var(--color-brand);
+    border-radius: var(--radius-full);
+    opacity: 0.32;
+    pointer-events: none;
+  }
+
+  .l-login__decor::after {
+    content: "";
+    position: absolute;
+    top: calc(var(--space-10) * -1);
+    left: calc(var(--space-10) * -1);
+    width: var(--space-8);
+    height: var(--space-8);
+    border-radius: var(--radius-full);
+    background: var(--color-brand-detail);
+  }
+
+  .l-login__main {
+    padding: var(--space-6) var(--space-4);
+  }
+}

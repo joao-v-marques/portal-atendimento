@@ -1,0 +1,181 @@
+/* ==========================================================================
+   Tokens — único arquivo com valores literais de design
+   ========================================================================== */
+
+:root {
+  /* ── Espaço (grade de 8px) ─────────────── */
+  --space-0:    0;
+  --space-half: 0.25rem; /*  4px — exceção controlada */
+  --space-1:    0.5rem;  /*  8px */
+  --space-2:    1rem;    /* 16px */
+  --space-3:    1.5rem;  /* 24px */
+  --space-4:    2rem;    /* 32px */
+  --space-5:    2.5rem;  /* 40px */
+  --space-6:    3rem;    /* 48px */
+  --space-8:    4rem;    /* 64px */
+  --space-10:   5rem;    /* 80px */
+  --space-12:   6rem;    /* 96px */
+
+  /* ── Marca ─────────────────────────────── */
+  --green-50:  #e6f4ee;
+  --green-100: #cce9dc;
+  --green-300: #66c29e;
+  --green-500: #00995d;  /* 348c — marca, uso decorativo */
+  --green-700: #00804e;  /* ação primária */
+  --green-800: #006b41;  /* hover */
+  --green-900: #00563a;  /* active */
+
+  --teal-50:  #e6eded;
+  --teal-100: #c2d6d5;
+  --teal-700: #00615e;
+  --teal-900: #004e4c;   /* 7722c */
+  --teal-950: #003a38;
+
+  --orange-100: #ffe5d0;
+  --orange-500: #f47920; /* 1585c — só destaque */
+  --orange-700: #a84a00; /* texto/aviso */
+
+  --lime-100: #eff6db;
+  --lime-500: #b1d34b;   /* 381c */
+
+  /* ── Apoio (paleta 2023) ───────────────── */
+  --terracotta-300: #d2a494; /* 7521c */
+  --rose-200:       #f1cdcd; /* 691c */
+  --beige-200:      #ece3d9; /* 7527c */
+  --beige-50:       #faf7f4;
+  --yellow-200:     #ffe596; /* 1205c */
+  --leaf-200:       #cde3bb; /* 7485c */
+  --sky-200:        #a4d8de; /* 304c */
+  --sky-50:         #e4f3f5;
+
+  /* ── Neutros (levemente puxados ao teal) ─ */
+  --white:       #ffffff;
+  --black:       #000000;
+  --neutral-50:  #f8faf9;
+  --neutral-100: #f1f4f3;
+  --neutral-200: #e1e6e5;
+  --neutral-300: #c4cccb;
+  --neutral-500: #7d8a89;
+  --neutral-600: #5f6b6b;
+  --neutral-700: #3d4a4a;
+  --neutral-900: #1b2626;
+
+  /* ── Semânticos (USE ESTES nos componentes) ── */
+  --color-bg:              var(--neutral-50);
+  --color-surface:         var(--white);
+  --color-surface-muted:   var(--neutral-100);
+  --color-surface-warm:    var(--beige-50);
+
+  --color-text:            var(--neutral-900);
+  --color-text-secondary:  var(--neutral-600);
+  --color-text-inverse:    var(--white);
+  --color-heading:         var(--teal-900);
+
+  --color-border:          var(--neutral-200); /* divisórias */
+  --color-border-strong:   var(--neutral-500); /* inputs, controles */
+  --color-border-hover:    var(--neutral-700);
+
+  --color-primary:         var(--green-700);
+  --color-primary-hover:   var(--green-800);
+  --color-primary-active:  var(--green-900);
+  --color-primary-subtle:  var(--green-50);
+  --color-brand:           var(--green-500);
+  --color-brand-detail:    var(--lime-500);
+  --color-accent:          var(--orange-500);
+
+  --color-structure:       var(--teal-900);   /* topbar/sidebar */
+  --color-structure-hover: var(--teal-700);
+  --color-structure-deep:  var(--teal-950);
+  --color-structure-text-muted: var(--teal-100); /* 6,32:1 sobre --teal-900 */
+  --color-structure-border: var(--teal-700);
+
+  --color-backdrop:        rgb(27 38 38 / 0.48);
+
+  --color-focus:           var(--green-700);
+  --color-focus-inverse:   var(--lime-500);   /* foco sobre --color-structure */
+
+  --color-success:         var(--green-700);
+  --color-success-bg:      var(--green-50);
+  --color-error:           #b3261e;
+  --color-error-hover:     #8f1e18;
+  --color-error-bg:        #fdeceb;
+  --color-warning:         var(--orange-700);
+  --color-warning-bg:      var(--orange-100);
+  --color-info:            #0b5f6a;
+  --color-info-bg:         var(--sky-50);
+
+  --color-disabled-bg:     var(--neutral-100);
+  --color-disabled-text:   var(--neutral-600);
+
+  /* Badges de status */
+  --status-analysis-bg:    var(--yellow-200);
+  --status-analysis-text:  #6b5200;  /* 5,97:1 */
+  --status-done-bg:        var(--leaf-200);
+  --status-done-text:      #2f5d1a;  /* 5,66:1 */
+  --status-neutral-bg:     var(--neutral-100);
+  --status-neutral-text:   var(--neutral-700);
+
+  /* ── Tipografia ────────────────────────── */
+  --font-heading: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body:    "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --text-xs:   0.75rem;  --leading-xs:   1rem;    /* 12 / 16 */
+  --text-sm:   0.875rem; --leading-sm:   1.5rem;  /* 14 / 24 */
+  --text-md:   1rem;     --leading-md:   1.5rem;  /* 16 / 24 */
+  --text-lg:   1.25rem;  --leading-lg:   2rem;    /* 20 / 32 */
+  --text-xl:   1.5rem;   --leading-xl:   2rem;    /* 24 / 32 */
+  --text-2xl:  2rem;     --leading-2xl:  2.5rem;  /* 32 / 40 */
+  --text-3xl:  2.5rem;   --leading-3xl:  3rem;    /* 40 / 48 */
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* ── Raio ──────────────────────────────── */
+  --radius-sm:   0.25rem;  /*  4px */
+  --radius-md:   0.5rem;   /*  8px */
+  --radius-lg:   1rem;     /* 16px */
+  --radius-full: 999px;
+
+  /* ── Borda ─────────────────────────────── */
+  --border-width:       1px;
+  --border-width-thick: 2px;
+
+  /* ── Sombra ────────────────────────────── */
+  --shadow-sm: 0 1px 2px rgb(27 38 38 / 0.08);
+  --shadow-md: 0 4px 8px rgb(27 38 38 / 0.08), 0 1px 2px rgb(27 38 38 / 0.06);
+  --shadow-lg: 0 16px 32px rgb(27 38 38 / 0.16);
+
+  /* ── Foco ──────────────────────────────── */
+  --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus);
+  --focus-ring-inverse: 0 0 0 2px var(--color-structure), 0 0 0 4px var(--color-focus-inverse);
+
+  /* ── Movimento ─────────────────────────── */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 250ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit:     cubic-bezier(0.4, 0, 1, 1);
+
+  /* ── Camadas (z-index) ─────────────────── */
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-overlay:  300;
+  --z-modal:    400;
+
+  /* ── Layout ────────────────────────────── */
+  --container-max:      80rem;  /* 1280px */
+  --container-form-max: 45rem;  /*  720px */
+  --container-auth-max: 25rem;  /*  400px — card de login */
+  --topbar-height:      4rem;   /*   64px */
+  --sidebar-width:      16rem;  /*  256px */
+  --sidebar-item-height: 3rem;  /*   48px */
+  --avatar-size:        2rem;   /*   32px */
+  --control-height-sm:  2rem;   /*   32px */
+  --control-height-md:  2.5rem; /*   40px */
+  --control-height-lg:  3rem;   /*   48px */
+  --icon-size-sm:       1rem;   /*   16px */
+  --icon-size-md:       1.5rem; /*   24px */
+}

@@ -1,0 +1,32 @@
+/* ==========================================================================
+   Notyf — ajustes visuais com tokens
+   ========================================================================== */
+
+.notyf__toast {
+  max-width: 28rem; /* 448px */
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.notyf__wrapper {
+  padding-block: var(--space-2);
+}
+
+.notyf__message {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-sm);
+}
+
+.notyf__dismiss-btn:focus-visible {
+  outline: 2px solid var(--color-text-inverse);
+  outline-offset: -4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notyf__toast {
+    animation-duration: 1ms !important; /* único !important permitido: sobrescrever vendor */
+  }
+}

@@ -1,0 +1,203 @@
+/* ==========================================================================
+   Shell autenticado — mobile-first:
+   < 60em: topbar + conteúdo, sidebar vira gaveta sobreposta;
+   ≥ 60em: topbar em cima, sidebar fixa à esquerda e conteúdo à direita.
+   ========================================================================== */
+
+.l-shell {
+  display: grid;
+  grid-template-areas:
+    "topbar"
+    "main";
+  /* minmax(0, 1fr): conteúdo largo da topbar não pode alargar a página */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: var(--topbar-height) 1fr;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Trava a rolagem do fundo enquanto a gaveta está aberta */
+.has-drawer-open {
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Topbar
+   ========================================================================== */
+
+.l-topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--topbar-height);
+  padding-inline: var(--space-2);
+  background: var(--color-structure);
+  color: var(--color-text-inverse);
+}
+
+.l-topbar__spacer {
+  flex: 1;
+}
+
+.l-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+/* ==========================================================================
+   Sidebar (gaveta no mobile)
+   ========================================================================== */
+
+.l-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(var(--sidebar-width), calc(100% - var(--space-8)));
+  padding: var(--space-2);
+  overflow-y: auto;
+  background: var(--color-structure);
+  visibility: hidden;
+  transform: translateX(-100%);
+  /* visibility espera a animação terminar para esconder os links do Tab */
+  transition: transform var(--duration-slow) var(--ease-exit),
+              visibility 0s linear var(--duration-slow);
+}
+
+.l-sidebar.is-open {
+  visibility: visible;
+  transform: none;
+  transition: transform var(--duration-slow) var(--ease-standard),
+              visibility 0s;
+}
+
+.l-sidebar__header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.l-shell__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal) - 1);
+  background: var(--color-backdrop);
+}
+
+/* ==========================================================================
+   Conteúdo
+   ========================================================================== */
+
+.l-main {
+  grid-area: main;
+  min-width: 0;
+  padding-block: var(--space-4) var(--space-8);
+}
+
+.l-main:focus {
+  outline: none;
+}
+
+.l-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--space-2);
+}
+
+.l-page-header {
+  display: grid;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
+}
+
+.l-page-header__subtitle {
+  color: var(--color-text-secondary);
+}
+
+.l-section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.l-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.l-grid__full {
+  grid-column: 1 / -1;
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+
+/* Telas estreitas: só o símbolo da marca; o nome segue como rótulo do link */
+@media (max-width: 37.49em) {
+  .l-topbar .c-brand__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 37.5em) {
+  .l-topbar {
+    padding-inline: var(--space-3);
+  }
+
+  .l-container {
+    padding-inline: var(--space-3);
+  }
+
+  .l-grid {
+    gap: var(--space-3);
+  }
+}
+
+@media (min-width: 60em) {
+  .l-shell {
+    grid-template-areas:
+      "topbar topbar"
+      "sidebar main";
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  }
+
+  /* .l-topbar na frente: components.css vem depois e define display do .c-icon-button */
+  .l-topbar .l-topbar__menu-button,
+  .l-sidebar__header,
+  .l-shell__backdrop {
+    display: none;
+  }
+
+  .l-sidebar {
+    position: sticky;
+    top: var(--topbar-height);
+    z-index: auto;
+    grid-area: sidebar;
+    width: auto;
+    height: calc(100dvh - var(--topbar-height));
+    border-top: var(--border-width) solid var(--color-structure-border);
+    visibility: visible;
+    transform: none;
+    transition: none;
+  }
+
+  .l-container {
+    padding-inline: var(--space-4);
+  }
+}

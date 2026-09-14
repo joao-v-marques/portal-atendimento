@@ -1,0 +1,638 @@
+/* ==========================================================================
+   Skip link
+   ========================================================================== */
+
+.c-skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: var(--z-modal);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-weight: var(--weight-semibold);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(calc(-100% - var(--space-4)));
+}
+
+.c-skip-link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  transform: none;
+}
+
+/* ==========================================================================
+   Button
+   ========================================================================== */
+
+.c-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: var(--control-height-md);
+  padding: 0 var(--space-2);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+  font: var(--weight-semibold) var(--text-sm) / var(--leading-sm) var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.c-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.c-button:disabled {
+  border-color: transparent;
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+.c-button--primary {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.c-button--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.c-button--primary:active:not(:disabled) {
+  background: var(--color-primary-active);
+}
+
+.c-button--lg {
+  min-height: var(--control-height-lg);
+  padding: 0 var(--space-3);
+  font-size: var(--text-md);
+}
+
+.c-button--block {
+  width: 100%;
+}
+
+/* Carregando: mantém a cor primária e a largura; só o texto some */
+.c-button.is-loading {
+  position: relative;
+  color: transparent;
+  pointer-events: none;
+}
+
+.c-button--primary.is-loading:disabled {
+  background: var(--color-primary);
+}
+
+.c-button.is-loading::after {
+  content: "";
+  position: absolute;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  border: var(--border-width-thick) solid var(--color-text-inverse);
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Field
+   ========================================================================== */
+
+.c-field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.c-field__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-sm);
+  color: var(--color-text);
+}
+
+.c-field__hint {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Aviso não bloqueante (ex.: Caps Lock). Altura reservada para o layout não saltar */
+.c-field__hint--warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-half);
+  min-height: var(--leading-sm);
+  color: var(--color-warning);
+}
+
+.c-field__hint--warning:not(:empty)::before {
+  content: "";
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  margin-top: var(--space-half);
+  background: currentColor;
+  mask: url("img/icon-alert.svg") center / contain no-repeat;
+}
+
+.c-field__required {
+  color: var(--color-error);
+}
+
+.c-field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-half);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-error);
+}
+
+.c-field__error[hidden] {
+  display: none;
+}
+
+/* Ícone: cor não é o único indicador de erro */
+.c-field__error::before {
+  content: "";
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  margin-top: var(--space-half);
+  background: currentColor;
+  mask: url("img/icon-alert.svg") center / contain no-repeat;
+}
+
+/* ==========================================================================
+   Input
+   ========================================================================== */
+
+.c-input {
+  width: 100%;
+  min-height: var(--control-height-md);
+  padding: 0 var(--space-1);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  font: var(--weight-regular) var(--text-md) / var(--leading-md) var(--font-body);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.c-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.c-input:hover {
+  border-color: var(--color-border-hover);
+}
+
+.c-input:focus-visible {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 1px var(--color-focus);
+}
+
+.c-input:disabled {
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+.c-input[readonly] {
+  background: var(--color-surface-muted);
+}
+
+.c-input[aria-invalid="true"] {
+  border-color: var(--color-error);
+  box-shadow: inset 0 0 0 1px var(--color-error);
+}
+
+.c-input--lg {
+  min-height: var(--control-height-lg);
+  padding: 0 var(--space-2);
+}
+
+/* ==========================================================================
+   Input group (campo + botão interno, ex.: mostrar senha)
+   ========================================================================== */
+
+.c-input-group {
+  position: relative;
+}
+
+.c-input-group .c-input {
+  padding-right: var(--control-height-lg);
+}
+
+.c-input-group__action {
+  position: absolute;
+  top: var(--space-half);
+  right: var(--space-half);
+  display: grid;
+  place-items: center;
+  width: var(--control-height-md);
+  height: var(--control-height-md);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.c-input-group__action:hover {
+  color: var(--color-text);
+}
+
+.c-input-group__action:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.c-input-group__icon {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  background: currentColor;
+  mask: url("img/icon-eye.svg") center / contain no-repeat;
+}
+
+.c-input-group__action[aria-pressed="true"] .c-input-group__icon {
+  mask-image: url("img/icon-eye-off.svg");
+}
+
+/* ==========================================================================
+   Card
+   ========================================================================== */
+
+.c-card {
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+@media (max-width: 37.49em) {
+  .c-card {
+    padding: var(--space-2);
+  }
+}
+
+/* ==========================================================================
+   Icon (ícone monocromático via máscara; herda a cor do texto)
+   ========================================================================== */
+
+.c-icon {
+  flex: none;
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.c-icon--sm {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.c-icon--menu   { --icon: url("img/icon-menu.svg"); }
+.c-icon--close  { --icon: url("img/icon-close.svg"); }
+.c-icon--home   { --icon: url("img/icon-home.svg"); }
+.c-icon--logout { --icon: url("img/icon-logout.svg"); }
+.c-icon--chart  { --icon: url("img/icon-chart.svg"); }
+
+/* ==========================================================================
+   Brand (logo do portal)
+   ========================================================================== */
+
+.c-brand {
+  --brand-ring: var(--color-bg);
+  --brand-name-color: var(--color-heading);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+}
+
+.c-brand:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.c-brand__mark {
+  position: relative;
+  flex: none;
+  width: var(--control-height-md);
+  height: var(--control-height-md);
+  border-radius: var(--radius-md);
+  background: var(--color-brand);
+}
+
+.c-brand__mark::after {
+  content: "";
+  position: absolute;
+  right: calc(var(--space-half) * -1);
+  bottom: calc(var(--space-half) * -1);
+  width: var(--space-2);
+  height: var(--space-2);
+  border: var(--border-width-thick) solid var(--brand-ring);
+  border-radius: var(--radius-full);
+  background: var(--color-brand-detail);
+}
+
+.c-brand__name {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-lg);
+  white-space: nowrap;
+  color: var(--brand-name-color);
+}
+
+.c-brand--inverse {
+  --brand-ring: var(--color-structure);
+  --brand-name-color: var(--color-text-inverse);
+}
+
+.c-brand--inverse:focus-visible {
+  box-shadow: var(--focus-ring-inverse);
+}
+
+/* ==========================================================================
+   Icon button (só ícone: exige aria-label e title no HTML)
+   ========================================================================== */
+
+.c-icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--control-height-md);
+  height: var(--control-height-md);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.c-icon-button:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.c-icon-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.c-icon-button--inverse {
+  color: var(--color-text-inverse);
+}
+
+.c-icon-button--inverse:hover {
+  background: var(--color-structure-hover);
+  color: var(--color-text-inverse);
+}
+
+.c-icon-button--inverse:focus-visible {
+  box-shadow: var(--focus-ring-inverse);
+}
+
+/* ==========================================================================
+   Button — variante para fundo escuro (topbar)
+   ========================================================================== */
+
+.c-button--inverse-ghost {
+  background: transparent;
+  color: var(--color-text-inverse);
+}
+
+.c-button--inverse-ghost:hover:not(:disabled) {
+  background: var(--color-structure-hover);
+}
+
+.c-button--inverse-ghost:focus-visible {
+  box-shadow: var(--focus-ring-inverse);
+}
+
+.c-button--inverse-ghost.is-loading:disabled {
+  background: transparent;
+}
+
+/* Rótulo que vira só ícone em telas estreitas (o botão mantém aria-label) */
+@media (max-width: 37.49em) {
+  .c-button__label--collapsible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+/* ==========================================================================
+   Avatar e user chip (usuário logado)
+   ========================================================================== */
+
+.c-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-xs);
+  background: var(--color-brand-detail);
+  color: var(--color-text);
+}
+
+.c-user-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.c-user-chip__text {
+  display: grid;
+  min-width: 0;
+}
+
+.c-user-chip__name {
+  overflow: hidden;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-sm);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-text-inverse);
+}
+
+.c-user-chip__role {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-structure-text-muted);
+}
+
+/* Em telas estreitas fica só o avatar; nome e perfil seguem para leitor de tela */
+@media (max-width: 37.49em) {
+  .c-user-chip__text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+/* ==========================================================================
+   Nav (itens da sidebar)
+   ========================================================================== */
+
+.c-nav__list {
+  display: grid;
+  gap: var(--space-half);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.c-nav__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--sidebar-item-height);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-sm);
+  text-decoration: none;
+  color: var(--color-structure-text-muted);
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.c-nav__link:hover {
+  background: var(--color-structure-hover);
+  color: var(--color-text-inverse);
+}
+
+.c-nav__link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-inverse);
+}
+
+/* Item ativo: fundo + barra lateral (cor não é o único indicador: há aria-current e peso) */
+.c-nav__link[aria-current="page"] {
+  font-weight: var(--weight-semibold);
+  background: var(--color-structure-hover);
+  color: var(--color-text-inverse);
+  box-shadow: inset var(--space-half) 0 0 var(--color-brand-detail);
+}
+
+.c-nav__link[aria-current="page"]:focus-visible {
+  box-shadow: inset var(--space-half) 0 0 var(--color-brand-detail), var(--focus-ring-inverse);
+}
+
+/* ==========================================================================
+   Skeleton
+   ========================================================================== */
+
+.c-skeleton {
+  display: inline-block;
+  max-width: 100%;
+  height: var(--space-2);
+  border-radius: var(--radius-sm);
+  vertical-align: middle;
+  background: linear-gradient(90deg, var(--neutral-100) 25%, var(--neutral-200) 50%, var(--neutral-100) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+.c-skeleton--name {
+  width: 12ch;
+}
+
+.c-skeleton--heading {
+  width: 16ch;
+  height: var(--space-4);
+}
+
+.c-skeleton--inverse {
+  background: linear-gradient(90deg, var(--color-structure-hover) 25%, var(--color-structure-deep) 50%, var(--color-structure-hover) 75%);
+  background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+/* ==========================================================================
+   Empty state (conteúdo da página, não notificação)
+   ========================================================================== */
+
+.c-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding-block: var(--space-6);
+  text-align: center;
+}
+
+.c-empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: var(--space-8);
+  height: var(--space-8);
+  margin-bottom: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-subtle);
+  color: var(--color-brand);
+}
+
+.c-empty-state__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-lg);
+  color: var(--color-heading);
+}
+
+.c-empty-state__text {
+  max-width: 48ch;
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   Toque: alvos de 48px
+   ========================================================================== */
+
+@media (pointer: coarse) {
+  .c-button,
+  .c-input,
+  .c-icon-button {
+    min-height: var(--control-height-lg);
+  }
+
+  .c-icon-button {
+    width: var(--control-height-lg);
+  }
+}

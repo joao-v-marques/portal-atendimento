@@ -1,13 +1,100 @@
-<!doctype html>
+  <!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar · Portal de Atendimento</title>
+
+  <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/vendor/notyf.min.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/notyf-theme.css">
+  <link rel="stylesheet" href="css/pages/login.css">
+
+  <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
+  <script src="js/vendor/notyf.min.js" defer></script>
+  <script type="module" src="js/pages/login.js"></script>
 </head>
 <body>
-    <h1>Esta é a página de login</h1>
+  <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <div class="l-login">
+    <header class="l-login__brand">
+      <div class="c-brand">
+        <span class="c-brand__mark" aria-hidden="true"></span>
+        <span class="c-brand__name">Portal de Atendimento</span>
+      </div>
+
+      <div class="l-login__tagline">
+        <p class="l-login__tagline-title">Atendimento ágil, do pedido ao documento.</p>
+        <p class="l-login__tagline-text">Registre solicitações de autorização e acompanhe cada beneficiário em um só lugar.</p>
+      </div>
+
+      <p class="l-login__footer">Acesso restrito à equipe de atendimento.</p>
+
+      <span class="l-login__decor" aria-hidden="true"></span>
+    </header>
+
+    <main class="l-login__main" id="conteudo" tabindex="-1">
+      <section class="c-card l-login__card" aria-labelledby="login-title">
+        <div class="l-login__header">
+          <h1 id="login-title">Entrar</h1>
+          <p class="l-login__subtitle">Use seu usuário e senha do portal.</p>
+        </div>
+
+        <form class="l-login__form js-login-form" novalidate>
+          <div class="c-field">
+            <label class="c-field__label" for="username">Usuário</label>
+            <input
+              class="c-input c-input--lg"
+              id="username"
+              name="username"
+              type="text"
+              aria-describedby="username-error"
+              autocomplete="username"
+              autocapitalize="none"
+              spellcheck="false"
+              required
+              autofocus
+            >
+            <p class="c-field__error" id="username-error" hidden></p>
+          </div>
+
+          <div class="c-field">
+            <label class="c-field__label" for="password">Senha</label>
+            <div class="c-input-group">
+              <input
+                class="c-input c-input--lg"
+                id="password"
+                name="password"
+                type="password"
+                aria-describedby="password-error password-capslock"
+                autocomplete="current-password"
+                required
+              >
+              <button
+                class="c-input-group__action js-toggle-password"
+                type="button"
+                aria-pressed="false"
+                aria-controls="password"
+                aria-label="Mostrar senha"
+                title="Mostrar senha"
+              >
+                <span class="c-input-group__icon" aria-hidden="true"></span>
+              </button>
+            </div>
+            <p class="c-field__error" id="password-error" hidden></p>
+            <p class="c-field__hint c-field__hint--warning js-capslock-hint" id="password-capslock" aria-live="polite"></p>
+          </div>
+
+          <button class="c-button c-button--primary c-button--lg c-button--block" type="submit">Entrar</button>
+        </form>
+      </section>
+    </main>
+  </div>
 </body>
 </html>

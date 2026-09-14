@@ -1,13 +1,107 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Início · Portal de Atendimento</title>
+
+  <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/vendor/notyf.min.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/notyf-theme.css">
+
+  <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
+  <script src="js/vendor/notyf.min.js" defer></script>
+  <script type="module" src="js/pages/home.js"></script>
 </head>
-<body>
-    <h1>Esta é a página home</h1>
+<body class="l-shell">
+  <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="l-topbar js-topbar">
+    <button
+      class="c-icon-button c-icon-button--inverse l-topbar__menu-button js-menu-open"
+      type="button"
+      aria-controls="menu-principal"
+      aria-expanded="false"
+      aria-label="Abrir menu"
+      title="Abrir menu"
+    >
+      <span class="c-icon c-icon--menu" aria-hidden="true"></span>
+    </button>
+
+    <a class="c-brand c-brand--inverse" href="home">
+      <span class="c-brand__mark" aria-hidden="true"></span>
+      <span class="c-brand__name">Portal de Atendimento</span>
+    </a>
+
+    <div class="l-topbar__spacer"></div>
+
+    <div class="l-topbar__actions">
+      <div class="c-user-chip js-user-chip" aria-busy="true">
+        <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
+        <span class="c-user-chip__text">
+          <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
+          <span class="c-user-chip__role js-user-role"></span>
+        </span>
+      </div>
+
+      <button class="c-button c-button--inverse-ghost js-logout" type="button">
+        <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
+        <span class="c-button__label--collapsible">Sair</span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="l-sidebar js-sidebar" id="menu-principal" aria-label="Menu principal">
+    <div class="l-sidebar__header">
+      <button
+        class="c-icon-button c-icon-button--inverse js-menu-close"
+        type="button"
+        aria-label="Fechar menu"
+        title="Fechar menu"
+      >
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <ul class="c-nav__list">
+      <li>
+        <a class="c-nav__link" href="home" aria-current="page">
+          <span class="c-icon c-icon--home" aria-hidden="true"></span>
+          Início
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
+
+  <main class="l-main js-main" id="conteudo" tabindex="-1">
+    <div class="l-container">
+      <header class="l-page-header">
+        <h1 class="js-greeting" aria-busy="true"><span class="c-skeleton c-skeleton--heading" aria-hidden="true"></span></h1>
+        <p class="l-page-header__subtitle js-today"></p>
+      </header>
+
+      <section class="l-section" aria-labelledby="indicadores-title">
+        <h2 id="indicadores-title">Indicadores</h2>
+
+        <div class="l-grid js-metrics">
+          <div class="c-card c-empty-state l-grid__full">
+            <span class="c-empty-state__icon" aria-hidden="true">
+              <span class="c-icon c-icon--chart"></span>
+            </span>
+            <h3 class="c-empty-state__title">Os indicadores vão aparecer aqui</h3>
+            <p class="c-empty-state__text">Em breve você vai acompanhar por aqui as solicitações em análise e as finalizadas.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
 </body>
 </html>
