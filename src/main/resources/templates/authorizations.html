@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Autorizações · Portal de Atendimento</title>
+
+  <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/vendor/notyf.min.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/notyf-theme.css">
+  <link rel="stylesheet" href="css/pages/authorizations.css">
+
+  <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
+  <script src="js/vendor/notyf.min.js" defer></script>
+  <script type="module" src="js/pages/authorizations.js"></script>
+</head>
+<body class="l-shell">
+  <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="l-topbar js-topbar">
+    <button
+      class="c-icon-button c-icon-button--inverse l-topbar__menu-button js-menu-open"
+      type="button"
+      aria-controls="menu-principal"
+      aria-expanded="false"
+      aria-label="Abrir menu"
+      title="Abrir menu"
+    >
+      <span class="c-icon c-icon--menu" aria-hidden="true"></span>
+    </button>
+
+    <a class="c-brand c-brand--inverse" href="home">
+      <span class="c-brand__mark" aria-hidden="true"></span>
+      <span class="c-brand__name">Portal de Atendimento</span>
+    </a>
+
+    <div class="l-topbar__spacer"></div>
+
+    <div class="l-topbar__actions">
+      <div class="c-user-chip js-user-chip" aria-busy="true">
+        <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
+        <span class="c-user-chip__text">
+          <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
+          <span class="c-user-chip__role js-user-role"></span>
+        </span>
+      </div>
+
+      <button class="c-button c-button--inverse-ghost js-logout" type="button">
+        <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
+        <span class="c-button__label--collapsible">Sair</span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="l-sidebar js-sidebar" id="menu-principal" aria-label="Menu principal">
+    <div class="l-sidebar__header">
+      <button
+        class="c-icon-button c-icon-button--inverse js-menu-close"
+        type="button"
+        aria-label="Fechar menu"
+        title="Fechar menu"
+      >
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <ul class="c-nav__list">
+      <li>
+        <a class="c-nav__link" href="home">
+          <span class="c-icon c-icon--home" aria-hidden="true"></span>
+          Início
+        </a>
+      </li>
+      <li>
+        <a class="c-nav__link" href="autorizacoes" aria-current="page">
+          <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+          Autorizações
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
+
+  <main class="l-main js-main" id="conteudo" tabindex="-1">
+    <div class="l-container">
+      <header class="l-page-header">
+        <h1>Autorizações</h1>
+        <p class="l-page-header__subtitle">Consulte as autorizações cadastradas e os documentos anexados.</p>
+      </header>
+
+      <div class="l-section">
+        <section class="c-card" aria-labelledby="filtros-title">
+          <h2 class="u-visually-hidden" id="filtros-title">Filtros</h2>
+
+          <form class="l-filters js-filters" role="search" aria-labelledby="filtros-title" novalidate>
+            <div class="c-field l-filters__search">
+              <label class="c-field__label" for="filtro-busca">Buscar</label>
+              <div class="c-search">
+                <input
+                  class="c-input"
+                  id="filtro-busca"
+                  name="busca"
+                  type="search"
+                  aria-describedby="filtro-busca-hint"
+                  placeholder="Nº da transação, beneficiário ou telefone"
+                  autocomplete="off"
+                  spellcheck="false"
+                >
+              </div>
+              <p class="u-visually-hidden" id="filtro-busca-hint">Atalho: tecla barra para focar a busca.</p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-status">Status</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="filtro-status" name="status" disabled>
+                  <option value="">Todos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-tipo">Tipo</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="filtro-tipo" name="tipo" disabled>
+                  <option value="">Todos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-de">Data de</label>
+              <input class="c-input" id="filtro-de" name="de" type="date" aria-describedby="filtro-de-error">
+              <p class="c-field__error" id="filtro-de-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-ate">Data até</label>
+              <input class="c-input" id="filtro-ate" name="ate" type="date" aria-describedby="filtro-ate-error">
+              <p class="c-field__error" id="filtro-ate-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-cadastrado-por">Cadastrado por</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="filtro-cadastrado-por" name="cadastradoPor" disabled>
+                  <option value="">Todos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="l-filters__actions">
+              <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
+                <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                Limpar filtros
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section class="l-results js-results" aria-labelledby="resultados-title">
+          <h2 class="u-visually-hidden" id="resultados-title">Resultados</h2>
+          <p class="l-results__count js-results-count" aria-live="polite"></p>
+
+          <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-title" tabindex="0">
+            <table class="c-table">
+              <caption class="u-visually-hidden">Autorizações cadastradas</caption>
+              <thead>
+                <tr>
+                  <th scope="col" data-sort-key="requestDate" aria-sort="descending">
+                    <button class="c-table__sort js-sort" type="button">Data <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col" data-sort-key="transactionNumber" aria-sort="none">
+                    <button class="c-table__sort js-sort" type="button">Nº da transação <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col" data-sort-key="beneficiaryName" aria-sort="none">
+                    <button class="c-table__sort js-sort" type="button">Beneficiário <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col">Tipo</th>
+                  <th scope="col" data-sort-key="authorizationStatusName" aria-sort="none">
+                    <button class="c-table__sort js-sort" type="button">Status <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col" data-sort-key="createdAt" aria-sort="none">
+                    <button class="c-table__sort js-sort" type="button">Cadastro <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col" class="u-text-end"><span class="u-visually-hidden">Ações</span></th>
+                </tr>
+              </thead>
+              <tbody class="js-table-body"></tbody>
+            </table>
+          </div>
+
+          <div class="js-table-state" tabindex="-1" hidden></div>
+
+          <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+            <p class="c-pagination__summary js-page-summary"></p>
+            <div class="c-pagination__controls">
+              <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                Anterior
+              </button>
+              <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+              <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                Próxima
+                <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+              </button>
+            </div>
+          </nav>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <dialog class="c-dialog js-detail-dialog" aria-labelledby="detalhe-title">
+    <header class="c-dialog__header">
+      <div class="c-dialog__heading">
+        <h2 class="c-dialog__title" id="detalhe-title">
+          Autorização <span class="c-dialog__title-code js-detail-code"></span>
+        </h2>
+        <div class="js-detail-status"></div>
+      </div>
+      <button
+        class="c-icon-button js-detail-close js-detail-dismiss"
+        type="button"
+        aria-label="Fechar detalhes"
+        title="Fechar detalhes"
+      >
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <div class="c-dialog__body">
+      <section class="c-dialog__section" aria-labelledby="detalhe-dados-title">
+        <h3 class="c-dialog__section-title" id="detalhe-dados-title">Dados da autorização</h3>
+        <dl class="c-description-list js-detail-list"></dl>
+      </section>
+
+      <section class="c-dialog__section js-documents" aria-labelledby="detalhe-documentos-title">
+        <h3 class="c-dialog__section-title" id="detalhe-documentos-title">
+          Documentos <span class="js-documents-count"></span>
+        </h3>
+        <div class="js-documents-area"></div>
+      </section>
+    </div>
+
+    <footer class="c-dialog__footer">
+      <button class="c-button c-button--secondary js-detail-dismiss" type="button">Fechar</button>
+    </footer>
+  </dialog>
+</body>
+</html>

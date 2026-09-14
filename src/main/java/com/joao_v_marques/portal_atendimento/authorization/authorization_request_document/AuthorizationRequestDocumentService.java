@@ -3,6 +3,7 @@ package com.joao_v_marques.portal_atendimento.authorization.authorization_reques
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request.AuthorizationRequest;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request.AuthorizationRequestRepository;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request_document.dto.AuthorizationRequestDocumentResponse;
+import com.joao_v_marques.portal_atendimento.authorization.authorization_request_document.dto.DocumentDownload;
 import com.joao_v_marques.portal_atendimento.exception.StorageException;
 import com.joao_v_marques.portal_atendimento.storage.AllowedFileType;
 import com.joao_v_marques.portal_atendimento.storage.DocumentStorage;
@@ -58,6 +59,20 @@ public class AuthorizationRequestDocumentService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    // Busca pelo par (documento, autorização): impede baixar documento de outra autorização trocando só o id
+    @Transactional(readOnly = true)
+    public DocumentDownload loadForDownload(Integer requestId, Integer documentId) {
+        AuthorizationRequestDocument document = documentRepository.findByIdAndAuthorizationRequestId(documentId, requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado documento com o ID informado."));
+
+        return new DocumentDownload(
+                documentStorage.load(document.getStoredPath()),
+                document.getOriginalFilename(),
+                document.getContentType(),
+                document.getSizeBytes()
+        );
     }
 
     private AuthorizationRequestDocumentResponse toResponse(AuthorizationRequestDocument authorizationRequestDocument) {

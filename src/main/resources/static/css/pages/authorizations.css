@@ -1,0 +1,53 @@
+/* ==========================================================================
+   Autorizações — filtros e barra de resultados
+   ========================================================================== */
+
+.l-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.l-filters__actions {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.l-results {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.l-results__count {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 37.5em) {
+  .l-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-filters__search {
+    grid-column: 1 / -1;
+  }
+
+  /* Com campos lado a lado, reserva a altura do label (linha + gap do c-field) para o botão alinhar */
+  .l-filters__actions::before {
+    content: "";
+    height: calc(var(--leading-sm) + var(--space-1));
+  }
+}
+
+@media (min-width: 60em) {
+  .l-filters {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .l-filters__search {
+    grid-column: span 2;
+  }
+}

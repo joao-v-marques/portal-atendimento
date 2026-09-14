@@ -2,6 +2,11 @@
    Utilitários (u-*) — !important permitido aqui
    ========================================================================== */
 
+/* O atributo hidden sempre vence: componentes com display próprio (flex/grid) não podem reaparecer */
+[hidden] {
+  display: none !important;
+}
+
 .u-visually-hidden {
   position: absolute !important;
   width: 1px !important;
@@ -12,4 +17,14 @@
   clip: rect(0 0 0 0) !important;
   white-space: nowrap !important;
   border: 0 !important;
+}
+
+/* Códigos (nº da transação, IDs): diferencia 0/O e 1/l/I */
+.u-text-mono {
+  font-family: var(--font-mono) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.u-text-end {
+  text-align: right !important;
 }
