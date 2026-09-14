@@ -1,6 +1,7 @@
 import { getCurrentUser, logout } from '../core/auth.js';
 import { handleError } from '../core/errors.js';
 import { getInitials, roleLabel } from '../core/format.js';
+import { initDropdownMenu } from './dropdown-menu.js';
 
 // Mesmo valor do breakpoint md em layout.css (custom properties não funcionam em media query)
 const DESKTOP_QUERY = '(min-width: 60em)';
@@ -34,17 +35,19 @@ function renderUserUnavailable(chip) {
 
 function setLogoutBusy(button, isBusy) {
   button.disabled = isBusy;
-  button.classList.toggle('is-loading', isBusy);
+  button.querySelector('.js-logout-label').textContent = isBusy ? 'Saindo…' : 'Sair';
 }
 
-function initLogout(button) {
+function initLogout(button, userMenu) {
   button.addEventListener('click', async () => {
     if (button.disabled) return;
+    // O item tem data-keep-open: o menu fica aberto mostrando "Saindo…" até a navegação
     setLogoutBusy(button, true);
     try {
-      await logout(); // navega para o login; o botão continua em carregamento até sair da página
+      await logout(); // navega para o login
     } catch (error) {
       setLogoutBusy(button, false);
+      userMenu.close();
       handleError(error);
     }
   });
@@ -101,7 +104,7 @@ function initDrawer({ openButton, closeButton, sidebar, backdrop, inertTargets }
 // ── Inicialização ────────────────────────────────────────────
 
 /**
- * Liga o comportamento do shell autenticado (topbar, sidebar e sair).
+ * Liga o comportamento do shell autenticado (topbar, menu do usuário, sidebar e sair).
  * Chame uma vez no entry point de cada página autenticada.
  * @returns {Promise<{ name: string | null, username: string, role: string }>} usuário logado
  */
@@ -118,7 +121,8 @@ export function initAppShell() {
     inertTargets: [topbar, main],
   });
 
-  initLogout(document.querySelector('.js-logout'));
+  const userMenu = initDropdownMenu(document.querySelector('.js-user-menu'));
+  initLogout(document.querySelector('.js-logout'), userMenu);
 
   const userPromise = getCurrentUser();
   userPromise

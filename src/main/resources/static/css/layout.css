@@ -86,6 +86,30 @@
   justify-content: flex-end;
 }
 
+/* margin-top: auto empurra o rodapé para a base da sidebar (flex em coluna) */
+.l-sidebar__footer {
+  display: grid;
+  gap: var(--space-half);
+  margin-top: auto;
+  padding: var(--space-2) var(--space-2) 0;
+  border-top: var(--border-width) solid var(--color-structure-border);
+}
+
+.l-sidebar__footer-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-sm);
+  color: var(--color-text-inverse);
+}
+
+/* Cor "apagada" por token em vez de opacity: mesmo efeito visual, contraste medido (6,32:1) */
+.l-sidebar__footer-text {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-structure-text-muted);
+}
+
 .l-shell__backdrop {
   position: fixed;
   inset: 0;
@@ -142,18 +166,6 @@
 /* ==========================================================================
    Breakpoints
    ========================================================================== */
-
-/* Telas estreitas: só o símbolo da marca; o nome segue como rótulo do link */
-@media (max-width: 37.49em) {
-  .l-topbar .c-brand__name {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-}
 
 @media (min-width: 37.5em) {
   .l-topbar {

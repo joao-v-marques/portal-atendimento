@@ -498,6 +498,18 @@
   box-shadow: var(--focus-ring-inverse);
 }
 
+/* Variante com a logo em imagem (topbar) */
+.c-brand--logo:focus-visible {
+  box-shadow: var(--focus-ring-inverse);
+}
+
+.c-brand__logo {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: var(--logo-height);
+}
+
 /* ==========================================================================
    Icon button (só ícone: exige aria-label e title no HTML)
    ========================================================================== */
@@ -540,27 +552,6 @@
   box-shadow: var(--focus-ring-inverse);
 }
 
-/* ==========================================================================
-   Button — variante para fundo escuro (topbar)
-   ========================================================================== */
-
-.c-button--inverse-ghost {
-  background: transparent;
-  color: var(--color-text-inverse);
-}
-
-.c-button--inverse-ghost:hover:not(:disabled) {
-  background: var(--color-structure-hover);
-}
-
-.c-button--inverse-ghost:focus-visible {
-  box-shadow: var(--focus-ring-inverse);
-}
-
-.c-button--inverse-ghost.is-loading:disabled {
-  background: transparent;
-}
-
 /* Rótulo que vira só ícone em telas estreitas (o botão mantém aria-label) */
 @media (max-width: 37.49em) {
   .c-button__label--collapsible {
@@ -570,6 +561,114 @@
     overflow: hidden;
     clip: rect(0 0 0 0);
     white-space: nowrap;
+  }
+}
+
+/* ==========================================================================
+   User menu (dropdown do usuário logado na topbar)
+   ========================================================================== */
+
+.c-user-menu {
+  position: relative;
+}
+
+.c-user-menu__trigger {
+  /* relative: o texto visualmente oculto do chip (absoluto) fica preso aqui */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--control-height-lg);
+  padding: var(--space-half) var(--space-1);
+  border: 0;
+  border-radius: var(--radius-md);
+  text-align: left;
+  background: transparent;
+  color: var(--color-text-inverse);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.c-user-menu__trigger:hover,
+.c-user-menu__trigger[aria-expanded="true"] {
+  background: var(--color-structure-hover);
+}
+
+.c-user-menu__trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-inverse);
+}
+
+/* Nome longo não empurra a topbar: trunca com reticências */
+.c-user-menu__trigger .c-user-chip__text {
+  max-width: 14rem;
+}
+
+.c-user-menu__chevron {
+  --icon: url("img/icon-chevron-down.svg");
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.c-user-menu__trigger[aria-expanded="true"] .c-user-menu__chevron {
+  transform: rotate(180deg);
+}
+
+.c-user-menu__list {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  z-index: var(--z-dropdown);
+  display: grid;
+  gap: var(--space-half);
+  /* Mesma largura do gatilho (nome + perfil); cresce além disso só se uma opção for mais longa */
+  min-width: 100%;
+  margin: 0;
+  padding: var(--space-half);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  list-style: none;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  animation: dropdown-in var(--duration-base) var(--ease-standard);
+}
+
+.c-user-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: var(--control-height-md);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-sm);
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--color-text);
+}
+
+.c-user-menu__item:hover:not(:disabled),
+.c-user-menu__item:focus-visible {
+  background: var(--color-surface-muted);
+}
+
+.c-user-menu__item:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+
+.c-user-menu__item:disabled {
+  color: var(--color-disabled-text);
+  cursor: progress;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--space-half) * -1));
   }
 }
 
@@ -1140,7 +1239,8 @@ th[aria-sort="descending"] .c-table__sort-icon {
   .c-button,
   .c-input,
   .c-select,
-  .c-icon-button {
+  .c-icon-button,
+  .c-user-menu__item {
     min-height: var(--control-height-lg);
   }
 
