@@ -44,19 +44,8 @@ public class AuthorizationRequestController {
     }
 
     // Criação atômica: autorização e documentos na mesma transação.
-    // A parte "request" precisa declarar Content-Type: application/json.
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AuthorizationRequestResponse> createWithDocuments(
-            @Valid @RequestPart("request") AuthorizationRequestRequest request,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files,
-            @AuthenticationPrincipal UserPrincipal currentUser,
-            HttpServletRequest httpRequest) throws ServletException, IOException {
-
-        // TODO diagnóstico temporário - remover
-        log.info("[upload-debug] partes recebidas: {}", httpRequest.getParts().stream()
-                .map(p -> p.getName() + " [" + p.getSize() + " bytes, " + p.getContentType() + "]")
-                .toList());
-        log.info("[upload-debug] files vinculado: {}", files == null ? "null" : files.size() + " arquivo(s)");
+    public ResponseEntity<AuthorizationRequestResponse> createWithDocuments(@Valid @RequestPart("request") AuthorizationRequestRequest request, @RequestPart(value = "files", required = false) List<MultipartFile> files, @AuthenticationPrincipal UserPrincipal currentUser) {
 
         return created(authorizationRequestService.create(request, files, currentUser.getId()));
     }
