@@ -92,12 +92,12 @@ public class AuthorizationRequestService {
                 authorizationRequest.getId(),
                 authorizationRequest.getTransactionNumber(),
                 authorizationRequest.getRequestDate(),
-                authorizationRequest.getAuthorizationType(),
-                authorizationRequest.getAuthorizationStatus(),
+                authorizationRequest.getAuthorizationType().getName(),
+                authorizationRequest.getAuthorizationStatus().getName(),
                 authorizationRequest.getBeneficiaryName(),
                 authorizationRequest.getBeneficiaryPhone(),
                 authorizationRequest.getCreatedAt(),
-                authorizationRequest.getInsertedBy()
+                authorizationRequest.getInsertedBy().getName()
         );
     }
 }

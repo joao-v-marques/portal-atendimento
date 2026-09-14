@@ -11,11 +11,11 @@ public record AuthorizationRequestResponse(
         Integer id,
         String transactionNumber,
         LocalDate requestDate,
-        AuthorizationType authorizationType,
-        AuthorizationStatus authorizationStatus,
+        String authorizationTypeName,
+        String authorizationStatusName,
         String beneficiaryName,
         String beneficiaryPhone,
         OffsetDateTime createdAt,
-        User insertedBy
+        String insertedByName
 ) {
 }
