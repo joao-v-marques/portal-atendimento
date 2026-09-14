@@ -99,7 +99,7 @@ public class AuthorizationRequestDocumentService {
     private String resolveCollision(String directory, String baseName, String extension) {
         String candidate = directory + "/" + baseName + "." + extension;
 
-        for (int counter = 2; documentRepository.existsByStoredPath(candidate); counter++) {
+        for (int counter = 2; documentRepository.existsByStoredPath(candidate) || documentStorage.exists(candidate); counter++) {
             if (counter > MAX_COLLISION_ATTEMPTS) {
                 throw new IllegalArgumentException("Não foi possível gerar um nome único para o arquivo.");
             }
@@ -112,7 +112,7 @@ public class AuthorizationRequestDocumentService {
     // Anexo avulso: carrega as entidades por id e delega para o attach
     @Transactional
     public AuthorizationRequestDocumentResponse upload(Integer requestId, MultipartFile file, Integer currentUserId) {
-        AuthorizationRequest request = authorizationRequestRepository.findById(requestId)
+        AuthorizationRequest request = authorizationRequestRepository.findByIdForUpdate(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Não foi encontrada autorização com o ID informado."));
 
         User user = userRepository.findById(currentUserId)
