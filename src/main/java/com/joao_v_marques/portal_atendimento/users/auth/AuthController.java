@@ -1,8 +1,10 @@
 package com.joao_v_marques.portal_atendimento.users.auth;
 
 import com.joao_v_marques.portal_atendimento.security.JwtService;
+import com.joao_v_marques.portal_atendimento.security.UserPrincipal;
 import com.joao_v_marques.portal_atendimento.users.auth.dto.AuthRequest;
 import com.joao_v_marques.portal_atendimento.users.auth.dto.AuthResponse;
+import com.joao_v_marques.portal_atendimento.users.auth.dto.CurrentUserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +13,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +50,12 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new AuthResponse(token));
+    }
+
+    // dados mínimos do usuário logado para a interface (o JS não lê o cookie HttpOnly)
+    @GetMapping("/me")
+    public CurrentUserResponse me(@AuthenticationPrincipal UserPrincipal principal) {
+        return new CurrentUserResponse(principal.getName(), principal.getUsername(), principal.getRoleName());
     }
 
     @PostMapping("/logout")
