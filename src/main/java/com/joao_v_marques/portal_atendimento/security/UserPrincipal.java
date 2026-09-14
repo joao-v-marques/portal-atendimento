@@ -21,6 +21,15 @@ public class UserPrincipal implements UserDetails {
         return user.getId();
     }
 
+    // nome de exibição e perfil, usados pelo GET /api/auth/me (role já vem no JOIN FETCH do findByUsername)
+    public String getName() {
+        return user.getName();
+    }
+
+    public String getRoleName() {
+        return user.getRole().getName();
+    }
+
     @Override
     public String getUsername() {
         return user.getUsername();
