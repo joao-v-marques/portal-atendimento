@@ -34,26 +34,41 @@
       <span class="c-icon c-icon--menu" aria-hidden="true"></span>
     </button>
 
-    <a class="c-brand c-brand--inverse" href="home">
-      <span class="c-brand__mark" aria-hidden="true"></span>
-      <span class="c-brand__name">Portal de Atendimento</span>
+    <a class="c-brand c-brand--logo" href="home">
+      <img class="c-brand__logo" src="css/img/logo-2023.png" alt="Unimed S. S. do Paraíso – Início" width="529" height="195">
     </a>
 
     <div class="l-topbar__spacer"></div>
 
     <div class="l-topbar__actions">
-      <div class="c-user-chip js-user-chip" aria-busy="true">
-        <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
-        <span class="c-user-chip__text">
-          <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
-          <span class="c-user-chip__role js-user-role"></span>
-        </span>
-      </div>
+      <div class="c-user-menu js-user-menu">
+        <button
+          class="c-user-menu__trigger js-dropdown-trigger"
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="menu-usuario"
+        >
+          <span class="c-user-chip js-user-chip" aria-busy="true">
+            <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
+            <span class="c-user-chip__text">
+              <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
+              <span class="c-user-chip__role js-user-role"></span>
+            </span>
+          </span>
+          <span class="c-icon c-icon--sm c-user-menu__chevron" aria-hidden="true"></span>
+        </button>
 
-      <button class="c-button c-button--inverse-ghost js-logout" type="button">
-        <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
-        <span class="c-button__label--collapsible">Sair</span>
-      </button>
+        <ul class="c-user-menu__list js-dropdown-list" id="menu-usuario" role="menu" aria-label="Opções da conta" hidden>
+          <li role="none">
+            <button class="c-user-menu__item js-logout" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
+              <span class="js-logout-label">Sair</span>
+            </button>
+          </li>
+          <!-- Novas opções: outro <li role="none"> com <button> ou <a> role="menuitem" tabindex="-1" -->
+        </ul>
+      </div>
     </div>
   </header>
 
@@ -83,6 +98,11 @@
         </a>
       </li>
     </ul>
+
+    <footer class="l-sidebar__footer">
+      <p class="l-sidebar__footer-title">Portal de Atendimento</p>
+      <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>
+    </footer>
   </nav>
 
   <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
