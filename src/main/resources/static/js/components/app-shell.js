@@ -101,6 +101,47 @@ function initDrawer({ openButton, closeButton, sidebar, backdrop, inertTargets }
   });
 }
 
+// ── Sidebar retrátil (desktop) ───────────────────────────────
+
+// Mesma chave do script inline no <head> dos templates
+const SIDEBAR_STORAGE_KEY = 'sidebar-collapsed';
+
+function initSidebarCollapse({ button, sidebar }) {
+  const desktop = window.matchMedia(DESKTOP_QUERY);
+  const root = document.documentElement;
+  const links = sidebar.querySelectorAll('.c-nav__link');
+
+  // Rótulo e estado do ☰ e tooltips dos itens conforme a tela e o estado atual
+  function sync() {
+    const isDesktop = desktop.matches;
+    const isCollapsed = isDesktop && root.classList.contains('has-sidebar-collapsed');
+    const label = !isDesktop ? 'Abrir menu' : (isCollapsed ? 'Expandir menu' : 'Recolher menu');
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    // No mobile o aria-expanded descreve a gaveta, que fecha ao trocar de tela
+    button.setAttribute('aria-expanded', String(isDesktop && !isCollapsed));
+    // Trilho só com ícones: o nome do item aparece no tooltip
+    links.forEach((link) => {
+      if (isCollapsed) link.title = link.textContent.trim();
+      else link.removeAttribute('title');
+    });
+  }
+
+  button.addEventListener('click', () => {
+    if (!desktop.matches) return; // no mobile o clique abre a gaveta (initDrawer)
+    const isCollapsed = root.classList.toggle('has-sidebar-collapsed');
+    try {
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isCollapsed));
+    } catch {
+      // Armazenamento bloqueado: funciona, só não lembra na próxima página
+    }
+    sync();
+  });
+
+  desktop.addEventListener('change', sync);
+  sync();
+}
+
 // ── Inicialização ────────────────────────────────────────────
 
 /**
@@ -119,6 +160,12 @@ export function initAppShell() {
     sidebar: document.querySelector('.js-sidebar'),
     backdrop: document.querySelector('.js-menu-backdrop'),
     inertTargets: [topbar, main],
+  });
+
+  // Depois do initDrawer: ao virar desktop, o close() da gaveta roda antes e o sync() acerta o aria-expanded
+  initSidebarCollapse({
+    button: document.querySelector('.js-menu-open'),
+    sidebar: document.querySelector('.js-sidebar'),
   });
 
   const userMenu = initDropdownMenu(document.querySelector('.js-user-menu'));

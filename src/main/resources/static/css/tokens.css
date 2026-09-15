@@ -171,6 +171,7 @@
   --container-auth-max: 25rem;  /*  400px — card de login */
   --topbar-height:      4rem;   /*   64px */
   --sidebar-width:      16rem;  /*  256px */
+  --sidebar-rail-width: 5rem;   /*   80px — sidebar retraída: item de 48px + padding de 16px dos lados */
   --sidebar-item-height: 3rem;  /*   48px */
   --avatar-size:        2rem;   /*   32px */
   --dialog-max-width:   45rem;  /*  720px — modal de detalhe */

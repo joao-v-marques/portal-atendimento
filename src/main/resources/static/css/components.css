@@ -756,6 +756,8 @@
   font-weight: var(--weight-medium);
   line-height: var(--leading-sm);
   text-decoration: none;
+  /* Rótulo não quebra em duas linhas enquanto a sidebar anima retraindo */
+  white-space: nowrap;
   color: var(--color-structure-text-muted);
   transition: background-color var(--duration-fast) var(--ease-standard),
               color var(--duration-fast) var(--ease-standard);

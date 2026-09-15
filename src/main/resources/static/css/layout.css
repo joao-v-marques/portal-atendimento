@@ -1,7 +1,8 @@
 /* ==========================================================================
    Shell autenticado — mobile-first:
    < 60em: topbar + conteúdo, sidebar vira gaveta sobreposta;
-   ≥ 60em: topbar em cima, sidebar fixa à esquerda e conteúdo à direita.
+   ≥ 60em: topbar em cima, sidebar fixa à esquerda e conteúdo à direita;
+           o ☰ retrai a sidebar para um trilho só com ícones.
    ========================================================================== */
 
 .l-shell {
@@ -203,10 +204,10 @@
       "topbar topbar"
       "sidebar main";
     grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    /* A largura da sidebar anima pela coluna do grid; o conteúdo acompanha */
+    transition: grid-template-columns var(--duration-slow) var(--ease-standard);
   }
 
-  /* .l-topbar na frente: components.css vem depois e define display do .c-icon-button */
-  .l-topbar .l-topbar__menu-button,
   .l-sidebar__header,
   .l-shell__backdrop {
     display: none;
@@ -219,10 +220,36 @@
     grid-area: sidebar;
     width: auto;
     height: calc(100dvh - var(--topbar-height));
+    overflow-x: hidden;
     border-top: var(--border-width) solid var(--color-structure-border);
     visibility: visible;
     transform: none;
     transition: none;
+  }
+
+  /* Sidebar retraída: trilho só com ícones (classe aplicada no <html> pelo script do <head>) */
+  .has-sidebar-collapsed .l-shell {
+    grid-template-columns: var(--sidebar-rail-width) minmax(0, 1fr);
+  }
+
+  .has-sidebar-collapsed .l-sidebar__footer {
+    display: none;
+  }
+
+  .has-sidebar-collapsed .c-nav__link {
+    position: relative;
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  /* Rótulo some da tela, mas continua sendo o nome acessível do link */
+  .has-sidebar-collapsed .c-nav__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 
   .l-container {

@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Autorizações · Portal de Atendimento</title>
 
+  <!-- Antes do CSS: aplica a sidebar retraída antes da 1ª pintura (chave igual à de app-shell.js) -->
+  <script>try { if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('has-sidebar-collapsed'); } catch (e) {}</script>
+
   <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 
   <link rel="stylesheet" href="css/vendor/notyf.min.css">
@@ -89,19 +92,19 @@
       <li>
         <a class="c-nav__link" href="home">
           <span class="c-icon c-icon--home" aria-hidden="true"></span>
-          Início
+          <span class="c-nav__label">Início</span>
         </a>
       </li>
       <li>
         <a class="c-nav__link" href="autorizacoes" aria-current="page">
           <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
-          Autorizações
+          <span class="c-nav__label">Autorizações</span>
         </a>
       </li>
       <li>
         <a class="c-nav__link" href="lancar-autorizacao">
           <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
-          Lançar autorização
+          <span class="c-nav__label">Lançar autorização</span>
         </a>
       </li>
     </ul>
