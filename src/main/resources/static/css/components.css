@@ -1052,6 +1052,36 @@ th[aria-sort="descending"] .c-table__sort-icon {
 .c-badge--status-neutral  { background: var(--status-neutral-bg);  color: var(--status-neutral-text); }
 
 /* ==========================================================================
+   Alert (faixa de aviso da página)
+   ========================================================================== */
+
+/* Vermelho sólido: aviso de risco (prazo da ANS); ícone + texto, a cor não é o único sinal */
+.c-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-error);
+  color: var(--color-text-inverse);
+}
+
+.c-alert[hidden] {
+  display: none;
+}
+
+.c-alert__content {
+  display: grid;
+  gap: var(--space-half);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+.c-alert__title {
+  font-weight: var(--weight-semibold);
+}
+
+/* ==========================================================================
    Dialog
    ========================================================================== */
 

@@ -8,10 +8,12 @@ import {
   populateSelect,
 } from '../components/authorization-filters.js';
 import {
+  DEADLINE_WARNING_BUSINESS_DAYS,
   DEFAULT_SORT,
   SORTABLE_KEYS,
   emptyState,
   initAuthorizationTable,
+  isDeadlineAtRisk,
   nextSort,
   sortItems,
 } from '../components/authorization-table.js';
@@ -25,6 +27,7 @@ const numberFormatter = new Intl.NumberFormat('pt-BR');
 const form = document.querySelector('.js-filters');
 const results = document.querySelector('.js-results');
 const countEl = document.querySelector('.js-results-count');
+const deadlineAlert = document.querySelector('.js-deadline-alert');
 
 // ── Estado (espelhado na query string) ───────────────────────
 
@@ -103,6 +106,21 @@ function renderCount(filteredCount) {
     : `${numberFormatter.format(filteredCount)} de ${numberFormatter.format(total)} ${pluralize(total)}`;
 }
 
+// Conta a lista inteira, não a filtrada: filtro ou paginação não podem esconder um prazo da ANS em risco
+function renderDeadlineAlert() {
+  const count = state.items.filter(isDeadlineAtRisk).length;
+  deadlineAlert.hidden = count === 0;
+  if (count === 0) return;
+
+  const isSingle = count === 1;
+  deadlineAlert.querySelector('.js-deadline-alert-title').textContent = isSingle
+    ? '1 autorização precisa de atenção'
+    : `${numberFormatter.format(count)} autorizações precisam de atenção`;
+  deadlineAlert.querySelector('.js-deadline-alert-text').textContent =
+    `${isSingle ? 'Não finalizada' : 'Não finalizadas'} há ${DEADLINE_WARNING_BUSINESS_DAYS} dias úteis ou mais desde a solicitação. `
+    + 'O prazo da ANS é de 10 dias úteis.';
+}
+
 function clearFiltersButton() {
   const button = el('button', { className: 'c-button c-button--secondary', attrs: { type: 'button' } }, [
     el('span', { className: 'c-icon c-icon--sm c-icon--filter-x', attrs: { 'aria-hidden': 'true' } }),
@@ -151,6 +169,7 @@ function render() {
 
 function renderLoadError(error) {
   countEl.textContent = '';
+  deadlineAlert.hidden = true;
   pagination.render(null);
   const retry = el('button', { className: 'c-button c-button--secondary', text: 'Tentar novamente', attrs: { type: 'button' } });
   retry.addEventListener('click', load);
@@ -184,6 +203,7 @@ async function load() {
   state.items = requests.value;
   state.itemsById = new Map(state.items.map((item) => [item.id, item]));
   state.loaded = true;
+  renderDeadlineAlert();
 
   // Opções = cadastro oficial + nomes presentes na lista (inclui tipos/status já desativados).
   // Falha nos auxiliares não é notificada: os nomes da própria lista bastam para filtrar.

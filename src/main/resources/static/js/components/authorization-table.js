@@ -9,7 +9,7 @@ const COLUMN_COUNT = 7;
 const SKELETON_ROWS = 5;
 
 // Prazo da ANS: 10 dias úteis desde a solicitação. A partir de 7 a linha já pede atenção
-const DEADLINE_WARNING_BUSINESS_DAYS = 7;
+export const DEADLINE_WARNING_BUSINESS_DAYS = 7;
 
 const collator = new Intl.Collator('pt-BR', { sensitivity: 'base', numeric: true });
 
@@ -21,6 +21,15 @@ function compareValues(key, a, b) {
   // Datas ISO ordenam como texto; nomes usam o collator (acentos e números naturais)
   if (DATE_KEYS.has(key)) return left < right ? -1 : left > right ? 1 : 0;
   return collator.compare(left, right);
+}
+
+/**
+ * Não finalizada e com DEADLINE_WARNING_BUSINESS_DAYS+ dias úteis desde a solicitação (prazo ANS).
+ * @param {{ requestDate?: string, authorizationStatusName?: string }} item
+ */
+export function isDeadlineAtRisk(item) {
+  if (statusVariant(item.authorizationStatusName) === 'done') return false;
+  return (businessDaysSince(item.requestDate) ?? 0) >= DEADLINE_WARNING_BUSINESS_DAYS;
 }
 
 /**

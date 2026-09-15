@@ -207,6 +207,15 @@
           </form>
         </section>
 
+        <!-- Preenchido em authorizations.js; aparece só se houver prazo da ANS em risco -->
+        <div class="c-alert js-deadline-alert" role="alert" hidden>
+          <span class="c-icon c-icon--alert" aria-hidden="true"></span>
+          <p class="c-alert__content">
+            <strong class="c-alert__title js-deadline-alert-title"></strong>
+            <span class="js-deadline-alert-text"></span>
+          </p>
+        </div>
+
         <section class="l-results js-results" aria-labelledby="resultados-title">
           <h2 class="u-visually-hidden" id="resultados-title">Resultados</h2>
           <p class="l-results__count js-results-count" aria-live="polite"></p>
