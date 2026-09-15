@@ -1,5 +1,5 @@
 import { el } from '../core/dom.js';
-import { formatDate, formatDateTime, formatPhone, statusVariant } from '../core/format.js';
+import { businessDaysSince, formatDate, formatPhone, statusVariant } from '../core/format.js';
 
 export const SORTABLE_KEYS = ['requestDate', 'transactionNumber', 'beneficiaryName', 'authorizationStatusName', 'createdAt'];
 export const DEFAULT_SORT = { key: 'requestDate', direction: 'desc' };
@@ -7,6 +7,9 @@ export const DEFAULT_SORT = { key: 'requestDate', direction: 'desc' };
 const DATE_KEYS = new Set(['requestDate', 'createdAt']);
 const COLUMN_COUNT = 7;
 const SKELETON_ROWS = 5;
+
+// Prazo da ANS: 10 dias úteis desde a solicitação. A partir de 7 a linha já pede atenção
+const DEADLINE_WARNING_BUSINESS_DAYS = 7;
 
 const collator = new Intl.Collator('pt-BR', { sensitivity: 'base', numeric: true });
 
@@ -75,6 +78,29 @@ function truncated(text) {
   return el('span', { className: 'c-table__truncate', text: value, attrs: { title: value } });
 }
 
+/**
+ * Linha de baixo do Cadastro: dias úteis desde a solicitação ou "Finalizado".
+ * @param {{ requestDate?: string, authorizationStatusName?: string }} item
+ */
+function deadlineInfo(item) {
+  if (statusVariant(item.authorizationStatusName) === 'done') {
+    return el('span', { className: 'c-table__secondary c-table__deadline--done', text: 'Finalizado' });
+  }
+
+  const days = businessDaysSince(item.requestDate);
+  if (days === null) return el('span', { className: 'c-table__secondary', text: '—' });
+
+  const text = days === 0 ? 'Criado hoje' : `Criado há ${days} ${days === 1 ? 'dia útil' : 'dias úteis'}`;
+  if (days < DEADLINE_WARNING_BUSINESS_DAYS) return el('span', { className: 'c-table__secondary', text });
+
+  // Cor não é o único sinal: ícone na tela e aviso para leitor de tela
+  return el('span', { className: 'c-table__secondary c-table__deadline--late' }, [
+    el('span', { className: 'c-icon c-icon--sm c-icon--alert', attrs: { 'aria-hidden': 'true' } }),
+    text,
+    el('span', { className: 'u-visually-hidden', text: ' (atenção ao prazo da ANS)' }),
+  ]);
+}
+
 function renderRow(item) {
   const viewButton = el('button', {
     className: 'c-button c-button--ghost c-button--sm js-view',
@@ -90,7 +116,16 @@ function renderRow(item) {
 
   return el('tr', {}, [
     el('td', { text: formatDate(item.requestDate) }),
-    el('td', {}, [el('span', { className: 'u-text-mono', text: item.transactionNumber })]),
+    el('td', {}, [
+      el('span', { className: 'c-table__stack' }, [
+        el('span', { className: 'u-text-mono', text: item.transactionNumber }),
+        el('span', {
+          className: 'c-table__secondary',
+          text: `por ${item.insertedByName || '—'}`,
+          attrs: { title: item.insertedByName || '—' },
+        }),
+      ]),
+    ]),
     el('td', {}, [
       el('span', { className: 'c-table__stack' }, [
         truncated(item.beneficiaryName),
@@ -101,12 +136,8 @@ function renderRow(item) {
     el('td', {}, [statusBadge(item.authorizationStatusName)]),
     el('td', {}, [
       el('span', { className: 'c-table__stack' }, [
-        el('span', { text: formatDateTime(item.createdAt) }),
-        el('span', {
-          className: 'c-table__secondary',
-          text: `por ${item.insertedByName || '—'}`,
-          attrs: { title: item.insertedByName || '—' },
-        }),
+        el('span', { text: formatDate(item.requestDate) }),
+        deadlineInfo(item),
       ]),
     ]),
     el('td', { className: 'u-text-end' }, [viewButton]),

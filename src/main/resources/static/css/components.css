@@ -441,6 +441,7 @@
 .c-icon--file-plus     { --icon: url("img/icon-file-plus.svg"); }
 .c-icon--upload        { --icon: url("img/icon-upload.svg"); }
 .c-icon--trash         { --icon: url("img/icon-trash.svg"); }
+.c-icon--alert         { --icon: url("img/icon-alert.svg"); }
 
 /* ==========================================================================
    Brand (logo do portal)
@@ -943,7 +944,7 @@
   text-overflow: ellipsis;
 }
 
-/* Célula com valor principal + linha auxiliar (ex.: data de cadastro e quem cadastrou) */
+/* Célula com valor principal + linha auxiliar (ex.: nº da transação e quem cadastrou) */
 .c-table__stack {
   display: grid;
 }
@@ -955,6 +956,23 @@
   line-height: var(--leading-xs);
   text-overflow: ellipsis;
   color: var(--color-text-secondary);
+}
+
+/* Prazo da ANS (10 dias úteis): a partir de 7 fica em vermelho, com ícone para a cor não ser o único sinal */
+.c-table__deadline--late {
+  display: flex;
+  align-items: center;
+  gap: var(--space-half);
+  font-weight: var(--weight-semibold);
+  color: var(--color-error);
+}
+
+/* Caixa alta só visual: no HTML fica "Finalizado" para o leitor de tela não soletrar */
+.c-table__deadline--done {
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--status-done-text);
 }
 
 .c-table__sort {

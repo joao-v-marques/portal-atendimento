@@ -91,6 +91,34 @@ export function formatDate(isoDate) {
   return dateFormatter.format(new Date(y, m - 1, d));
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Dias úteis (seg–sex) desde uma data "2026-09-14" até hoje; o próprio dia não conta.
+ * Sexta → segunda = 1. Não considera feriados. Datas futuras = 0.
+ * @param {string | null | undefined} isoDate
+ * @param {Date} [today]
+ * @returns {number | null} null quando não há data
+ */
+export function businessDaysSince(isoDate, today = new Date()) {
+  if (!isoDate) return null;
+  const [y, m, d] = isoDate.split('-').map(Number);
+  const start = new Date(y, m - 1, d);
+  const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  // round: horário de verão pode deixar a diferença 1h a mais/menos
+  const totalDays = Math.round((end - start) / DAY_MS);
+  if (totalDays <= 0) return 0;
+
+  // Cada semana cheia tem 5 dias úteis; só o resto (0–6 dias) é conferido um a um
+  const fullWeeks = Math.floor(totalDays / 7);
+  let count = fullWeeks * 5;
+  for (let offset = fullWeeks * 7 + 1; offset <= totalDays; offset++) {
+    const weekday = (start.getDay() + offset) % 7;
+    if (weekday !== 0 && weekday !== 6) count++;
+  }
+  return count;
+}
+
 /**
  * OffsetDateTime → "14/09/2026 às 15:30" (no fuso do navegador).
  * @param {string | null | undefined} iso
