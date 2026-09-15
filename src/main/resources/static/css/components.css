@@ -1058,6 +1058,7 @@ th[aria-sort="descending"] .c-table__sort-icon {
 /* Vermelho sólido: aviso de risco (prazo da ANS); ícone + texto, a cor não é o único sinal */
 .c-alert {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: var(--space-2);
   padding: var(--space-2);
@@ -1066,12 +1067,10 @@ th[aria-sort="descending"] .c-table__sort-icon {
   color: var(--color-text-inverse);
 }
 
-.c-alert[hidden] {
-  display: none;
-}
-
+/* flex-basis: abaixo de ~16rem de texto o botão desce para a linha de baixo */
 .c-alert__content {
   display: grid;
+  flex: 1 1 16rem;
   gap: var(--space-half);
   font-size: var(--text-sm);
   line-height: var(--leading-sm);
@@ -1079,6 +1078,18 @@ th[aria-sort="descending"] .c-table__sort-icon {
 
 .c-alert__title {
   font-weight: var(--weight-semibold);
+}
+
+/* Botão claro sobre o vermelho: destaca a ação sem competir com o texto do aviso */
+.c-alert__action {
+  align-self: center;
+  margin-left: auto;
+  background: var(--color-surface);
+  color: var(--color-error);
+}
+
+.c-alert__action:hover:not(:disabled) {
+  background: var(--color-error-bg);
 }
 
 /* ==========================================================================

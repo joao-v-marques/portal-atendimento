@@ -2,9 +2,10 @@ import { debounce, el } from '../core/dom.js';
 import { clearFieldError, setFieldError } from '../core/form.js';
 import { onlyDigits } from '../core/format.js';
 import { notify } from '../core/notify.js';
+import { isDeadlineAtRisk } from './authorization-table.js';
 
 /** Nomes dos campos do formulário = chaves na query string. */
-export const FILTER_KEYS = ['busca', 'status', 'tipo', 'de', 'ate', 'cadastradoPor'];
+export const FILTER_KEYS = ['busca', 'status', 'tipo', 'de', 'ate', 'cadastradoPor', 'prazo'];
 
 const PHONE_LIKE = /^[\d\s()+-]+$/;
 
@@ -56,6 +57,8 @@ export function applyFilters(items, filters) {
     // requestDate é "AAAA-MM-DD": a comparação de texto já respeita a ordem das datas
     if (filters.de && item.requestDate < filters.de) return false;
     if (filters.ate && item.requestDate > filters.ate) return false;
+    // Mesma regra da linha vermelha da tabela e da faixa de aviso
+    if (filters.prazo === 'risco' && !isDeadlineAtRisk(item)) return false;
     return true;
   });
 }
@@ -109,7 +112,11 @@ function isTypingTarget(target) {
  * Liga os eventos do formulário de filtros.
  * @param {HTMLFormElement} form
  * @param {{ onChange: (filters: Record<string, string>) => void }} callbacks
- * @returns {{ clear: () => void, syncClearButton: (filters: Record<string, string>) => void }}
+ * @returns {{
+ *   clear: () => void,
+ *   replace: (values: Record<string, string>) => void,
+ *   syncClearButton: (filters: Record<string, string>) => void,
+ * }}
  */
 export function initFilters(form, { onChange }) {
   const searchField = form.elements.namedItem('busca');
@@ -152,6 +159,12 @@ export function initFilters(form, { onChange }) {
     searchField.focus();
   }
 
+  // Troca todos os filtros pelos informados; chaves ausentes ficam vazias (ex.: atalho da faixa de prazo)
+  function replace(values) {
+    fillFilters(form, values);
+    emit();
+  }
+
   form.addEventListener('input', (event) => {
     if (event.target === searchField) emitDebounced();
   });
@@ -179,5 +192,5 @@ export function initFilters(form, { onChange }) {
   syncDateLimits();
   syncClearButton(readFilters(form));
 
-  return { clear, syncClearButton };
+  return { clear, replace, syncClearButton };
 }

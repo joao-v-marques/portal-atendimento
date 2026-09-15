@@ -93,6 +93,13 @@ const filters = initFilters(form, {
   },
 });
 
+// Atalho da faixa: só as em risco, mais antigas (mais urgentes) primeiro
+deadlineAlert.querySelector('.js-deadline-alert-action').addEventListener('click', () => {
+  state.sort = { key: 'requestDate', direction: 'asc' };
+  filters.replace({ prazo: 'risco' });
+  table.focusResults();
+});
+
 // ── Renderização ─────────────────────────────────────────────
 
 function pluralize(count) {

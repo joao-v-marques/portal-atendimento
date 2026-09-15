@@ -198,6 +198,16 @@
               </div>
             </div>
 
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-prazo">Prazo ANS</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="filtro-prazo" name="prazo">
+                  <option value="">Todos</option>
+                  <option value="risco">Em risco (7+ dias úteis)</option>
+                </select>
+              </div>
+            </div>
+
             <div class="l-filters__actions">
               <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
                 <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
@@ -214,6 +224,9 @@
             <strong class="c-alert__title js-deadline-alert-title"></strong>
             <span class="js-deadline-alert-text"></span>
           </p>
+          <button class="c-button c-button--sm c-alert__action js-deadline-alert-action" type="button">
+            Ver autorizações
+          </button>
         </div>
 
         <section class="l-results js-results" aria-labelledby="resultados-title">
