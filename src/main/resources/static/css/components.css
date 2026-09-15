@@ -745,6 +745,24 @@
   list-style: none;
 }
 
+/* Categoria da sidebar: rótulo pequeno só de identificação (não clicável) */
+.c-nav__group {
+  display: grid;
+  gap: var(--space-1);
+}
+
+/* Alinhado ao ícone dos links (mesmo padding lateral); caixa alta só visual, o HTML fica em texto normal */
+.c-nav__group-title {
+  padding-inline: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-structure-text-muted);
+}
+
 .c-nav__link {
   display: flex;
   align-items: center;

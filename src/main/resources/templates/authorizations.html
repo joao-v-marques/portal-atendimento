@@ -95,19 +95,26 @@
           <span class="c-nav__label">Início</span>
         </a>
       </li>
-      <li>
-        <a class="c-nav__link" href="autorizacoes" aria-current="page">
-          <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
-          <span class="c-nav__label">Autorizações</span>
-        </a>
-      </li>
-      <li>
-        <a class="c-nav__link" href="lancar-autorizacao">
-          <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
-          <span class="c-nav__label">Lançar autorização</span>
-        </a>
-      </li>
     </ul>
+
+    <!-- Categoria: título + lista rotulada por ele. Nova categoria = novo c-nav__group com id próprio -->
+    <div class="c-nav__group">
+      <p class="c-nav__group-title" id="nav-grupo-autorizacoes">Autorizações</p>
+      <ul class="c-nav__list" aria-labelledby="nav-grupo-autorizacoes">
+        <li>
+          <a class="c-nav__link" href="autorizacoes" aria-current="page">
+            <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+            <span class="c-nav__label">Autorizações</span>
+          </a>
+        </li>
+        <li>
+          <a class="c-nav__link" href="lancar-autorizacao">
+            <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+            <span class="c-nav__label">Lançar autorização</span>
+          </a>
+        </li>
+      </ul>
+    </div>
 
     <footer class="l-sidebar__footer">
       <p class="l-sidebar__footer-title">Portal de Atendimento</p>

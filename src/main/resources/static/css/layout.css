@@ -242,8 +242,15 @@
     padding-inline: 0;
   }
 
-  /* Rótulo some da tela, mas continua sendo o nome acessível do link */
-  .has-sidebar-collapsed .c-nav__label {
+  /* No trilho o rótulo da categoria não cabe: o grupo ganha uma divisória no lugar */
+  .has-sidebar-collapsed .c-nav__group {
+    padding-top: var(--space-2);
+    border-top: var(--border-width) solid var(--color-structure-border);
+  }
+
+  /* Rótulos somem da tela, mas continuam para o leitor de tela (nome do link e da lista) */
+  .has-sidebar-collapsed .c-nav__label,
+  .has-sidebar-collapsed .c-nav__group-title {
     position: absolute;
     width: 1px;
     height: 1px;
