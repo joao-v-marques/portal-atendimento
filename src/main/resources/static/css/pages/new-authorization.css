@@ -1,0 +1,72 @@
+/* ==========================================================================
+   Lançar autorização — mobile-first
+   < 37.5em  : cards empilhados, 1 campo por linha, botões 100% (primário em cima)
+   ≥ 37.5em  : campos 2 por linha, botões lado a lado
+   ≥ 80em    : 2 colunas (dados | documentos). Só aqui: com a sidebar de 256px,
+               abaixo de 1280px sobram menos de 960px e as colunas apertariam os campos
+   ========================================================================== */
+
+.l-new-auth {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.l-new-auth__main {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.l-new-auth__side {
+  min-width: 0;
+}
+
+/* Grade de campos dentro de cada card */
+.l-field-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+/* Ação principal primeiro e alinhada ao início dos campos (§10.1) */
+.l-new-auth__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+@media (min-width: 37.5em) {
+  .l-field-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-field-grid__full {
+    grid-column: 1 / -1;
+  }
+
+  .l-new-auth__actions {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (min-width: 80em) {
+  .l-new-auth {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+    gap: var(--space-4) var(--space-3);
+  }
+
+  /* Documentos acompanham a rolagem enquanto a pessoa preenche os dados */
+  .l-new-auth__side {
+    position: sticky;
+    top: calc(var(--topbar-height) + var(--space-3));
+  }
+
+  .l-new-auth__actions {
+    grid-column: 1 / -1;
+  }
+}

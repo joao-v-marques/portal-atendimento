@@ -5,6 +5,7 @@ import com.joao_v_marques.portal_atendimento.authorization.authorization_type.Au
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -12,7 +13,8 @@ import java.time.LocalDate;
 
 public record AuthorizationRequestRequest(
         @NotBlank(message = "Preencha o número da transação")
-        @Size(min = 12, max = 12, message = "O número da transação deve conter exatamente 12 caracteres")
+        @Size(min = 12, max = 12, message = "O número da transação deve conter exatamente 12 números")
+        @Pattern(regexp = "\\d*", message = "O número da transação deve conter apenas números")
         String transactionNumber,
 
         @NotNull(message = "Preencha a data da requisição/autorização")

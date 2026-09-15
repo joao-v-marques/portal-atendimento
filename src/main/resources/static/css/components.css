@@ -438,6 +438,9 @@
 .c-icon--file-text     { --icon: url("img/icon-file-text.svg"); }
 .c-icon--file-image    { --icon: url("img/icon-file-image.svg"); }
 .c-icon--filter-x      { --icon: url("img/icon-filter-x.svg"); }
+.c-icon--file-plus     { --icon: url("img/icon-file-plus.svg"); }
+.c-icon--upload        { --icon: url("img/icon-upload.svg"); }
+.c-icon--trash         { --icon: url("img/icon-trash.svg"); }
 
 /* ==========================================================================
    Brand (logo do portal)
@@ -1229,6 +1232,179 @@ th[aria-sort="descending"] .c-table__sort-icon {
   font-size: var(--text-sm);
   line-height: var(--leading-sm);
   white-space: nowrap;
+}
+
+/* ==========================================================================
+   Fieldset (grupos de campos de formulário)
+   ========================================================================== */
+
+.c-fieldset {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* A legend renderizada não é item do grid: o espaço até o primeiro campo vem da margem */
+.c-fieldset__legend {
+  margin-bottom: var(--space-3);
+  padding: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-lg);
+  color: var(--color-heading);
+}
+
+.c-fieldset__optional {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+  color: var(--color-text-secondary);
+}
+
+/* Hint e contador na mesma linha, abaixo do campo (contador perto do texto, não na borda oposta) */
+.c-field__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.c-field__counter {
+  flex: none;
+  font-size: var(--text-xs);
+  line-height: var(--leading-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+/* Códigos (nº da transação, telefone): fonte mono para conferir 0/O e 1/l/I */
+.c-input--code {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* Card que agrupa um fieldset de formulário */
+.c-form-panel {
+  display: grid;
+  min-width: 0;
+}
+
+/* ==========================================================================
+   Breadcrumb
+   ========================================================================== */
+
+.c-breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+.c-breadcrumb__item + .c-breadcrumb__item::before {
+  content: "/";
+  margin-right: var(--space-1);
+  color: var(--color-border-strong);
+}
+
+.c-breadcrumb__link {
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.c-breadcrumb__link:hover {
+  color: var(--color-primary-hover);
+}
+
+.c-breadcrumb__link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ==========================================================================
+   Upload de documentos
+   ========================================================================== */
+
+.c-upload {
+  /* relative: o input visualmente oculto (absoluto) fica preso à área de upload */
+  position: relative;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.c-upload__dropzone {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-2);
+  border: var(--border-width-thick) dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  text-align: center;
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              background-color var(--duration-fast) var(--ease-standard);
+}
+
+.c-upload__dropzone:hover,
+.c-upload__dropzone.is-dragover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-subtle);
+}
+
+/* O input real fica oculto (irmão da label): o foco de teclado dele aparece na área de envio */
+.c-upload:has(.js-upload-input:focus-visible) .c-upload__dropzone {
+  border-color: var(--color-focus);
+  box-shadow: var(--focus-ring);
+}
+
+.c-upload__icon {
+  display: grid;
+  place-items: center;
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.c-upload__title {
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+}
+
+.c-upload__action {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.c-upload__hint,
+.c-upload__summary {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+.c-upload__summary {
+  font-variant-numeric: tabular-nums;
+}
+
+.c-upload.is-disabled .c-upload__dropzone {
+  border-color: var(--color-border);
+  background: var(--color-disabled-bg);
+  cursor: not-allowed;
 }
 
 /* ==========================================================================

@@ -144,6 +144,18 @@
   margin-bottom: var(--space-6);
 }
 
+/* Título à esquerda e ação principal à direita; empilha em telas estreitas */
+.l-page-header--with-action {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+  gap: var(--space-2);
+}
+
+.l-page-header__text {
+  display: grid;
+  gap: var(--space-1);
+}
+
 .l-page-header__subtitle {
   color: var(--color-text-secondary);
 }
@@ -178,6 +190,10 @@
 
   .l-grid {
     gap: var(--space-3);
+  }
+
+  .l-page-header--with-action {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 }
 
