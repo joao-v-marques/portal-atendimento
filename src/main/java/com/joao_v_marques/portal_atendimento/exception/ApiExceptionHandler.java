@@ -83,6 +83,13 @@ public class ApiExceptionHandler {
                 .body(ApiError.of("Endereço não encontrado"));
     }
 
+    // Tratamento para erro de conflito -> 409
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiError.of(ex.getMessage()));
+    }
+
     private String messageOf(FieldError error) {
         return error.isBindingFailure()
                 ? "O valor informado não é válido para este campo."
