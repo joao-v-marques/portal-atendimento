@@ -6,12 +6,15 @@ import com.joao_v_marques.portal_atendimento.authorization.authorization_status.
 import com.joao_v_marques.portal_atendimento.authorization.authorization_status.AuthorizationStatusRepository;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_type.AuthorizationType;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_type.AuthorizationTypeRepository;
+import com.joao_v_marques.portal_atendimento.exception.ConflictException;
+import com.joao_v_marques.portal_atendimento.exception.ResourceNotFoundException;
 import com.joao_v_marques.portal_atendimento.users.user.User;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request_document.AuthorizationRequestDocumentService;
 import com.joao_v_marques.portal_atendimento.users.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,11 +49,11 @@ public class AuthorizationRequestService {
     public AuthorizationRequestResponse create(AuthorizationRequestRequest request, List<MultipartFile> files, Integer currentUserId) {
         // Valida as FK's e retorna erro se não existir
         AuthorizationType authorizationType = authorizationTypeRepository.findById(request.authorizationTypeId())
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado tipo de autorização com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado tipo de autorização com o ID informado."));
         AuthorizationStatus authorizationStatus = authorizationStatusRepository.findById(request.authorizationStatusId())
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado tipo de autorização com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado tipo de autorização com o ID informado."));
         User user = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado usuário com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado usuário com o ID informado."));
 
         if (!authorizationType.isActive()) {
             throw new IllegalArgumentException("Não é possível realizar o cadastro de uma autorização com o tipo inativo.");
@@ -62,7 +65,7 @@ public class AuthorizationRequestService {
         String transactionNumber = request.transactionNumber().trim();
 
         if (authorizationRequestRepository.existsByTransactionNumber(transactionNumber)) {
-            throw new IllegalArgumentException("Já existe uma autorização com este número de transação.");
+            throw new ConflictException("Já existe uma autorização com este número de transação.");
         }
 
         LocalDate requestDate = request.requestDate();

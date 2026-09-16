@@ -2,6 +2,8 @@ package com.joao_v_marques.portal_atendimento.authorization.authorization_status
 
 import com.joao_v_marques.portal_atendimento.authorization.authorization_status.dto.AuthorizationStatusRequest;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_status.dto.AuthorizationStatusResponse;
+import com.joao_v_marques.portal_atendimento.exception.ConflictException;
+import com.joao_v_marques.portal_atendimento.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +33,7 @@ public class AuthorizationStatusService {
         String name = request.name().trim();
 
         if (authorizationStatusRepository.existsByNameIgnoreCase(name)) {
-            throw new IllegalArgumentException("O usuário que está tentando cadastrar já existe");
+            throw new ConflictException("O usuário que está tentando cadastrar já existe");
         }
 
         // Montar entidade com base na DTO
@@ -49,7 +51,7 @@ public class AuthorizationStatusService {
         String name = request.name().trim();
 
          AuthorizationStatus authorizationStatus = authorizationStatusRepository.findById(id)
-                 .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum status de autorização com o ID informado."));
+                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum status de autorização com o ID informado."));
 
          if (!authorizationStatus.isActive()) {
              throw new IllegalArgumentException("Não é possível editar um status de autorização inativo.");
@@ -64,7 +66,7 @@ public class AuthorizationStatusService {
     @Transactional
     public AuthorizationStatusResponse deactivate(Integer id) {
         AuthorizationStatus authorizationStatus = authorizationStatusRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum status de autorização com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum status de autorização com o ID informado."));
 
         if (!authorizationStatus.isActive()) {
             throw new IllegalArgumentException("Este status da autorização já está inativo.");
@@ -79,7 +81,7 @@ public class AuthorizationStatusService {
     @Transactional
     public AuthorizationStatusResponse reactivate(Integer id) {
         AuthorizationStatus authorizationStatus = authorizationStatusRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum status de autorização com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum status de autorização com o ID informado."));
 
         if (authorizationStatus.isActive()) {
             throw new IllegalArgumentException("Este status da autorização já está ativo");

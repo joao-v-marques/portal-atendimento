@@ -2,6 +2,8 @@ package com.joao_v_marques.portal_atendimento.authorization.authorization_type;
 
 import com.joao_v_marques.portal_atendimento.authorization.authorization_type.dto.AuthorizationTypeRequest;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_type.dto.AuthorizationTypeResponse;
+import com.joao_v_marques.portal_atendimento.exception.ConflictException;
+import com.joao_v_marques.portal_atendimento.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +31,7 @@ public class AuthorizationTypeService {
         String name = request.name().trim();
 
         if (authorizationTypeRepository.existsByNameIgnoreCase(name)) {
-            throw new IllegalArgumentException("Já existe um tipo de autorização com o nome informado.");
+            throw new ConflictException("Já existe um tipo de autorização com o nome informado.");
         }
 
         // Montar entidade com base na DTO
@@ -47,7 +49,7 @@ public class AuthorizationTypeService {
 
         // Validar se a AuthorizationType realmente existe
         AuthorizationType authorizationType = authorizationTypeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado tipo de autorização com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado tipo de autorização com o ID informado."));
 
         if (!authorizationType.isActive()) {
             throw new IllegalArgumentException("Não é possível editar um tipo de autorização inativo.");
@@ -61,7 +63,7 @@ public class AuthorizationTypeService {
     @Transactional
     public AuthorizationTypeResponse deactivate(Integer id) {
         AuthorizationType authorizationType = authorizationTypeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum tipo de autorização com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum tipo de autorização com o ID informado."));
 
         if (!authorizationType.isActive()) {
             throw new IllegalArgumentException("Não é possível editar um tipo de autorização inativo.");
@@ -75,7 +77,7 @@ public class AuthorizationTypeService {
     @Transactional
     public AuthorizationTypeResponse reactivate(Integer id) {
         AuthorizationType authorizationType = authorizationTypeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado nenhum tipo de autorização com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum tipo de autorização com o ID informado."));
 
         if (authorizationType.isActive()) {
             throw new IllegalArgumentException("O tipo de autorização já está inativo");

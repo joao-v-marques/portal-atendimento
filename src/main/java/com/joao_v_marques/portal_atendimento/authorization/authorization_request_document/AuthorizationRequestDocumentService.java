@@ -4,6 +4,7 @@ import com.joao_v_marques.portal_atendimento.authorization.authorization_request
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request.AuthorizationRequestRepository;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request_document.dto.AuthorizationRequestDocumentResponse;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request_document.dto.DocumentDownload;
+import com.joao_v_marques.portal_atendimento.exception.ResourceNotFoundException;
 import com.joao_v_marques.portal_atendimento.exception.StorageException;
 import com.joao_v_marques.portal_atendimento.storage.AllowedFileType;
 import com.joao_v_marques.portal_atendimento.storage.DocumentStorage;
@@ -53,7 +54,7 @@ public class AuthorizationRequestDocumentService {
     @Transactional(readOnly = true)
     public List<AuthorizationRequestDocumentResponse> findByRequest(Integer requestId) {
         if (!authorizationRequestRepository.existsById(requestId)) {
-            throw new IllegalArgumentException("Não foi encontrada autorização com o ID informado.");
+            throw new ResourceNotFoundException("Não foi encontrada autorização com o ID informado.");
         }
         return documentRepository.findByAuthorizationRequestId(requestId)
                 .stream()
@@ -65,7 +66,7 @@ public class AuthorizationRequestDocumentService {
     @Transactional(readOnly = true)
     public DocumentDownload loadForDownload(Integer requestId, Integer documentId) {
         AuthorizationRequestDocument document = documentRepository.findByIdAndAuthorizationRequestId(documentId, requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado documento com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado documento com o ID informado."));
 
         return new DocumentDownload(
                 documentStorage.load(document.getStoredPath()),
@@ -128,10 +129,10 @@ public class AuthorizationRequestDocumentService {
     @Transactional
     public AuthorizationRequestDocumentResponse upload(Integer requestId, MultipartFile file, Integer currentUserId) {
         AuthorizationRequest request = authorizationRequestRepository.findByIdForUpdate(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrada autorização com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada autorização com o ID informado."));
 
         User user = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrado usuário com o ID informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado usuário com o ID informado."));
 
         if (documentRepository.countByAuthorizationRequestId(requestId) >= storageProperties.maxFilesPerRequest()) {
             throw new IllegalArgumentException(
