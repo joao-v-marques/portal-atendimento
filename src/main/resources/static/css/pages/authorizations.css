@@ -20,6 +20,16 @@
 }
 
 
+/* Cards de prazo centralizados na largura do conteúdo; lado a lado a partir de 600px */
+.l-deadline-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
 .l-results {
   display: grid;
   gap: var(--space-2);
@@ -33,6 +43,10 @@
 
 @media (min-width: 37.5em) {
   .l-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-deadline-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

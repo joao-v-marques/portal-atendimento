@@ -8,8 +8,9 @@ const DATE_KEYS = new Set(['requestDate', 'createdAt']);
 const COLUMN_COUNT = 7;
 const SKELETON_ROWS = 5;
 
-// Prazo da ANS: 10 dias úteis desde a solicitação. A partir de 7 a linha já pede atenção
-export const DEADLINE_WARNING_BUSINESS_DAYS = 7;
+// Prazo da ANS: 10 dias úteis desde a solicitação. A partir de 8 o aviso é preventivo; em 10 já venceu
+export const DEADLINE_WARNING_BUSINESS_DAYS = 8;
+export const DEADLINE_LIMIT_BUSINESS_DAYS = 10;
 
 const collator = new Intl.Collator('pt-BR', { sensitivity: 'base', numeric: true });
 
@@ -24,12 +25,16 @@ function compareValues(key, a, b) {
 }
 
 /**
- * Não finalizada e com DEADLINE_WARNING_BUSINESS_DAYS+ dias úteis desde a solicitação (prazo ANS).
+ * Situação da autorização diante do prazo da ANS, contado em dias úteis desde a solicitação.
  * @param {{ requestDate?: string, authorizationStatusName?: string }} item
+ * @returns {'done' | 'overdue' | 'warning' | 'ok'}
  */
-export function isDeadlineAtRisk(item) {
-  if (statusVariant(item.authorizationStatusName) === 'done') return false;
-  return (businessDaysSince(item.requestDate) ?? 0) >= DEADLINE_WARNING_BUSINESS_DAYS;
+export function deadlineLevel(item) {
+  if (statusVariant(item.authorizationStatusName) === 'done') return 'done';
+  const days = businessDaysSince(item.requestDate) ?? 0;
+  if (days >= DEADLINE_LIMIT_BUSINESS_DAYS) return 'overdue';
+  if (days >= DEADLINE_WARNING_BUSINESS_DAYS) return 'warning';
+  return 'ok';
 }
 
 /**
@@ -92,7 +97,8 @@ function truncated(text) {
  * @param {{ requestDate?: string, authorizationStatusName?: string }} item
  */
 function deadlineInfo(item) {
-  if (statusVariant(item.authorizationStatusName) === 'done') {
+  const level = deadlineLevel(item);
+  if (level === 'done') {
     return el('span', { className: 'c-table__secondary c-table__deadline--done', text: 'Finalizado' });
   }
 
@@ -100,13 +106,17 @@ function deadlineInfo(item) {
   if (days === null) return el('span', { className: 'c-table__secondary', text: '—' });
 
   const text = days === 0 ? 'Criado hoje' : `Criado há ${days} ${days === 1 ? 'dia útil' : 'dias úteis'}`;
-  if (days < DEADLINE_WARNING_BUSINESS_DAYS) return el('span', { className: 'c-table__secondary', text });
+  if (level === 'ok') return el('span', { className: 'c-table__secondary', text });
 
   // Cor não é o único sinal: ícone na tela e aviso para leitor de tela
-  return el('span', { className: 'c-table__secondary c-table__deadline--late' }, [
+  const isOverdue = level === 'overdue';
+  return el('span', { className: `c-table__secondary c-table__deadline--${isOverdue ? 'late' : 'warning'}` }, [
     el('span', { className: 'c-icon c-icon--sm c-icon--alert', attrs: { 'aria-hidden': 'true' } }),
     text,
-    el('span', { className: 'u-visually-hidden', text: ' (atenção ao prazo da ANS)' }),
+    el('span', {
+      className: 'u-visually-hidden',
+      text: isOverdue ? ' (prazo da ANS vencido)' : ' (prazo da ANS prestes a vencer)',
+    }),
   ]);
 }
 

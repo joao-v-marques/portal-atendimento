@@ -203,7 +203,8 @@
               <div class="c-select-wrapper">
                 <select class="c-select" id="filtro-prazo" name="prazo">
                   <option value="">Todos</option>
-                  <option value="risco">Em risco (7+ dias úteis)</option>
+                  <option value="avencer">Prestes a vencer (8 ou 9 dias úteis)</option>
+                  <option value="vencida">Vencidas (10+ dias úteis)</option>
                 </select>
               </div>
             </div>
@@ -217,16 +218,35 @@
           </form>
         </section>
 
-        <!-- Preenchido em authorizations.js; aparece só se houver prazo da ANS em risco -->
-        <div class="c-alert js-deadline-alert" role="alert" hidden>
-          <span class="c-icon c-icon--alert" aria-hidden="true"></span>
-          <p class="c-alert__content">
-            <strong class="c-alert__title js-deadline-alert-title"></strong>
-            <span class="js-deadline-alert-text"></span>
-          </p>
-          <button class="c-button c-button--sm c-alert__action js-deadline-alert-action" type="button">
-            Ver autorizações
-          </button>
+        <!-- Contagens preenchidas em authorizations.js; cada card some quando está zerado -->
+        <div class="l-deadline-cards js-deadline-cards" hidden>
+          <section class="c-card c-deadline-card c-deadline-card--warning js-card-warning" aria-labelledby="prazo-avencer-title" hidden>
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="prazo-avencer-title">Prestes a vencer</h3>
+            </div>
+            <p class="c-deadline-card__main">
+              <span class="c-deadline-card__count js-warning-count"></span>
+              <button class="c-deadline-card__action js-warning-action" type="button" aria-label="Ver autorizações prestes a vencer">
+                Ver autorizações
+              </button>
+            </p>
+            <p class="c-deadline-card__text">Não finalizadas há 8 ou 9 dias úteis.</p>
+          </section>
+
+          <section class="c-card c-deadline-card c-deadline-card--overdue js-card-overdue" aria-labelledby="prazo-vencidas-title" hidden>
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="prazo-vencidas-title">Vencidas</h3>
+            </div>
+            <p class="c-deadline-card__main">
+              <span class="c-deadline-card__count js-overdue-count"></span>
+              <button class="c-deadline-card__action js-overdue-action" type="button" aria-label="Ver autorizações vencidas">
+                Ver autorizações
+              </button>
+            </p>
+            <p class="c-deadline-card__text">Passaram dos 10 dias úteis do prazo da ANS.</p>
+          </section>
         </div>
 
         <section class="l-results js-results" aria-labelledby="resultados-title">

@@ -8,12 +8,11 @@ import {
   populateSelect,
 } from '../components/authorization-filters.js';
 import {
-  DEADLINE_WARNING_BUSINESS_DAYS,
   DEFAULT_SORT,
   SORTABLE_KEYS,
+  deadlineLevel,
   emptyState,
   initAuthorizationTable,
-  isDeadlineAtRisk,
   nextSort,
   sortItems,
 } from '../components/authorization-table.js';
@@ -27,7 +26,9 @@ const numberFormatter = new Intl.NumberFormat('pt-BR');
 const form = document.querySelector('.js-filters');
 const results = document.querySelector('.js-results');
 const countEl = document.querySelector('.js-results-count');
-const deadlineAlert = document.querySelector('.js-deadline-alert');
+const deadlineCards = document.querySelector('.js-deadline-cards');
+const warningCard = deadlineCards.querySelector('.js-card-warning');
+const overdueCard = deadlineCards.querySelector('.js-card-overdue');
 
 // ── Estado (espelhado na query string) ───────────────────────
 
@@ -93,12 +94,15 @@ const filters = initFilters(form, {
   },
 });
 
-// Atalho da faixa: só as em risco, mais antigas (mais urgentes) primeiro
-deadlineAlert.querySelector('.js-deadline-alert-action').addEventListener('click', () => {
+// Atalho dos cards: só aquele grupo, mais antigas (mais urgentes) primeiro
+function showDeadlineGroup(prazo) {
   state.sort = { key: 'requestDate', direction: 'asc' };
-  filters.replace({ prazo: 'risco' });
+  filters.replace({ prazo });
   table.focusResults();
-});
+}
+
+warningCard.querySelector('.js-warning-action').addEventListener('click', () => showDeadlineGroup('avencer'));
+overdueCard.querySelector('.js-overdue-action').addEventListener('click', () => showDeadlineGroup('vencida'));
 
 // ── Renderização ─────────────────────────────────────────────
 
@@ -114,18 +118,16 @@ function renderCount(filteredCount) {
 }
 
 // Conta a lista inteira, não a filtrada: filtro ou paginação não podem esconder um prazo da ANS em risco
-function renderDeadlineAlert() {
-  const count = state.items.filter(isDeadlineAtRisk).length;
-  deadlineAlert.hidden = count === 0;
-  if (count === 0) return;
+function renderDeadlineCards() {
+  const levels = state.items.map(deadlineLevel);
+  const warning = levels.filter((level) => level === 'warning').length;
+  const overdue = levels.filter((level) => level === 'overdue').length;
 
-  const isSingle = count === 1;
-  deadlineAlert.querySelector('.js-deadline-alert-title').textContent = isSingle
-    ? '1 autorização precisa de atenção'
-    : `${numberFormatter.format(count)} autorizações precisam de atenção`;
-  deadlineAlert.querySelector('.js-deadline-alert-text').textContent =
-    `${isSingle ? 'Não finalizada' : 'Não finalizadas'} há ${DEADLINE_WARNING_BUSINESS_DAYS} dias úteis ou mais desde a solicitação. `
-    + 'O prazo da ANS é de 10 dias úteis.';
+  warningCard.querySelector('.js-warning-count').textContent = numberFormatter.format(warning);
+  overdueCard.querySelector('.js-overdue-count').textContent = numberFormatter.format(overdue);
+  warningCard.hidden = warning === 0;
+  overdueCard.hidden = overdue === 0;
+  deadlineCards.hidden = warning === 0 && overdue === 0;
 }
 
 function clearFiltersButton() {
@@ -176,7 +178,7 @@ function render() {
 
 function renderLoadError(error) {
   countEl.textContent = '';
-  deadlineAlert.hidden = true;
+  deadlineCards.hidden = true;
   pagination.render(null);
   const retry = el('button', { className: 'c-button c-button--secondary', text: 'Tentar novamente', attrs: { type: 'button' } });
   retry.addEventListener('click', load);
@@ -210,7 +212,7 @@ async function load() {
   state.items = requests.value;
   state.itemsById = new Map(state.items.map((item) => [item.id, item]));
   state.loaded = true;
-  renderDeadlineAlert();
+  renderDeadlineCards();
 
   // Opções = cadastro oficial + nomes presentes na lista (inclui tipos/status já desativados).
   // Falha nos auxiliares não é notificada: os nomes da própria lista bastam para filtrar.

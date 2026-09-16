@@ -2,7 +2,7 @@ import { debounce, el } from '../core/dom.js';
 import { clearFieldError, setFieldError } from '../core/form.js';
 import { onlyDigits } from '../core/format.js';
 import { notify } from '../core/notify.js';
-import { isDeadlineAtRisk } from './authorization-table.js';
+import { deadlineLevel } from './authorization-table.js';
 
 /** Nomes dos campos do formulário = chaves na query string. */
 export const FILTER_KEYS = ['busca', 'status', 'tipo', 'de', 'ate', 'cadastradoPor', 'prazo'];
@@ -57,8 +57,9 @@ export function applyFilters(items, filters) {
     // requestDate é "AAAA-MM-DD": a comparação de texto já respeita a ordem das datas
     if (filters.de && item.requestDate < filters.de) return false;
     if (filters.ate && item.requestDate > filters.ate) return false;
-    // Mesma regra da linha vermelha da tabela e da faixa de aviso
-    if (filters.prazo === 'risco' && !isDeadlineAtRisk(item)) return false;
+    // Mesma regra dos cards de prazo e da cor da linha na tabela
+    if (filters.prazo === 'avencer' && deadlineLevel(item) !== 'warning') return false;
+    if (filters.prazo === 'vencida' && deadlineLevel(item) !== 'overdue') return false;
     return true;
   });
 }

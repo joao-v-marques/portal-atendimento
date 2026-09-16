@@ -958,12 +958,20 @@
   color: var(--color-text-secondary);
 }
 
-/* Prazo da ANS (10 dias úteis): a partir de 7 fica em vermelho, com ícone para a cor não ser o único sinal */
+/* Prazo da ANS (10 dias úteis): 8–9 em laranja e 10+ em vermelho, com ícone para a cor não ser o único sinal */
+.c-table__deadline--warning,
 .c-table__deadline--late {
   display: flex;
   align-items: center;
   gap: var(--space-half);
   font-weight: var(--weight-semibold);
+}
+
+.c-table__deadline--warning {
+  color: var(--color-warning);
+}
+
+.c-table__deadline--late {
   color: var(--color-error);
 }
 
@@ -1052,44 +1060,77 @@ th[aria-sort="descending"] .c-table__sort-icon {
 .c-badge--status-neutral  { background: var(--status-neutral-bg);  color: var(--status-neutral-text); }
 
 /* ==========================================================================
-   Alert (faixa de aviso da página)
+   Deadline card (prazo da ANS: prestes a vencer / vencidas)
    ========================================================================== */
 
-/* Vermelho sólido: aviso de risco (prazo da ANS); ícone + texto, a cor não é o único sinal */
-.c-alert {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  border-radius: var(--radius-md);
-  background: var(--color-error);
-  color: var(--color-text-inverse);
-}
-
-/* flex-basis: abaixo de ~16rem de texto o botão desce para a linha de baixo */
-.c-alert__content {
+/* Bloco baixo: ícone + título, número com o atalho ao lado e a explicação no rodapé.
+   A cor reforça o rótulo escrito, não o substitui */
+.c-deadline-card {
   display: grid;
-  flex: 1 1 16rem;
-  gap: var(--space-half);
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border-top: var(--border-width-thick) solid var(--deadline-card-color);
+}
+
+.c-deadline-card--warning { --deadline-card-color: var(--color-warning); }
+.c-deadline-card--overdue { --deadline-card-color: var(--color-error); }
+
+.c-deadline-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--deadline-card-color);
+}
+
+/* h3 com tamanho de rótulo: o peso e a cor já dão a hierarquia */
+.c-deadline-card__title {
   font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-}
-
-.c-alert__title {
   font-weight: var(--weight-semibold);
+  line-height: var(--leading-sm);
+  color: inherit;
 }
 
-/* Botão claro sobre o vermelho: destaca a ação sem competir com o texto do aviso */
-.c-alert__action {
-  align-self: center;
+.c-deadline-card__main {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.c-deadline-card__count {
+  font: var(--weight-bold) var(--text-xl) / var(--leading-xl) var(--font-heading);
+  font-variant-numeric: tabular-nums;
+  color: var(--deadline-card-color);
+}
+
+/* Ação discreta: parece link, mas é <button> porque filtra a lista e não navega */
+.c-deadline-card__action {
   margin-left: auto;
-  background: var(--color-surface);
-  color: var(--color-error);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-sm);
+  text-decoration: underline;
+  background: transparent;
+  color: var(--color-primary);
 }
 
-.c-alert__action:hover:not(:disabled) {
-  background: var(--color-error-bg);
+.c-deadline-card__action:hover {
+  color: var(--color-primary-hover);
+}
+
+.c-deadline-card__action:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.c-deadline-card__text {
+  padding-top: var(--space-1);
+  border-top: var(--border-width) solid var(--color-border);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
 }
 
 /* ==========================================================================
