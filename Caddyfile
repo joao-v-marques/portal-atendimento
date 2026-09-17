@@ -1,0 +1,4 @@
+:80 {
+    redir / /portal-atendimento/
+    reverse_proxy app:8080
+}

@@ -4,7 +4,7 @@ server:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:minha_chave_super_mega_hiper_secreta_trocar_quando_colocar_em_prod}
+    secret: ${JWT_SECRET}
     expiration: ${JWT_EXPIRATION:86400000}
   security:
     # em produção defina COOKIE_SECURE=true (exige HTTPS)
@@ -15,9 +15,9 @@ app:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/portal_atendimento
-    username: postgres
-    password: 1234
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/portal_atendimento}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:1234}
   jpa:
     hibernate:
       ddl-auto: validate

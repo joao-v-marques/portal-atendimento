@@ -37,3 +37,4 @@ internal_documentation.md
 .claude
 frontend-documentation/
 /uploads
+.env
