@@ -1074,6 +1074,7 @@ th[aria-sort="descending"] .c-table__sort-icon {
 
 .c-deadline-card--warning { --deadline-card-color: var(--color-warning); }
 .c-deadline-card--overdue { --deadline-card-color: var(--color-error); }
+.c-deadline-card--neutral { --deadline-card-color: var(--color-primary); }
 
 .c-deadline-card__header {
   display: flex;

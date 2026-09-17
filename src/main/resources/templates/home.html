@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/utilities.css">
   <link rel="stylesheet" href="css/notyf-theme.css">
+  <link rel="stylesheet" href="css/pages/home.css">
 
   <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
   <script src="js/vendor/notyf.min.js" defer></script>
@@ -125,7 +126,7 @@
 
   <main class="l-main js-main" id="conteudo" tabindex="-1">
     <div class="l-container">
-      <header class="l-page-header">
+      <header class="l-page-header l-page-header--home">
         <h1 class="js-greeting" aria-busy="true"><span class="c-skeleton c-skeleton--heading" aria-hidden="true"></span></h1>
         <p class="l-page-header__subtitle js-today"></p>
       </header>
@@ -133,14 +134,84 @@
       <section class="l-section" aria-labelledby="indicadores-title">
         <h2 id="indicadores-title">Indicadores</h2>
 
-        <div class="l-grid js-metrics">
-          <div class="c-card c-empty-state l-grid__full">
-            <span class="c-empty-state__icon" aria-hidden="true">
-              <span class="c-icon c-icon--chart"></span>
-            </span>
-            <h3 class="c-empty-state__title">Os indicadores vão aparecer aqui</h3>
-            <p class="c-empty-state__text">Em breve você vai acompanhar por aqui as solicitações em análise e as finalizadas.</p>
-          </div>
+        <!-- Contagens preenchidas em home.js; mesma regra de prazo da página de autorizações. Zerado também aparece -->
+        <div class="l-metrics js-metrics">
+          <section class="c-card c-deadline-card c-deadline-card--neutral" aria-labelledby="indicador-total-title">
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="indicador-total-title">Total de autorizações</h3>
+            </div>
+            <p class="c-deadline-card__main">
+              <span class="c-deadline-card__count js-total-count" aria-live="polite" aria-busy="true"><span class="c-skeleton" aria-hidden="true"></span></span>
+              <a class="c-deadline-card__action" href="autorizacoes" aria-label="Ver todas as autorizações">Ver autorizações</a>
+            </p>
+            <p class="c-deadline-card__text">Todas as autorizações cadastradas no portal.</p>
+          </section>
+
+          <section class="c-card c-deadline-card c-deadline-card--warning" aria-labelledby="indicador-avencer-title">
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="indicador-avencer-title">Prestes a vencer</h3>
+            </div>
+            <p class="c-deadline-card__main">
+              <span class="c-deadline-card__count js-warning-count" aria-live="polite" aria-busy="true"><span class="c-skeleton" aria-hidden="true"></span></span>
+              <a class="c-deadline-card__action" href="autorizacoes?prazo=avencer" aria-label="Ver autorizações prestes a vencer">Ver autorizações</a>
+            </p>
+            <p class="c-deadline-card__text">Não finalizadas há 8 ou 9 dias úteis (vencem em até 2 dias úteis).</p>
+          </section>
+
+          <section class="c-card c-deadline-card c-deadline-card--overdue" aria-labelledby="indicador-vencidas-title">
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="indicador-vencidas-title">Vencidas</h3>
+            </div>
+            <p class="c-deadline-card__main">
+              <span class="c-deadline-card__count js-overdue-count" aria-live="polite" aria-busy="true"><span class="c-skeleton" aria-hidden="true"></span></span>
+              <a class="c-deadline-card__action" href="autorizacoes?prazo=vencida" aria-label="Ver autorizações vencidas">Ver autorizações</a>
+            </p>
+            <p class="c-deadline-card__text">Passaram dos 10 dias úteis do prazo da ANS.</p>
+          </section>
+        </div>
+      </section>
+
+      <section class="l-section" aria-labelledby="como-funciona-title">
+        <h2 id="como-funciona-title">Como funciona</h2>
+
+        <div class="c-card l-about">
+          <p class="l-about__intro">
+            O Portal de Atendimento centraliza o lançamento e o controle das solicitações de autorização,
+            acompanhando cada uma até a finalização dentro do prazo da ANS.
+          </p>
+
+          <ol class="c-steps">
+            <li class="c-steps__item">
+              <h3 class="c-steps__title">Lançamento</h3>
+              <p class="c-steps__text">
+                Em <a href="lancar-autorizacao">Lançar autorização</a>, informe o número da transação, a data da solicitação,
+                o tipo, o beneficiário e o telefone, e anexe os documentos. A autorização e os anexos são salvos juntos.
+              </p>
+            </li>
+            <li class="c-steps__item">
+              <h3 class="c-steps__title">Acompanhamento</h3>
+              <p class="c-steps__text">
+                Em <a href="autorizacoes">Autorizações</a>, busque e filtre por status, tipo, período, quem cadastrou e prazo.
+                Abra os detalhes para consultar os dados e baixar os documentos.
+              </p>
+            </li>
+            <li class="c-steps__item">
+              <h3 class="c-steps__title">Prazo da ANS</h3>
+              <p class="c-steps__text">
+                São 10 dias úteis contados a partir da data da solicitação. Com 8 dias úteis a autorização aparece como
+                “prestes a vencer”; com 10, como “vencida”.
+              </p>
+            </li>
+            <li class="c-steps__item">
+              <h3 class="c-steps__title">Finalização</h3>
+              <p class="c-steps__text">
+                Quando a autorização passa para o status “Finalizado”, ela sai do controle de prazo.
+              </p>
+            </li>
+          </ol>
         </div>
       </section>
     </div>

@@ -1,0 +1,104 @@
+/* ==========================================================================
+   Início — indicadores e "Como funciona"
+   ========================================================================== */
+
+/* Saudação mais discreta e mais perto dos indicadores que o cabeçalho padrão */
+.l-page-header--home {
+  margin-bottom: var(--space-3);
+}
+
+.l-page-header--home h1 {
+  font-size: var(--text-xl);
+  line-height: var(--leading-xl);
+}
+
+/* Respiro entre os indicadores e o "Como funciona" */
+.l-section + .l-section {
+  margin-top: var(--space-6);
+}
+
+/* Cards de indicadores: empilhados no celular, 3 lado a lado a partir de 600px */
+.l-metrics {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+/* Placeholder do número enquanto a lista carrega (o skeleton base não tem largura) */
+.l-metrics .c-skeleton {
+  width: 4ch;
+  height: var(--space-3);
+}
+
+.l-about {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.l-about__intro {
+  color: var(--color-text-secondary);
+}
+
+/* Passo a passo numerado: o número vem do contador CSS, o <ol> já dá a ordem para leitor de tela */
+.c-steps {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: steps;
+}
+
+.c-steps__item {
+  position: relative;
+  display: grid;
+  gap: var(--space-half);
+  padding-left: var(--space-5);
+  counter-increment: steps;
+}
+
+.c-steps__item::before {
+  content: counter(steps);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.c-steps__title {
+  font-size: var(--text-md);
+  line-height: var(--space-4);
+}
+
+.c-steps__text {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+.c-steps__text a {
+  font-weight: var(--weight-medium);
+  color: var(--color-primary);
+}
+
+.c-steps__text a:hover {
+  color: var(--color-primary-hover);
+}
+
+@media (min-width: 37.5em) {
+  .l-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .c-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
