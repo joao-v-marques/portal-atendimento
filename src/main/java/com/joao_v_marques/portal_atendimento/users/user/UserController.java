@@ -1,12 +1,15 @@
 package com.joao_v_marques.portal_atendimento.users.user;
 
+import com.joao_v_marques.portal_atendimento.security.UserPrincipal;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserIsActiveResponse;
+import com.joao_v_marques.portal_atendimento.users.user.dto.UserPasswordRequest;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserRequest;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserResponse;
 import com.joao_v_marques.portal_atendimento.users.user.dto.UserUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -40,16 +43,27 @@ public class UserController {
 
     // PUT de um usuário
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserResponse> update(@PathVariable Integer id, @Valid @RequestBody UserUpdateRequest request) {
-        UserResponse updated = userService.update(id, request);
+    public ResponseEntity<UserResponse> update(@PathVariable Integer id,
+                                               @Valid @RequestBody UserUpdateRequest request,
+                                               @AuthenticationPrincipal UserPrincipal currentUser) {
+        UserResponse updated = userService.update(id, request, currentUser.getId());
 
         return ResponseEntity.ok(updated);
     }
 
+    // PATCH redefinir a senha de um usuário
+    @PatchMapping(value = "/{id}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> changePassword(@PathVariable Integer id, @Valid @RequestBody UserPasswordRequest request) {
+        userService.changePassword(id, request);
+
+        return ResponseEntity.noContent().build();
+    }
+
     // PATCH desativar usuário
     @PatchMapping("/{id}/deactivate")
-    public ResponseEntity<UserIsActiveResponse> deactivate(@PathVariable Integer id) {
-        UserIsActiveResponse deactivatedUser = userService.deactivate(id);
+    public ResponseEntity<UserIsActiveResponse> deactivate(@PathVariable Integer id,
+                                                           @AuthenticationPrincipal UserPrincipal currentUser) {
+        UserIsActiveResponse deactivatedUser = userService.deactivate(id, currentUser.getId());
 
         return ResponseEntity.ok(deactivatedUser);
     }

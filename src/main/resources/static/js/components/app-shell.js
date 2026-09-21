@@ -16,12 +16,20 @@ export function displayName(user) {
 
 // ── Usuário na topbar ────────────────────────────────────────
 
+// Itens só de administrador: escondidos no HTML e revelados aqui (guia 11.6).
+// É UX, não segurança: a proteção real é o hasRole("ADMIN") do backend.
+function revealAdminItems(user) {
+  if (user.role !== 'ADMIN') return;
+  document.querySelectorAll('.js-admin-only').forEach((node) => { node.hidden = false; });
+}
+
 function renderUser(chip, user) {
   const name = displayName(user);
   chip.querySelector('.js-user-avatar').textContent = getInitials(name);
   chip.querySelector('.js-user-name').textContent = name;
   chip.querySelector('.js-user-role').textContent = roleLabel(user.role);
   chip.removeAttribute('aria-busy');
+  revealAdminItems(user);
 }
 
 function renderUserUnavailable(chip) {

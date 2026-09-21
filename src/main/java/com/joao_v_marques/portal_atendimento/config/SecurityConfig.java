@@ -3,7 +3,6 @@ package com.joao_v_marques.portal_atendimento.config;
 import com.joao_v_marques.portal_atendimento.security.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -31,7 +30,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/api/auth/login", "/api/auth/logout", "/error", "/css/**", "/js/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
+                        // Tela e API de administração: só ADMIN. O 403 fora de /api/** redireciona para home?erro=sem-acesso
+                        .requestMatchers("/configuracoes").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**", "/api/user-roles/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

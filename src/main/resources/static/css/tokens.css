@@ -175,6 +175,9 @@
   --sidebar-item-height: 3rem;  /*   48px */
   --avatar-size:        2rem;   /*   32px */
   --dialog-max-width:   45rem;  /*  720px — modal de detalhe */
+  --dialog-max-width-form:    40rem; /* 640px — modal de formulário (guia 11.7) */
+  --dialog-max-width-confirm: 30rem; /* 480px — modal de confirmação (guia 11.7) */
+  --settings-nav-width: 15rem;  /*  240px — sub-navegação das configurações */
   --logo-height:        2.5rem; /*   40px — logo na topbar */
   --control-height-sm:  2rem;   /*   32px */
   --control-height-md:  2.5rem; /*   40px */

@@ -1,0 +1,166 @@
+/* ==========================================================================
+   Configurações — grade da tela (sub-navegação + painel)
+   ========================================================================== */
+
+.l-settings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.l-settings__panel {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+/* Duas colunas só em telas largas: de 60em a 80em a sidebar principal (256px) já ocupa
+   o espaço que a tabela precisa. Com a sidebar recolhida (80px) sobram 176px, então a
+   virada acontece mais cedo. */
+@media (min-width: 72em) {
+  .has-sidebar-collapsed .l-settings {
+    grid-template-columns: var(--settings-nav-width) minmax(0, 1fr);
+  }
+
+  .has-sidebar-collapsed .l-settings__nav {
+    position: sticky;
+    /* align-self obrigatório: sem ele o item de grid estica e o sticky nunca atua */
+    align-self: start;
+    top: calc(var(--topbar-height) + var(--space-3));
+  }
+}
+
+@media (min-width: 80em) {
+  .l-settings {
+    grid-template-columns: var(--settings-nav-width) minmax(0, 1fr);
+  }
+
+  .l-settings__nav {
+    position: sticky;
+    align-self: start;
+    top: calc(var(--topbar-height) + var(--space-3));
+  }
+}
+
+/* ==========================================================================
+   Filtros e barra de resultados
+
+   Duplicado de pages/authorizations.css (l-filters / l-results). São classes de
+   layout usadas hoje por duas telas; quando uma terceira precisar, o lugar delas
+   passa a ser o layout.css.
+   ========================================================================== */
+
+.l-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.l-filters__actions {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sem filtro ativo o "Limpar filtros" fica hidden; a célula vazia abriria uma linha em branco no grid */
+.l-filters__actions:not(:has(> :not([hidden]))) {
+  display: none;
+}
+
+.l-results {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.l-results__count {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 37.5em) {
+  .l-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-filters__search {
+    grid-column: 1 / -1;
+  }
+
+  /* Com campos lado a lado, reserva a altura do label (linha + gap do c-field) para o botão alinhar */
+  .l-filters__actions::before {
+    content: "";
+    height: calc(var(--leading-sm) + var(--space-1));
+  }
+}
+
+/* ==========================================================================
+   Tabela de usuários
+   ========================================================================== */
+
+/* Nome com avatar, igual ao chip da topbar */
+.c-user-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+/* Ações da linha lado a lado, sem quebrar em duas linhas */
+.c-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-half);
+}
+
+/* O nome ganha avatar e badges, então precisa ceder mais espaço que o padrão de 14rem:
+   sem isso a tabela passa da largura do painel e as ações saem da área visível */
+.l-settings .c-user-cell .c-table__truncate {
+  max-width: 9rem;
+  white-space: nowrap;
+}
+
+.l-settings .c-table__truncate {
+  max-width: 11rem;
+  white-space: nowrap;
+}
+
+/* Com a sub-navegação ocupando parte da largura, a tabela rola na horizontal e a
+   coluna de ações — a interação principal da tela — ficaria fora da área visível.
+   Fixá-la à direita resolve em qualquer largura, sem esconder colunas. */
+.l-settings .c-table th:last-child,
+.l-settings .c-table td:last-child {
+  position: sticky;
+  right: 0;
+}
+
+/* O fundo sai do <td> para o <tr>, senão a célula fixa fica transparente e deixa
+   ver o conteúdo rolando por baixo — e o hover da linha precisa alcançá-la */
+.l-settings .c-table tbody tr {
+  background: var(--color-surface);
+}
+
+.l-settings .c-table tbody tr:hover {
+  background: var(--color-bg);
+}
+
+.l-settings .c-table td:last-child {
+  background: inherit;
+}
+
+/* Acima das demais células fixas do thead (que já são sticky no topo) */
+.l-settings .c-table thead th:last-child {
+  z-index: 2;
+}
+
+/* Divisória indicando que existe conteúdo rolando por baixo da coluna fixa */
+.l-settings .c-table th:last-child::before,
+.l-settings .c-table td:last-child::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: var(--border-width);
+  background: var(--color-border);
+}

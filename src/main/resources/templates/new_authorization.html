@@ -116,6 +116,19 @@
       </ul>
     </div>
 
+    <!-- Só para ADMIN: revelado em app-shell.js. Esconder é UX; a proteção real é o backend -->
+    <div class="c-nav__group js-admin-only" hidden>
+      <p class="c-nav__group-title" id="nav-grupo-administracao">Administração</p>
+      <ul class="c-nav__list" aria-labelledby="nav-grupo-administracao">
+        <li>
+          <a class="c-nav__link" href="configuracoes">
+            <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+            <span class="c-nav__label">Configurações</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
     <footer class="l-sidebar__footer">
       <p class="l-sidebar__footer-title">Portal de Atendimento</p>
       <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>

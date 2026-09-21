@@ -1,6 +1,7 @@
 import { displayName, initAppShell } from '../components/app-shell.js';
 import { deadlineLevel } from '../components/authorization-table.js';
 import { api } from '../core/api.js';
+import { showLoginReasonFromUrl } from '../core/auth.js';
 import { handleError } from '../core/errors.js';
 import { formatLongDate } from '../core/format.js';
 
@@ -44,6 +45,9 @@ async function loadMetrics() {
 }
 
 // ── Inicialização ────────────────────────────────────────────
+
+// Antes do shell: o redirect de 403 (home?erro=sem-acesso) precisa avisar assim que a página abre
+showLoginReasonFromUrl();
 
 const now = new Date();
 todayEl.textContent = formatLongDate(now);

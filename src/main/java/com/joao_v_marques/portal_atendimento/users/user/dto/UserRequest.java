@@ -11,8 +11,8 @@ public record UserRequest(
         @Size(max = 255, message = "O campo de nome deve ter no máximo 255 caracteres")
         String name,
 
-        @NotBlank
-        @Size(min = 4, max = 72, message = "A senha deve ter no máximo 72 caracteres")
+        @NotBlank(message = "Informe a senha")
+        @Size(min = 4, max = 72, message = "A senha deve ter entre 4 e 72 caracteres")
         String password,
 
         @Size(max = 255, message = "O campo de email deve ter no máximo 255 caracteres")

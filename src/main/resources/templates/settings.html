@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configurações · Portal de Atendimento</title>
+
+  <!-- Antes do CSS: aplica a sidebar retraída antes da 1ª pintura (chave igual à de app-shell.js) -->
+  <script>try { if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('has-sidebar-collapsed'); } catch (e) {}</script>
+
+  <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/vendor/notyf.min.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/notyf-theme.css">
+  <link rel="stylesheet" href="css/pages/settings.css">
+
+  <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
+  <script src="js/vendor/notyf.min.js" defer></script>
+  <script type="module" src="js/pages/settings.js"></script>
+</head>
+<body class="l-shell">
+  <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="l-topbar js-topbar">
+    <button
+      class="c-icon-button c-icon-button--inverse l-topbar__menu-button js-menu-open"
+      type="button"
+      aria-controls="menu-principal"
+      aria-expanded="false"
+      aria-label="Abrir menu"
+      title="Abrir menu"
+    >
+      <span class="c-icon c-icon--menu" aria-hidden="true"></span>
+    </button>
+
+    <a class="c-brand c-brand--logo" href="home">
+      <img class="c-brand__logo" src="css/img/logo-2023.png" alt="Unimed S. S. do Paraíso – Início" width="529" height="195">
+    </a>
+
+    <div class="l-topbar__spacer"></div>
+
+    <div class="l-topbar__actions">
+      <div class="c-user-menu js-user-menu">
+        <button
+          class="c-user-menu__trigger js-dropdown-trigger"
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="menu-usuario"
+        >
+          <span class="c-user-chip js-user-chip" aria-busy="true">
+            <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
+            <span class="c-user-chip__text">
+              <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
+              <span class="c-user-chip__role js-user-role"></span>
+            </span>
+          </span>
+          <span class="c-icon c-icon--sm c-user-menu__chevron" aria-hidden="true"></span>
+        </button>
+
+        <ul class="c-user-menu__list js-dropdown-list" id="menu-usuario" role="menu" aria-label="Opções da conta" hidden>
+          <li role="none">
+            <button class="c-user-menu__item js-logout" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
+              <span class="js-logout-label">Sair</span>
+            </button>
+          </li>
+          <!-- Novas opções: outro <li role="none"> com <button> ou <a> role="menuitem" tabindex="-1" -->
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <nav class="l-sidebar js-sidebar" id="menu-principal" aria-label="Menu principal">
+    <div class="l-sidebar__header">
+      <button
+        class="c-icon-button c-icon-button--inverse js-menu-close"
+        type="button"
+        aria-label="Fechar menu"
+        title="Fechar menu"
+      >
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <ul class="c-nav__list">
+      <li>
+        <a class="c-nav__link" href="home">
+          <span class="c-icon c-icon--home" aria-hidden="true"></span>
+          <span class="c-nav__label">Início</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Categoria: título + lista rotulada por ele. Nova categoria = novo c-nav__group com id próprio -->
+    <div class="c-nav__group">
+      <p class="c-nav__group-title" id="nav-grupo-autorizacoes">Autorizações</p>
+      <ul class="c-nav__list" aria-labelledby="nav-grupo-autorizacoes">
+        <li>
+          <a class="c-nav__link" href="autorizacoes">
+            <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+            <span class="c-nav__label">Autorizações</span>
+          </a>
+        </li>
+        <li>
+          <a class="c-nav__link" href="lancar-autorizacao">
+            <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+            <span class="c-nav__label">Lançar autorização</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Só para ADMIN: revelado em app-shell.js. Esconder é UX; a proteção real é o backend -->
+    <div class="c-nav__group js-admin-only" hidden>
+      <p class="c-nav__group-title" id="nav-grupo-administracao">Administração</p>
+      <ul class="c-nav__list" aria-labelledby="nav-grupo-administracao">
+        <li>
+          <a class="c-nav__link" href="configuracoes" aria-current="page">
+            <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+            <span class="c-nav__label">Configurações</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <footer class="l-sidebar__footer">
+      <p class="l-sidebar__footer-title">Portal de Atendimento</p>
+      <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>
+    </footer>
+  </nav>
+
+  <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
+
+  <main class="l-main js-main" id="conteudo" tabindex="-1">
+    <div class="l-container">
+      <header class="l-page-header">
+        <div class="l-page-header__text">
+          <h1>Configurações</h1>
+          <p class="l-page-header__subtitle">Ajuste o que é configurável no portal.</p>
+        </div>
+      </header>
+
+      <div class="l-settings">
+        <!-- Segundo landmark de navegação: nome distinto do "Menu principal", e sem a
+             palavra "navegação" (o leitor de tela já anuncia o papel) -->
+        <nav class="l-settings__nav c-subnav js-settings-nav" aria-label="Seções das configurações">
+          <ul class="c-subnav__list">
+            <li>
+              <a class="c-subnav__link js-section-link" href="configuracoes?secao=usuarios" data-section="usuarios">
+                <span class="c-icon c-icon--sm c-icon--users" aria-hidden="true"></span>
+                Usuários
+              </a>
+            </li>
+            <!-- Nova seção = novo <li> aqui + nova <section class="l-settings__panel js-panel" data-section="..." hidden> -->
+          </ul>
+        </nav>
+
+        <section
+          class="l-settings__panel js-panel"
+          id="painel-usuarios"
+          data-section="usuarios"
+          aria-labelledby="painel-usuarios-title"
+          hidden
+        >
+          <header class="l-page-header l-page-header--with-action">
+            <div class="l-page-header__text">
+              <h2 id="painel-usuarios-title">Usuários</h2>
+              <p class="l-page-header__subtitle">Quem acessa o portal e com qual perfil de acesso.</p>
+            </div>
+            <button class="c-button c-button--primary js-new-user" type="button">
+              <span class="c-icon c-icon--sm c-icon--users" aria-hidden="true"></span>
+              Novo usuário
+            </button>
+          </header>
+
+          <section class="c-card" aria-labelledby="filtros-usuarios-title">
+            <h3 class="u-visually-hidden" id="filtros-usuarios-title">Filtros</h3>
+
+            <form class="l-filters js-filters" role="search" aria-labelledby="filtros-usuarios-title" novalidate>
+              <div class="c-field l-filters__search">
+                <label class="c-field__label" for="filtro-usuarios-busca">Buscar</label>
+                <div class="c-search">
+                  <input
+                    class="c-input"
+                    id="filtro-usuarios-busca"
+                    name="busca"
+                    type="search"
+                    aria-describedby="filtro-usuarios-busca-hint"
+                    placeholder="Usuário, nome, e-mail ou perfil"
+                    autocomplete="off"
+                    spellcheck="false"
+                  >
+                </div>
+                <p class="u-visually-hidden" id="filtro-usuarios-busca-hint">Atalho: tecla barra para focar a busca.</p>
+              </div>
+
+              <div class="c-field">
+                <label class="c-field__label" for="filtro-usuarios-situacao">Situação</label>
+                <div class="c-select-wrapper">
+                  <select class="c-select" id="filtro-usuarios-situacao" name="situacao">
+                    <option value="ativos">Ativos</option>
+                    <option value="inativos">Inativos</option>
+                    <option value="todos">Todos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="l-filters__actions">
+                <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
+                  <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                  Limpar filtros
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="l-results js-results" aria-labelledby="resultados-usuarios-title">
+            <h3 class="u-visually-hidden" id="resultados-usuarios-title">Resultados</h3>
+            <p class="l-results__count js-results-count" aria-live="polite"></p>
+
+            <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-usuarios-title" tabindex="0">
+              <table class="c-table">
+                <caption class="u-visually-hidden">Usuários cadastrados</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" data-sort-key="username" aria-sort="ascending">
+                      <button class="c-table__sort js-sort" type="button">Usuário <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" data-sort-key="name" aria-sort="none">
+                      <button class="c-table__sort js-sort" type="button">Nome <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col" data-sort-key="roleName" aria-sort="none">
+                      <button class="c-table__sort js-sort" type="button">Perfil <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" data-sort-key="createdAt" aria-sort="none">
+                      <button class="c-table__sort js-sort" type="button">Criado em <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" class="u-text-end"><span class="u-visually-hidden">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody class="js-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="js-table-state" tabindex="-1" hidden></div>
+
+            <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+              <p class="c-pagination__summary js-page-summary"></p>
+              <div class="c-pagination__controls">
+                <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                  <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                  Anterior
+                </button>
+                <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+                <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                  Próxima
+                  <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+                </button>
+              </div>
+            </nav>
+          </section>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Criar / editar usuário. Um <dialog> para os dois modos: um conjunto de ids, e o
+       form.js localiza a mensagem de erro por `${field.id}-error` numa busca global -->
+  <dialog class="c-dialog c-dialog--form js-user-dialog" aria-labelledby="usuario-dialog-title">
+    <!-- Sem method="dialog": ele fecharia no submit e descartaria a requisição -->
+    <form class="c-dialog__form js-user-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title js-user-dialog-title" id="usuario-dialog-title">Novo usuário</h2>
+          <p class="c-field__hint">Campos com * são obrigatórios.</p>
+        </div>
+        <button class="c-icon-button js-user-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <div class="c-field">
+          <label class="c-field__label" for="usuario-username">
+            Usuário <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input"
+            id="usuario-username"
+            name="username"
+            type="text"
+            maxlength="255"
+            required
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="usuario-username-hint usuario-username-error"
+          >
+          <p class="c-field__hint" id="usuario-username-hint">Nome usado para entrar no portal.</p>
+          <p class="c-field__error" id="usuario-username-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="usuario-name">Nome (opcional)</label>
+          <input
+            class="c-input"
+            id="usuario-name"
+            name="name"
+            type="text"
+            maxlength="255"
+            autocomplete="off"
+            aria-describedby="usuario-name-error"
+          >
+          <p class="c-field__error" id="usuario-name-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="usuario-email">E-mail (opcional)</label>
+          <input
+            class="c-input"
+            id="usuario-email"
+            name="email"
+            type="email"
+            maxlength="255"
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="usuario-email-error"
+          >
+          <p class="c-field__error" id="usuario-email-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="usuario-role">
+            Perfil de acesso <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <div class="c-select-wrapper">
+            <select class="c-select" id="usuario-role" name="roleId" required aria-describedby="usuario-role-error" disabled>
+              <option value="">Carregando…</option>
+            </select>
+          </div>
+          <p class="c-field__error" id="usuario-role-error" hidden></p>
+        </div>
+
+        <!-- Senha só na criação: o UserUpdateRequest não tem o campo -->
+        <div class="c-field js-user-password-field">
+          <label class="c-field__label" for="usuario-password">
+            Senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <div class="c-input-group">
+            <input
+              class="c-input"
+              id="usuario-password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              aria-describedby="usuario-password-hint usuario-password-error usuario-caps-lock"
+            >
+            <button
+              class="c-input-group__action js-user-password-toggle"
+              type="button"
+              aria-controls="usuario-password"
+              aria-pressed="false"
+              aria-label="Mostrar senha"
+              title="Mostrar senha"
+            >
+              <span class="c-input-group__icon" aria-hidden="true"></span>
+            </button>
+          </div>
+          <p class="c-field__hint" id="usuario-password-hint">De 4 a 72 caracteres.</p>
+          <p class="c-field__hint c-field__hint--warning js-user-caps-lock" id="usuario-caps-lock" aria-live="polite"></p>
+          <p class="c-field__error" id="usuario-password-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <!-- Abre o diálogo de senha em sequência, nunca empilhado (guia 11.7) -->
+        <button class="c-button c-button--ghost js-user-reset-password" type="button" hidden>
+          <span class="c-icon c-icon--sm c-icon--key" aria-hidden="true"></span>
+          Redefinir senha
+        </button>
+        <button class="c-button c-button--secondary js-user-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary js-user-submit" type="submit">Criar usuário</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Redefinir senha. Ids namespaced (senha-*) para não colidir com o diálogo de usuário -->
+  <dialog class="c-dialog c-dialog--form js-password-dialog" aria-labelledby="senha-dialog-title">
+    <form class="c-dialog__form js-password-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title" id="senha-dialog-title">Redefinir senha</h2>
+          <p class="c-field__hint">Nova senha de <strong class="js-password-user"></strong>.</p>
+        </div>
+        <button class="c-icon-button js-password-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <div class="c-field">
+          <label class="c-field__label" for="senha-nova">
+            Nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <div class="c-input-group">
+            <input
+              class="c-input"
+              id="senha-nova"
+              name="password"
+              type="password"
+              required
+              autocomplete="new-password"
+              aria-describedby="senha-nova-hint senha-nova-error senha-caps-lock"
+            >
+            <button
+              class="c-input-group__action js-password-toggle"
+              type="button"
+              aria-controls="senha-nova"
+              aria-pressed="false"
+              aria-label="Mostrar senha"
+              title="Mostrar senha"
+            >
+              <span class="c-input-group__icon" aria-hidden="true"></span>
+            </button>
+          </div>
+          <p class="c-field__hint" id="senha-nova-hint">De 4 a 72 caracteres.</p>
+          <p class="c-field__hint c-field__hint--warning js-password-caps-lock" id="senha-caps-lock" aria-live="polite"></p>
+          <p class="c-field__error" id="senha-nova-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="senha-confirmacao">
+            Repetir a nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input"
+            id="senha-confirmacao"
+            name="passwordConfirm"
+            type="password"
+            required
+            autocomplete="new-password"
+            aria-describedby="senha-confirmacao-error"
+          >
+          <p class="c-field__error" id="senha-confirmacao-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-password-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary" type="submit">Redefinir senha</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Confirmação de ação destrutiva (guia 11.8). Sem method="dialog": o confirm-dialog.js
+       resolve no clique de cada botão, porque o evento close não é confiável o bastante
+       para carregar a decisão (a ação ficava sem efeito) -->
+  <dialog class="c-dialog c-dialog--confirm js-confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-description">
+    <div class="c-dialog__form">
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title js-confirm-title" id="confirm-title">Confirmar?</h2>
+        </div>
+      </header>
+
+      <div class="c-dialog__body">
+        <p class="js-confirm-description" id="confirm-description"></p>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-confirm-cancel" type="button">Cancelar</button>
+        <button class="c-button c-button--danger js-confirm-accept" type="button">Confirmar</button>
+      </footer>
+    </div>
+  </dialog>
+</body>
+</html>

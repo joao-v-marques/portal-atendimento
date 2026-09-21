@@ -49,11 +49,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                if (jwtService.isTokenValid(token, username)) {
+                // isEnabled() é o is_active do usuário: sem ele, quem for desativado continuaria
+                // entrando até o token expirar (24h por padrão)
+                if (jwtService.isTokenValid(token, username) && userDetails.isEnabled()) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else if (!userDetails.isEnabled()) {
+                    // Mesmo tratamento de token inválido: a página vai para login?erro=sessao-expirada
+                    request.setAttribute(INVALID_TOKEN_ATTRIBUTE, Boolean.TRUE);
                 }
             }
         } catch (JwtException e) {

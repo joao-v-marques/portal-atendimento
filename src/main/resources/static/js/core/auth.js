@@ -28,10 +28,12 @@ export async function logout() {
 const LOGIN_REASONS = {
   'sessao-expirada': () => notify.warning('Sua sessão expirou. Entre novamente.'),
   'login-necessario': () => notify.info('Entre para continuar.'),
+  // RestAccessDeniedHandler manda um 403 de página para home?erro=sem-acesso
+  'sem-acesso': () => notify.error('Você não tem permissão para acessar as configurações.'),
 };
 
 /**
- * Mostra o motivo do redirecionamento para o login (`?erro=`) e limpa a URL
+ * Mostra o motivo de um redirecionamento (`?erro=`) e limpa a URL
  * para o aviso não se repetir ao recarregar a página.
  */
 export function showLoginReasonFromUrl() {

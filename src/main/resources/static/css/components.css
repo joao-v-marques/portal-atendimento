@@ -103,6 +103,19 @@
   color: var(--color-primary-hover);
 }
 
+.c-button--danger {
+  background: var(--color-error);
+  color: var(--color-text-inverse);
+}
+
+.c-button--danger:hover:not(:disabled) {
+  background: var(--color-error-hover);
+}
+
+.c-button--danger.is-loading:disabled {
+  background: var(--color-error);
+}
+
 /* Spinner escuro em botões de fundo claro */
 .c-button--secondary.is-loading::after,
 .c-button--ghost.is-loading::after {
@@ -442,6 +455,12 @@
 .c-icon--upload        { --icon: url("img/icon-upload.svg"); }
 .c-icon--trash         { --icon: url("img/icon-trash.svg"); }
 .c-icon--alert         { --icon: url("img/icon-alert.svg"); }
+.c-icon--settings      { --icon: url("img/icon-settings.svg"); }
+.c-icon--users         { --icon: url("img/icon-users.svg"); }
+.c-icon--pencil        { --icon: url("img/icon-pencil.svg"); }
+.c-icon--user-x        { --icon: url("img/icon-user-x.svg"); }
+.c-icon--user-check    { --icon: url("img/icon-user-check.svg"); }
+.c-icon--key           { --icon: url("img/icon-key.svg"); }
 
 /* ==========================================================================
    Brand (logo do portal)
@@ -1215,6 +1234,23 @@ th[aria-sort="descending"] .c-table__sort-icon {
   border-top: var(--border-width) solid var(--color-border);
 }
 
+/* Larguras do guia 11.7: formulário em 640px, confirmação em 480px */
+.c-dialog--form {
+  width: min(var(--dialog-max-width-form), calc(100% - var(--space-4)));
+}
+
+.c-dialog--confirm {
+  width: min(var(--dialog-max-width-confirm), calc(100% - var(--space-4)));
+}
+
+/* Com o <form> envolvendo header/body/footer, ele passa a ser o único filho flex do
+   dialog: sem min-height 0 o body para de rolar e o conteúdo estoura a altura da tela */
+.c-dialog__form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 @keyframes dialog-in {
   from {
     opacity: 0;
@@ -1526,6 +1562,75 @@ th[aria-sort="descending"] .c-table__sort-icon {
   border-color: var(--color-border);
   background: var(--color-disabled-bg);
   cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Subnav (navegação de 2º nível dentro da página, ex.: seções das configurações)
+   ========================================================================== */
+
+.c-subnav {
+  /* Faixa rolável no mobile; o padding vertical evita cortar o anel de foco */
+  overflow-x: auto;
+  padding-block: var(--space-half);
+  scroll-padding-inline: var(--space-2);
+}
+
+.c-subnav__list {
+  display: flex;
+  gap: var(--space-half);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.c-subnav__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--control-height-md);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-sm);
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.c-subnav__link:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.c-subnav__link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Item ativo: fundo + peso + barra (cor não é o único indicador; há aria-current) */
+.c-subnav__link[aria-current="page"] {
+  font-weight: var(--weight-semibold);
+  background: var(--color-primary-subtle);
+  color: var(--color-heading);
+  box-shadow: inset var(--space-half) 0 0 var(--color-primary);
+}
+
+.c-subnav__link[aria-current="page"]:focus-visible {
+  box-shadow: inset var(--space-half) 0 0 var(--color-primary), var(--focus-ring);
+}
+
+@media (min-width: 80em) {
+  .c-subnav {
+    overflow-x: visible;
+  }
+
+  .c-subnav__list {
+    flex-direction: column;
+    gap: var(--space-half);
+  }
 }
 
 /* ==========================================================================

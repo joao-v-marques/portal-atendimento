@@ -13,5 +13,6 @@ public class ViewConfig implements WebMvcConfigurer {
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/autorizacoes").setViewName("authorizations");
         registry.addViewController("/lancar-autorizacao").setViewName("new_authorization");
+        registry.addViewController("/configuracoes").setViewName("settings");
     }
 }
