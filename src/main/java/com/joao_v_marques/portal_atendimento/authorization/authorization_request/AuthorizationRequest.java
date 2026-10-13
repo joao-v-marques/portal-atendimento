@@ -48,4 +48,7 @@ public class AuthorizationRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inserted_by", nullable = false)
     private User insertedBy;
+
+    @Column(name = "finish_date")
+    private LocalDate finishDate;
 }

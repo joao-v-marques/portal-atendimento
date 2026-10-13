@@ -11,6 +11,7 @@ public record AuthorizationRequestResponse(
         Integer id,
         String transactionNumber,
         LocalDate requestDate,
+        LocalDate finishDate,
         String authorizationTypeName,
         String authorizationStatusName,
         String beneficiaryName,

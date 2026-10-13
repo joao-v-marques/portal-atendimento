@@ -104,6 +104,7 @@ public class AuthorizationRequestService {
         }
 
         authorizationRequest.setAuthorizationStatus(authorizationStatus);
+        authorizationRequest.setFinishDate(LocalDate.now());
 
         return toResponse(authorizationRequest);
     }
@@ -113,6 +114,7 @@ public class AuthorizationRequestService {
                 authorizationRequest.getId(),
                 authorizationRequest.getTransactionNumber(),
                 authorizationRequest.getRequestDate(),
+                authorizationRequest.getFinishDate(),
                 authorizationRequest.getAuthorizationType().getName(),
                 authorizationRequest.getAuthorizationStatus().getName(),
                 authorizationRequest.getBeneficiaryName(),
