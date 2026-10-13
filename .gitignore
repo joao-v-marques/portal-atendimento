@@ -38,3 +38,4 @@ internal_documentation.md
 frontend-documentation/
 /uploads
 .env
+DEPLOY.md
