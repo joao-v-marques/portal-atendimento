@@ -14,7 +14,6 @@ import com.joao_v_marques.portal_atendimento.users.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -88,6 +87,25 @@ public class AuthorizationRequestService {
         authorizationRequestDocumentService.attachAll(saved, files, user);
 
         return toResponse(saved);
+    }
+
+    @Transactional
+    public AuthorizationRequestResponse finishAuthorization(Integer authorizationId) {
+        AuthorizationRequest authorizationRequest = authorizationRequestRepository.findByIdForUpdate(authorizationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhuma autorização com o ID informado."));
+        AuthorizationStatus authorizationStatus = authorizationStatusRepository.findById(2)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum status para autorização com o ID 2."));
+
+        if (!authorizationStatus.isActive()) {
+            throw new IllegalArgumentException("Não é possível alterar para um status inativo");
+        }
+        if (authorizationRequest.getAuthorizationStatus().getId().equals(2)) {
+            throw new IllegalArgumentException("Este pedido já está finalizado");
+        }
+
+        authorizationRequest.setAuthorizationStatus(authorizationStatus);
+
+        return toResponse(authorizationRequest);
     }
 
     private AuthorizationRequestResponse toResponse(AuthorizationRequest authorizationRequest) {

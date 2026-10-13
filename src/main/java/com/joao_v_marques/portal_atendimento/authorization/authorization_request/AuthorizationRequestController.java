@@ -3,8 +3,6 @@ package com.joao_v_marques.portal_atendimento.authorization.authorization_reques
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request.dto.AuthorizationRequestRequest;
 import com.joao_v_marques.portal_atendimento.authorization.authorization_request.dto.AuthorizationRequestResponse;
 import com.joao_v_marques.portal_atendimento.security.UserPrincipal;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -48,6 +45,14 @@ public class AuthorizationRequestController {
     public ResponseEntity<AuthorizationRequestResponse> createWithDocuments(@Valid @RequestPart("request") AuthorizationRequestRequest request, @RequestPart(value = "files", required = false) List<MultipartFile> files, @AuthenticationPrincipal UserPrincipal currentUser) {
 
         return created(authorizationRequestService.create(request, files, currentUser.getId()));
+    }
+
+    // Atualização da situação da autorização para finalizado
+    @PatchMapping("/{id}/finish")
+    public ResponseEntity<AuthorizationRequestResponse> finishAuthorization(@PathVariable Integer id) {
+        AuthorizationRequestResponse authorizationRequest = authorizationRequestService.finishAuthorization(id);
+
+        return ResponseEntity.ok(authorizationRequest);
     }
 
     private ResponseEntity<AuthorizationRequestResponse> created(AuthorizationRequestResponse created) {
