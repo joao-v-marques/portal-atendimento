@@ -2,11 +2,6 @@
    Autorizações — filtros e barra de resultados
    ========================================================================== */
 
-/* A tabela tem muitas colunas: a página usa mais da tela que o container padrão */
-.l-container--wide {
-  max-width: var(--container-wide-max);
-}
-
 /* Detalhes + Finalizar lado a lado, alinhados à direita */
 .c-row-actions {
   display: flex;

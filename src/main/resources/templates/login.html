@@ -1,4 +1,4 @@
-  <!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -23,28 +23,55 @@
   <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <div class="l-login">
-    <header class="l-login__brand">
-      <div class="c-brand">
-        <span class="c-brand__mark" aria-hidden="true"></span>
-        <span class="c-brand__name">Portal de Atendimento</span>
+    <!-- Painel de marca: só a partir de 60em. Nada focável aqui, então o skip link vai direto ao formulário -->
+    <aside class="l-login__brand" aria-label="Sobre o portal">
+      <img class="c-brand__logo l-login__logo" src="css/img/logo-2023.png" alt="Unimed S. S. do Paraíso" width="529" height="195">
+
+      <div class="l-login__pitch">
+        <p class="l-login__eyebrow">Portal de Atendimento</p>
+        <p class="l-login__headline">Autorizações sob controle, do pedido à resposta.</p>
+        <p class="l-login__lead">Tudo o que a equipe precisa para lançar, acompanhar e finalizar pedidos de autorização dos beneficiários.</p>
+
+        <ul class="l-login__features">
+          <li class="l-login__feature">
+            <span class="l-login__feature-icon" aria-hidden="true"><span class="c-icon c-icon--sm c-icon--clipboard"></span></span>
+            <span class="l-login__feature-text">
+              <strong class="l-login__feature-title">Lançamento rápido</strong>
+              Registre o pedido e anexe os documentos em um só passo.
+            </span>
+          </li>
+          <li class="l-login__feature">
+            <span class="l-login__feature-icon" aria-hidden="true"><span class="c-icon c-icon--sm c-icon--alert"></span></span>
+            <span class="l-login__feature-text">
+              <strong class="l-login__feature-title">Prazo da ANS à vista</strong>
+              Alertas de autorizações prestes a vencer ou vencidas.
+            </span>
+          </li>
+          <li class="l-login__feature">
+            <span class="l-login__feature-icon" aria-hidden="true"><span class="c-icon c-icon--sm c-icon--file-text"></span></span>
+            <span class="l-login__feature-text">
+              <strong class="l-login__feature-title">Histórico do beneficiário</strong>
+              Consulte pedidos e documentos sempre que precisar.
+            </span>
+          </li>
+        </ul>
       </div>
 
-      <div class="l-login__tagline">
-        <p class="l-login__tagline-title">Atendimento ágil, do pedido ao documento.</p>
-        <p class="l-login__tagline-text">Registre solicitações de autorização e acompanhe cada beneficiário em um só lugar.</p>
-      </div>
-
-      <p class="l-login__footer">Acesso restrito à equipe de atendimento.</p>
+      <p class="l-login__brand-footer">Uso interno · acesso restrito à equipe de atendimento da Unimed S. S. do Paraíso.</p>
 
       <span class="l-login__decor" aria-hidden="true"></span>
-    </header>
+    </aside>
 
     <main class="l-login__main" id="conteudo" tabindex="-1">
+      <!-- Abaixo de 60em o painel some: a logo aparece aqui, acima do card -->
+      <img class="c-brand__logo l-login__logo l-login__logo--compact" src="css/img/logo-2023.png" alt="Unimed S. S. do Paraíso" width="529" height="195">
+
       <section class="c-card l-login__card" aria-labelledby="login-title">
-        <div class="l-login__header">
-          <h1 id="login-title">Entrar</h1>
-          <p class="l-login__subtitle">Use seu usuário e senha do portal.</p>
-        </div>
+        <header class="l-login__header">
+          <p class="l-login__kicker">Acesso ao portal</p>
+          <h1 class="l-login__title" id="login-title">Boas-vindas de volta</h1>
+          <p class="l-login__subtitle">Entre com o usuário e a senha cadastrados para você no portal.</p>
+        </header>
 
         <form class="l-login__form js-login-form" novalidate>
           <div class="c-field">
@@ -91,9 +118,19 @@
             <p class="c-field__hint c-field__hint--warning js-capslock-hint" id="password-capslock" aria-live="polite"></p>
           </div>
 
-          <button class="c-button c-button--primary c-button--lg c-button--block" type="submit">Entrar</button>
+          <button class="c-button c-button--primary c-button--lg c-button--block l-login__submit" type="submit">Entrar</button>
         </form>
+
+        <div class="l-login__help">
+          <span class="l-login__help-icon" aria-hidden="true"><span class="c-icon c-icon--sm c-icon--key"></span></span>
+          <p class="l-login__help-text">
+            <strong class="l-login__help-title">Esqueceu a senha?</strong>
+            Peça ao administrador do portal para redefini-la em Configurações.
+          </p>
+        </div>
       </section>
+
+      <p class="l-login__footer">Unimed S. S. do Paraíso · Portal de Atendimento</p>
     </main>
   </div>
 </body>

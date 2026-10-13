@@ -132,10 +132,9 @@
   outline: none;
 }
 
+/* Sem max-width: o conteúdo ocupa toda a área ao lado da sidebar; só o padding faz o respiro */
 .l-container {
   width: 100%;
-  max-width: var(--container-max);
-  margin-inline: auto;
   padding-inline: var(--space-2);
 }
 
