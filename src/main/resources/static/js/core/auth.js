@@ -19,15 +19,17 @@ export function getCurrentUser() {
 /**
  * Encerra a sessão (apaga o cookie no backend) e volta para o login.
  * Erros sobem para quem chamou tratar com handleError().
+ * @param {string} [reason] chave de LOGIN_REASONS mostrada no login (ex.: 'senha-alterada')
  */
-export async function logout() {
+export async function logout(reason) {
   await api.post('api/auth/logout');
-  window.location.assign('login');
+  window.location.assign(reason ? `login?erro=${encodeURIComponent(reason)}` : 'login');
 }
 
 const LOGIN_REASONS = {
   'sessao-expirada': () => notify.warning('Sua sessão expirou. Entre novamente.'),
   'login-necessario': () => notify.info('Entre para continuar.'),
+  'senha-alterada': () => notify.success('Senha alterada. Entre novamente com a nova senha.'),
   // RestAccessDeniedHandler manda um 403 de página para home?erro=sem-acesso
   'sem-acesso': () => notify.error('Você não tem permissão para acessar as configurações.'),
 };

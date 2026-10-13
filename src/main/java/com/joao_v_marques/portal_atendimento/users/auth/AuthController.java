@@ -5,16 +5,20 @@ import com.joao_v_marques.portal_atendimento.security.UserPrincipal;
 import com.joao_v_marques.portal_atendimento.users.auth.dto.AuthRequest;
 import com.joao_v_marques.portal_atendimento.users.auth.dto.AuthResponse;
 import com.joao_v_marques.portal_atendimento.users.auth.dto.CurrentUserResponse;
+import com.joao_v_marques.portal_atendimento.users.user.UserService;
+import com.joao_v_marques.portal_atendimento.users.user.dto.UserPasswordRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,12 +32,14 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final UserService userService;
 
     private final boolean secureCookie;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, @Value("${app.security.cookie-secure}") boolean secureCookie) {
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, UserService userService, @Value("${app.security.cookie-secure}") boolean secureCookie) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.userService = userService;
         this.secureCookie = secureCookie;
     }
 
@@ -56,6 +62,16 @@ public class AuthController {
     @GetMapping("/me")
     public CurrentUserResponse me(@AuthenticationPrincipal UserPrincipal principal) {
         return new CurrentUserResponse(principal.getName(), principal.getUsername(), principal.getRoleName());
+    }
+
+    // PATCH troca da senha do próprio usuário logado (qualquer perfil). O id vem do token, nunca da URL,
+    // para ninguém trocar a senha de outra pessoa; a de terceiros continua em /api/users/{id}/password (ADMIN)
+    @PatchMapping(value = "/me/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> changeOwnPassword(@AuthenticationPrincipal UserPrincipal principal,
+                                                  @Valid @RequestBody UserPasswordRequest request) {
+        userService.changePassword(principal.getId(), request);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/logout")

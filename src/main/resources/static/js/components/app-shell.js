@@ -3,6 +3,7 @@ import { handleError } from '../core/errors.js';
 import { getInitials, roleLabel } from '../core/format.js';
 import { getTheme, toggleTheme } from '../core/theme.js';
 import { initDropdownMenu } from './dropdown-menu.js';
+import { initOwnPasswordDialog } from './own-password-dialog.js';
 
 // Mesmo valor do breakpoint md em layout.css (custom properties não funcionam em media query)
 const DESKTOP_QUERY = '(min-width: 60em)';
@@ -191,6 +192,15 @@ export function initAppShell() {
   const userMenu = initDropdownMenu(document.querySelector('.js-user-menu'));
   initLogout(document.querySelector('.js-logout'), userMenu);
   initThemeToggle(document.querySelector('.js-theme-toggle'));
+
+  // data-keep-open: o menu é fechado aqui sem devolver o foco (senão o gatilho roubaria o
+  // foco do diálogo recém-aberto); ao fechar o diálogo, o foco volta ao gatilho do menu
+  const ownPasswordDialog = initOwnPasswordDialog(document.querySelector('.js-own-password-dialog'));
+  const userMenuTrigger = document.querySelector('.js-user-menu .js-dropdown-trigger');
+  document.querySelector('.js-own-password-open').addEventListener('click', () => {
+    userMenu.close({ restoreFocus: false });
+    ownPasswordDialog.open(userMenuTrigger);
+  });
 
   const userPromise = getCurrentUser();
   userPromise
