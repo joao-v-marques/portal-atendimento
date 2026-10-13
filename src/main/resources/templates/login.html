@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Entrar · Portal de Atendimento</title>
 
+  <!-- Antes do CSS: aplica o tema salvo (ou o do sistema) antes da 1ª pintura (chave igual à de core/theme.js) -->
+  <script>try { var t = localStorage.getItem('theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
   <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 
   <link rel="stylesheet" href="css/vendor/notyf.min.css">

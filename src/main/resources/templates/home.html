@@ -8,6 +8,9 @@
   <!-- Antes do CSS: aplica a sidebar retraída antes da 1ª pintura (chave igual à de app-shell.js) -->
   <script>try { if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('has-sidebar-collapsed'); } catch (e) {}</script>
 
+  <!-- Antes do CSS: aplica o tema salvo (ou o do sistema) antes da 1ª pintura (chave igual à de core/theme.js) -->
+  <script>try { var t = localStorage.getItem('theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
   <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 
   <link rel="stylesheet" href="css/vendor/notyf.min.css">
@@ -64,6 +67,15 @@
         </button>
 
         <ul class="c-user-menu__list js-dropdown-list" id="menu-usuario" role="menu" aria-label="Opções da conta" hidden>
+          <li role="none">
+            <!-- Estado em aria-checked (core/theme.js); data-keep-open: o menu fica aberto para ver a troca -->
+            <button class="c-user-menu__item js-theme-toggle" type="button" role="menuitemcheckbox" aria-checked="false" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--moon" aria-hidden="true"></span>
+              <span>Tema escuro</span>
+              <span class="c-switch" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li class="c-user-menu__separator" role="separator"></li>
           <li role="none">
             <button class="c-user-menu__item js-logout" type="button" role="menuitem" tabindex="-1" data-keep-open>
               <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>

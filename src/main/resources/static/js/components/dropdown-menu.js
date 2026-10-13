@@ -3,7 +3,7 @@
  *
  * Estrutura esperada dentro de `root`:
  * - `.js-dropdown-trigger`: <button aria-haspopup="menu" aria-expanded aria-controls>
- * - `.js-dropdown-list`: <ul role="menu" hidden> com itens [role="menuitem"][tabindex="-1"]
+ * - `.js-dropdown-list`: <ul role="menu" hidden> com itens [role="menuitem"] ou [role="menuitemcheckbox"], todos com tabindex="-1"
  * Itens com `data-keep-open` não fecham o menu ao serem clicados (ex.: ação com carregamento).
  *
  * @param {HTMLElement} root
@@ -14,7 +14,8 @@ export function initDropdownMenu(root) {
   const list = root.querySelector('.js-dropdown-list');
 
   const isOpen = () => !list.hidden;
-  const enabledItems = () => [...list.querySelectorAll('[role="menuitem"]')].filter((item) => !item.disabled);
+  // ^=: inclui menuitemcheckbox (ex.: tema escuro)
+  const enabledItems = () => [...list.querySelectorAll('[role^="menuitem"]')].filter((item) => !item.disabled);
 
   function focusItem(index) {
     const items = enabledItems();
@@ -84,7 +85,7 @@ export function initDropdownMenu(root) {
   });
 
   list.addEventListener('click', (event) => {
-    const item = event.target.closest('[role="menuitem"]');
+    const item = event.target.closest('[role^="menuitem"]');
     if (item && !item.hasAttribute('data-keep-open')) close();
   });
 

@@ -33,10 +33,10 @@ function getInstance() {
     dismissible: true,
     position: { x: 'right', y: 'top' },
     types: [
-      { type: 'success', background: token('--color-success', '#00804e'), duration: 4000 },
-      { type: 'error',   background: token('--color-error',   '#b3261e'), duration: 7000 },
-      { type: 'warning', background: token('--color-warning', '#a84a00'), duration: 6000, icon: false, className: 'c-toast--warning' },
-      { type: 'info',    background: token('--color-info',    '#0b5f6a'), duration: 5000, icon: false, className: 'c-toast--info' },
+      { type: 'success', background: token('--color-toast-success', '#00804e'), duration: 4000 },
+      { type: 'error',   background: token('--color-toast-error',   '#b3261e'), duration: 7000 },
+      { type: 'warning', background: token('--color-toast-warning', '#a84a00'), duration: 6000, icon: false, className: 'c-toast--warning' },
+      { type: 'info',    background: token('--color-toast-info',    '#0b5f6a'), duration: 5000, icon: false, className: 'c-toast--info' },
     ],
   });
 

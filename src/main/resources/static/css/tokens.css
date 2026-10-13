@@ -60,6 +60,9 @@
   --neutral-700: #3d4a4a;
   --neutral-900: #1b2626;
 
+  /* Controles nativos (date, scrollbar, autofill) seguem o tema */
+  color-scheme: light;
+
   /* ── Semânticos (USE ESTES nos componentes) ── */
   --color-bg:              var(--neutral-50);
   --color-surface:         var(--white);
@@ -106,6 +109,22 @@
 
   --color-disabled-bg:     var(--neutral-100);
   --color-disabled-text:   var(--neutral-600);
+
+  /* Texto sobre preenchimentos (botão primário/perigo, avatar). No escuro o fundo clareia e o texto escurece */
+  --color-on-primary:      var(--white);
+  --color-on-brand-detail: var(--neutral-900);
+
+  /* Divisória da topbar/sidebar: invisível no claro (o teal já separa), visível no escuro */
+  --color-structure-divider: transparent;
+
+  --color-skeleton:           var(--neutral-100);
+  --color-skeleton-highlight: var(--neutral-200);
+
+  /* Toasts: texto branco sobre fundo escuro nos dois temas (não variam com o tema) */
+  --color-toast-success:   var(--green-700);
+  --color-toast-error:     #b3261e;
+  --color-toast-warning:   var(--orange-700);
+  --color-toast-info:      #0b5f6a;
 
   /* Badges de status */
   --status-analysis-bg:    var(--yellow-200);
@@ -184,4 +203,91 @@
   --control-height-lg:  3rem;   /*   48px */
   --icon-size-sm:       1rem;   /*   16px */
   --icon-size-md:       1.5rem; /*   24px */
+}
+
+/* ==========================================================================
+   Tema escuro — cinza neutro, sem tom de marca no fundo.
+   Ativado por data-theme="dark" no <html> (script inline no <head> + core/theme.js).
+   Só semânticos são redefinidos: componentes não mudam.
+   Contrastes medidos sobre --color-surface (#1c1f20).
+   ========================================================================== */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* ── Cinzas do tema ────────────────────── */
+  --gray-dark-950: #121314;
+  --gray-dark-900: #17191a;
+  --gray-dark-850: #1c1f20;
+  --gray-dark-800: #24272a;
+  --gray-dark-750: #2c3033;
+  --gray-dark-700: #383d40;
+  --gray-dark-500: #6f777b;
+  --gray-dark-400: #9aa2a6;
+  --gray-dark-300: #b9c0c3;
+  --gray-dark-100: #e4e7e8;
+
+  --color-bg:              var(--gray-dark-950);
+  --color-surface:         var(--gray-dark-850);
+  --color-surface-muted:   var(--gray-dark-800);
+  --color-surface-warm:    var(--gray-dark-900);
+
+  --color-text:            var(--gray-dark-100);  /* 13,3:1 */
+  --color-text-secondary:  var(--gray-dark-400);  /*  6,4:1 */
+  --color-text-inverse:    var(--gray-dark-100);  /* texto sobre a estrutura (topbar/sidebar) */
+  --color-heading:         #f3f5f5;
+
+  --color-border:          var(--gray-dark-750);
+  --color-border-strong:   var(--gray-dark-500);  /* 3,6:1 — limite de controles (WCAG 1.4.11) */
+  --color-border-hover:    var(--gray-dark-300);
+
+  /* Verde da marca clareado para ler sobre cinza; o texto em cima dele fica escuro */
+  --color-primary:         #5cc597;               /*  7,8:1 */
+  --color-primary-hover:   #79d1aa;
+  --color-primary-active:  #94dbbb;
+  --color-primary-subtle:  #1f3029;
+  --color-on-primary:      #0d1f17;               /*  8,1:1 sobre --color-primary */
+  --color-on-brand-detail: #17191a;
+
+  /* Topbar e sidebar: um degrau acima do fundo, separados por divisória em vez de cor forte */
+  --color-structure:       var(--gray-dark-900);
+  --color-structure-hover: var(--gray-dark-800);
+  --color-structure-deep:  var(--gray-dark-950);
+  --color-structure-text-muted: var(--gray-dark-300); /* 9,6:1 sobre --color-structure */
+  --color-structure-border: var(--gray-dark-750);
+  --color-structure-divider: var(--gray-dark-750);
+
+  --color-backdrop:        rgb(0 0 0 / 0.64);
+
+  --color-focus:           #79d1aa;
+  --color-focus-inverse:   var(--lime-500);
+
+  --color-success:         #5cc597;
+  --color-success-bg:      #1f3029;
+  --color-error:           #f08a80;               /*  6,8:1 */
+  --color-error-hover:     #f5aaa2;
+  --color-error-bg:        #3a2221;
+  --color-warning:         #f2a65e;               /*  8,2:1 */
+  --color-warning-bg:      #3a2b1c;
+  --color-info:            #7dc8d4;
+  --color-info-bg:         #1a2f34;
+
+  --color-disabled-bg:     var(--gray-dark-800);
+  --color-disabled-text:   var(--gray-dark-400);  /*  5,8:1 sobre --color-disabled-bg */
+
+  --color-skeleton:           var(--gray-dark-800);
+  --color-skeleton-highlight: var(--gray-dark-750);
+
+  /* Badges: fundo escuro com leve matiz e texto claro da mesma cor */
+  --status-analysis-bg:    #3b3319;
+  --status-analysis-text:  #f0d77a;
+  --status-done-bg:        #24331d;
+  --status-done-text:      #b9dca0;
+  --status-neutral-bg:     var(--gray-dark-750);
+  --status-neutral-text:   var(--gray-dark-300);
+
+  /* Sombras: no escuro a profundidade vem mais da cor da superfície que da sombra */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.4), 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 16px 40px rgb(0 0 0 / 0.56);
 }

@@ -38,6 +38,8 @@
   padding-inline: var(--space-2);
   background: var(--color-structure);
   color: var(--color-text-inverse);
+  /* Linha de 1px que não altera a altura; só aparece no tema escuro (token transparente no claro) */
+  box-shadow: inset 0 -1px 0 var(--color-structure-divider);
 }
 
 .l-topbar__spacer {
@@ -68,6 +70,7 @@
   padding: var(--space-2);
   overflow-y: auto;
   background: var(--color-structure);
+  box-shadow: inset -1px 0 0 var(--color-structure-divider);
   visibility: hidden;
   transform: translateX(-100%);
   /* visibility espera a animação terminar para esconder os links do Tab */

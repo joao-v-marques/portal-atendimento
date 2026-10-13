@@ -1,6 +1,7 @@
 import { getCurrentUser, logout } from '../core/auth.js';
 import { handleError } from '../core/errors.js';
 import { getInitials, roleLabel } from '../core/format.js';
+import { getTheme, toggleTheme } from '../core/theme.js';
 import { initDropdownMenu } from './dropdown-menu.js';
 
 // Mesmo valor do breakpoint md em layout.css (custom properties não funcionam em media query)
@@ -59,6 +60,17 @@ function initLogout(button, userMenu) {
       handleError(error);
     }
   });
+}
+
+// ── Tema ─────────────────────────────────────────────────────
+
+function initThemeToggle(button) {
+  const sync = () => button.setAttribute('aria-checked', String(getTheme() === 'dark'));
+  button.addEventListener('click', () => {
+    toggleTheme();
+    sync();
+  });
+  sync();
 }
 
 // ── Gaveta do menu (mobile) ──────────────────────────────────
@@ -178,6 +190,7 @@ export function initAppShell() {
 
   const userMenu = initDropdownMenu(document.querySelector('.js-user-menu'));
   initLogout(document.querySelector('.js-logout'), userMenu);
+  initThemeToggle(document.querySelector('.js-theme-toggle'));
 
   const userPromise = getCurrentUser();
   userPromise
