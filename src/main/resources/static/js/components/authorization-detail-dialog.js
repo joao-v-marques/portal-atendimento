@@ -2,9 +2,26 @@ import { api } from '../core/api.js';
 import { el, saveBlob } from '../core/dom.js';
 import { handleError } from '../core/errors.js';
 import { fileTypeLabel, formatDate, formatDateTime, formatFileSize, formatPhone } from '../core/format.js';
-import { statusBadge } from './authorization-table.js';
+import { notify } from '../core/notify.js';
+import { deadlineLevel, finishLead, finishLeadText, statusBadge } from './authorization-table.js';
 
 const SKELETON_DOCUMENTS = 2;
+
+/**
+ * Texto pronto para enviar ao beneficiário. Os dias só aparecem quando houve antecedência:
+ * no limite ou com atraso a mensagem não cita prazo.
+ * @param {{ beneficiaryName?: string, transactionNumber?: string, requestDate?: string, finishDate?: string | null }} item
+ */
+function beneficiaryMessage(item) {
+  const name = item.beneficiaryName?.trim();
+  const greeting = name ? `Olá, ${name}!` : 'Olá!';
+  const lead = finishLead(item);
+  const leadText = lead && lead.early > 0
+    ? ` com ${finishLeadText(lead)} em relação ao prazo estabelecido pela ANS`
+    : '';
+  return `${greeting} Sua solicitação de autorização nº ${item.transactionNumber} foi autorizada${leadText}. `
+    + 'Em caso de dúvidas, estamos à disposição. Unimed S. S. do Paraíso.';
+}
 
 export function descriptionItem(term, value) {
   return el('div', { className: 'c-description-list__item' }, [
@@ -72,6 +89,8 @@ export function initAuthorizationDetailDialog(dialog) {
   const documentsCount = dialog.querySelector('.js-documents-count');
   const documentsArea = dialog.querySelector('.js-documents-area');
   const closeButton = dialog.querySelector('.js-detail-close');
+  const messageSection = dialog.querySelector('.js-beneficiary-message');
+  const messageText = dialog.querySelector('.js-message-text');
 
   let current = null;
   let opener = null;
@@ -84,6 +103,7 @@ export function initAuthorizationDetailDialog(dialog) {
   function renderDetails(item) {
     code.textContent = item.transactionNumber;
     status.replaceChildren(statusBadge(item.authorizationStatusName));
+    const lead = finishLead(item);
     details.replaceChildren(
       descriptionItem('Data da solicitação', formatDate(item.requestDate)),
       descriptionItem('Tipo', item.authorizationTypeName),
@@ -91,7 +111,16 @@ export function initAuthorizationDetailDialog(dialog) {
       descriptionItem('Telefone', formatPhone(item.beneficiaryPhone)),
       descriptionItem('Cadastrado em', formatDateTime(item.createdAt)),
       descriptionItem('Cadastrado por', item.insertedByName),
+      ...(lead ? [
+        descriptionItem('Finalizado em', formatDate(item.finishDate)),
+        descriptionItem('Prazo da ANS', finishLeadText(lead)),
+      ] : []),
     );
+
+    // Mensagem só faz sentido depois de finalizada: em análise não há o que comunicar
+    const isDone = deadlineLevel(item) === 'done';
+    messageSection.hidden = !isDone;
+    messageText.textContent = isDone ? beneficiaryMessage(item) : '';
   }
 
   function renderDocumentsLoading() {
@@ -176,6 +205,16 @@ export function initAuthorizationDetailDialog(dialog) {
   documentsArea.addEventListener('click', (event) => {
     const button = event.target.closest('.js-download');
     if (button) downloadDocument(button);
+  });
+
+  // Clipboard exige contexto seguro (HTTPS/localhost); se falhar, o texto tem user-select: all
+  messageSection.querySelector('.js-copy-message').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(messageText.textContent);
+      notify.success('Mensagem copiada.');
+    } catch {
+      notify.error('Não foi possível copiar. Selecione o texto e copie manualmente.');
+    }
   });
 
   // Idempotente: roda no clique de fechar, no Esc (cancel) e, por garantia, no evento close.

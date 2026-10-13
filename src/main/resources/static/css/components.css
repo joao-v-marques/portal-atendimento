@@ -462,6 +462,7 @@
 .c-icon--user-check    { --icon: url("img/icon-user-check.svg"); }
 .c-icon--key           { --icon: url("img/icon-key.svg"); }
 .c-icon--check-circle  { --icon: url("img/icon-check-circle.svg"); }
+.c-icon--copy          { --icon: url("img/icon-copy.svg"); }
 
 /* ==========================================================================
    Brand (logo do portal)
@@ -1003,6 +1004,31 @@
   color: var(--status-done-text);
 }
 
+/* Antecedência da finalização: selo compacto que não quebra nem corta (frase completa no title) */
+.c-table__lead {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  gap: var(--space-half);
+  margin-top: var(--space-half);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-sm);
+  white-space: nowrap;
+}
+
+.c-table__lead--on-time {
+  background: var(--status-done-bg);
+  color: var(--status-done-text);
+}
+
+.c-table__lead--late {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
 .c-table__sort {
   display: inline-flex;
   align-items: center;
@@ -1225,6 +1251,25 @@ th[aria-sort="descending"] .c-table__sort-icon {
 .c-dialog__section-title {
   font-size: var(--text-lg);
   line-height: var(--leading-lg);
+}
+
+/* Título da seção com uma ação à direita (ex.: Copiar mensagem); quebra em telas estreitas */
+.c-dialog__section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Texto pronto para copiar: seleciona tudo num clique, caso a cópia automática falhe */
+.c-message-preview {
+  padding: var(--space-2);
+  border-left: var(--border-width-thick) solid var(--color-brand);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  white-space: pre-wrap;
+  user-select: all;
 }
 
 .c-dialog__footer {

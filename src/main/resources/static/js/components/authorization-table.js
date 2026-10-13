@@ -38,6 +38,33 @@ export function deadlineLevel(item) {
 }
 
 /**
+ * Antecedência da finalização frente ao prazo da ANS, em dias úteis.
+ * early > 0: antecedência; 0: no último dia; < 0: atraso.
+ * @param {{ requestDate?: string, finishDate?: string | null }} item
+ * @returns {{ used: number, early: number } | null} null para pedidos sem finishDate (finalizados antes da data existir)
+ */
+export function finishLead(item) {
+  if (!item.finishDate) return null;
+  const [y, m, d] = item.finishDate.split('-').map(Number);
+  const used = businessDaysSince(item.requestDate, new Date(y, m - 1, d)) ?? 0;
+  return { used, early: DEADLINE_LIMIT_BUSINESS_DAYS - used };
+}
+
+function businessDaysLabel(days) {
+  return `${days} ${days === 1 ? 'dia útil' : 'dias úteis'}`;
+}
+
+/**
+ * "5 dias úteis de antecedência" / "no último dia do prazo" / "2 dias úteis de atraso".
+ * @param {{ early: number }} lead
+ */
+export function finishLeadText({ early }) {
+  if (early > 0) return `${businessDaysLabel(early)} de antecedência`;
+  if (early === 0) return 'no último dia do prazo';
+  return `${businessDaysLabel(-early)} de atraso`;
+}
+
+/**
  * Ordena sem alterar a lista original. Empate: mais recente primeiro.
  * @param {object[]} items
  * @param {{ key: string, direction: 'asc' | 'desc' }} sort
@@ -93,13 +120,36 @@ function truncated(text) {
 }
 
 /**
- * Linha de baixo do Cadastro: dias úteis desde a solicitação ou "Finalizado".
- * @param {{ requestDate?: string, authorizationStatusName?: string }} item
+ * Linha de baixo do Cadastro: dias úteis desde a solicitação ou, se finalizada,
+ * a antecedência (ou atraso) frente ao prazo da ANS.
+ * @param {{ requestDate?: string, finishDate?: string | null, authorizationStatusName?: string }} item
  */
 function deadlineInfo(item) {
   const level = deadlineLevel(item);
   if (level === 'done') {
-    return el('span', { className: 'c-table__secondary c-table__deadline--done', text: 'Finalizado' });
+    const lead = finishLead(item);
+    if (!lead) {
+      return el('span', { className: 'c-table__secondary c-table__deadline--done', text: 'Finalizado' });
+    }
+
+    // Selo curto na célula; a frase completa fica no title (mouse) e no texto oculto (leitor de tela)
+    const isLate = lead.early < 0;
+    const days = Math.abs(lead.early);
+    const shortText = lead.early === 0
+      ? 'No limite do prazo'
+      : `${businessDaysLabel(days)} ${isLate ? 'de atraso' : 'antes do prazo'}`;
+    const fullText = lead.early === 0
+      ? `Autorizado em ${formatDate(item.finishDate)}, no último dia do prazo da ANS`
+      : `Autorizado em ${formatDate(item.finishDate)}, com ${finishLeadText(lead)} em relação ao prazo da ANS`;
+
+    return el('span', {
+      className: `c-table__lead c-table__lead--${isLate ? 'late' : 'on-time'}`,
+      attrs: { title: fullText },
+    }, [
+      el('span', { className: `c-icon c-icon--sm c-icon--${isLate ? 'alert' : 'check-circle'}`, attrs: { 'aria-hidden': 'true' } }),
+      el('span', { text: shortText, attrs: { 'aria-hidden': 'true' } }),
+      el('span', { className: 'u-visually-hidden', text: fullText }),
+    ]);
   }
 
   const days = businessDaysSince(item.requestDate);

@@ -339,6 +339,18 @@
         <dl class="c-description-list js-detail-list"></dl>
       </section>
 
+      <!-- Só para autorizações finalizadas; texto montado em authorization-detail-dialog.js -->
+      <section class="c-dialog__section js-beneficiary-message" aria-labelledby="detalhe-mensagem-title" hidden>
+        <div class="c-dialog__section-heading">
+          <h3 class="c-dialog__section-title" id="detalhe-mensagem-title">Mensagem para o beneficiário</h3>
+          <button class="c-button c-button--secondary c-button--sm js-copy-message" type="button">
+            <span class="c-icon c-icon--sm c-icon--copy" aria-hidden="true"></span>
+            Copiar mensagem
+          </button>
+        </div>
+        <p class="c-message-preview js-message-text"></p>
+      </section>
+
       <section class="c-dialog__section js-documents" aria-labelledby="detalhe-documentos-title">
         <h3 class="c-dialog__section-title" id="detalhe-documentos-title">
           Documentos <span class="js-documents-count"></span>
