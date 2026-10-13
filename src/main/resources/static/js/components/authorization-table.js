@@ -133,6 +133,22 @@ function renderRow(item) {
     'Detalhes',
   ]);
 
+  // Já finalizada não tem o que finalizar: o backend recusaria e a coluna Cadastro já diz "Finalizado"
+  const actions = [viewButton];
+  if (deadlineLevel(item) !== 'done') {
+    actions.push(el('button', {
+      className: 'c-button c-button--secondary c-button--sm js-finish',
+      attrs: {
+        type: 'button',
+        'data-request-id': String(item.id),
+        'aria-label': `Finalizar a autorização ${item.transactionNumber}`,
+      },
+    }, [
+      el('span', { className: 'c-icon c-icon--sm c-icon--check-circle', attrs: { 'aria-hidden': 'true' } }),
+      'Finalizar',
+    ]));
+  }
+
   return el('tr', {}, [
     el('td', { text: formatDate(item.requestDate) }),
     el('td', {}, [
@@ -159,7 +175,7 @@ function renderRow(item) {
         deadlineInfo(item),
       ]),
     ]),
-    el('td', { className: 'u-text-end' }, [viewButton]),
+    el('td', { className: 'u-text-end' }, [el('div', { className: 'c-row-actions' }, actions)]),
   ]);
 }
 
@@ -173,23 +189,30 @@ function renderSkeletonRow() {
 
 /**
  * @param {HTMLElement} root elemento que contém a tabela e a área de estado
- * @param {{ onSort: (key: string) => void, onView: (id: number, opener: HTMLElement) => void }} callbacks
+ * @param {{
+ *   onSort: (key: string) => void,
+ *   onView: (id: number, opener: HTMLElement) => void,
+ *   onFinish: (id: number, opener: HTMLElement) => void,
+ * }} callbacks
  */
-export function initAuthorizationTable(root, { onSort, onView }) {
+export function initAuthorizationTable(root, { onSort, onView, onFinish }) {
   const wrapper = root.querySelector('.js-table-wrapper');
   const tbody = root.querySelector('.js-table-body');
   const stateArea = root.querySelector('.js-table-state');
   const sortableHeaders = [...root.querySelectorAll('th[data-sort-key]')];
 
-  // Delegação: um listener para todos os botões de ordenação e de detalhe
+  // Delegação: um listener para todos os botões de ordenação e de ação das linhas
   root.querySelector('thead').addEventListener('click', (event) => {
     const button = event.target.closest('.js-sort');
     if (button) onSort(button.closest('th').dataset.sortKey);
   });
 
   tbody.addEventListener('click', (event) => {
-    const button = event.target.closest('.js-view');
-    if (button) onView(Number(button.dataset.requestId), button);
+    const viewButton = event.target.closest('.js-view');
+    if (viewButton) onView(Number(viewButton.dataset.requestId), viewButton);
+
+    const finishButton = event.target.closest('.js-finish');
+    if (finishButton && !finishButton.disabled) onFinish(Number(finishButton.dataset.requestId), finishButton);
   });
 
   function showTable() {
@@ -228,6 +251,13 @@ export function initAuthorizationTable(root, { onSort, onView }) {
       tbody.replaceChildren();
       stateArea.replaceChildren(node);
       stateArea.hidden = false;
+    },
+
+    /** Foca uma ação da linha; false se a linha não está na página atual (ex.: saiu do filtro). */
+    focusRowAction(id, selector) {
+      const button = tbody.querySelector(`${selector}[data-request-id="${id}"]`);
+      button?.focus();
+      return Boolean(button);
     },
 
     focusResults() {

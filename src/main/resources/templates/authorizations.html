@@ -138,7 +138,7 @@
   <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
 
   <main class="l-main js-main" id="conteudo" tabindex="-1">
-    <div class="l-container">
+    <div class="l-container l-container--wide">
       <header class="l-page-header l-page-header--with-action">
         <div class="l-page-header__text">
           <h1>Autorizações</h1>
@@ -231,15 +231,15 @@
           </form>
         </section>
 
-        <!-- Contagens preenchidas em authorizations.js; cada card some quando está zerado -->
-        <div class="l-deadline-cards js-deadline-cards" hidden>
-          <section class="c-card c-deadline-card c-deadline-card--warning js-card-warning" aria-labelledby="prazo-avencer-title" hidden>
+        <!-- Contagens preenchidas em authorizations.js; os cards ficam sempre visíveis, mesmo zerados -->
+        <div class="l-deadline-cards js-deadline-cards">
+          <section class="c-card c-deadline-card c-deadline-card--warning js-card-warning" aria-labelledby="prazo-avencer-title">
             <div class="c-deadline-card__header">
               <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
               <h3 class="c-deadline-card__title" id="prazo-avencer-title">Prestes a vencer</h3>
             </div>
             <p class="c-deadline-card__main">
-              <span class="c-deadline-card__count js-warning-count"></span>
+              <span class="c-deadline-card__count js-warning-count">—</span>
               <button class="c-deadline-card__action js-warning-action" type="button" aria-label="Ver autorizações prestes a vencer">
                 Ver autorizações
               </button>
@@ -247,13 +247,13 @@
             <p class="c-deadline-card__text">Não finalizadas há 8 ou 9 dias úteis.</p>
           </section>
 
-          <section class="c-card c-deadline-card c-deadline-card--overdue js-card-overdue" aria-labelledby="prazo-vencidas-title" hidden>
+          <section class="c-card c-deadline-card c-deadline-card--overdue js-card-overdue" aria-labelledby="prazo-vencidas-title">
             <div class="c-deadline-card__header">
               <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
               <h3 class="c-deadline-card__title" id="prazo-vencidas-title">Vencidas</h3>
             </div>
             <p class="c-deadline-card__main">
-              <span class="c-deadline-card__count js-overdue-count"></span>
+              <span class="c-deadline-card__count js-overdue-count">—</span>
               <button class="c-deadline-card__action js-overdue-action" type="button" aria-label="Ver autorizações vencidas">
                 Ver autorizações
               </button>
@@ -350,6 +350,28 @@
     <footer class="c-dialog__footer">
       <button class="c-button c-button--secondary js-detail-dismiss" type="button">Fechar</button>
     </footer>
+  </dialog>
+
+  <!-- Confirmação de finalização: mesmo confirm-dialog.js do settings.html; os dados do
+       pedido (js-finish-details) são preenchidos em authorizations.js antes de abrir -->
+  <dialog class="c-dialog c-dialog--confirm js-finish-dialog" aria-labelledby="finalizar-title" aria-describedby="finalizar-description">
+    <div class="c-dialog__form">
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title js-confirm-title" id="finalizar-title">Finalizar autorização?</h2>
+        </div>
+      </header>
+
+      <div class="c-dialog__body">
+        <p class="js-confirm-description" id="finalizar-description"></p>
+        <dl class="c-description-list js-finish-details"></dl>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-confirm-cancel" type="button">Cancelar</button>
+        <button class="c-button c-button--primary js-confirm-accept" type="button">Finalizar autorização</button>
+      </footer>
+    </div>
   </dialog>
 </body>
 </html>

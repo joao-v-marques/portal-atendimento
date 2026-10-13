@@ -167,6 +167,7 @@
 
   /* ── Layout ────────────────────────────── */
   --container-max:      80rem;  /* 1280px */
+  --container-wide-max: 120rem; /* 1920px — páginas de tabela larga */
   --container-form-max: 45rem;  /*  720px */
   --container-auth-max: 25rem;  /*  400px — card de login */
   --topbar-height:      4rem;   /*   64px */

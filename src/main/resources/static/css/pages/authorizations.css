@@ -2,6 +2,18 @@
    Autorizações — filtros e barra de resultados
    ========================================================================== */
 
+/* A tabela tem muitas colunas: a página usa mais da tela que o container padrão */
+.l-container--wide {
+  max-width: var(--container-wide-max);
+}
+
+/* Detalhes + Finalizar lado a lado, alinhados à direita */
+.c-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-half);
+}
+
 .l-filters {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -20,14 +32,11 @@
 }
 
 
-/* Cards de prazo centralizados na largura do conteúdo; lado a lado a partir de 600px */
+/* Cards de prazo na largura toda do conteúdo; lado a lado a partir de 600px */
 .l-deadline-cards {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
-  width: 100%;
-  max-width: 40rem;
-  margin-inline: auto;
 }
 
 .l-results {

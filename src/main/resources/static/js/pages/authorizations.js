@@ -1,5 +1,5 @@
 import { initAppShell } from '../components/app-shell.js';
-import { initAuthorizationDetailDialog } from '../components/authorization-detail-dialog.js';
+import { descriptionItem, initAuthorizationDetailDialog } from '../components/authorization-detail-dialog.js';
 import {
   FILTER_KEYS,
   applyFilters,
@@ -16,10 +16,13 @@ import {
   nextSort,
   sortItems,
 } from '../components/authorization-table.js';
+import { initConfirmDialog } from '../components/confirm-dialog.js';
 import { initPagination, paginate } from '../components/pagination.js';
 import { api } from '../core/api.js';
 import { el } from '../core/dom.js';
 import { handleError } from '../core/errors.js';
+import { businessDaysSince, formatDate, formatPhone } from '../core/format.js';
+import { notify } from '../core/notify.js';
 
 const numberFormatter = new Intl.NumberFormat('pt-BR');
 
@@ -29,6 +32,8 @@ const countEl = document.querySelector('.js-results-count');
 const deadlineCards = document.querySelector('.js-deadline-cards');
 const warningCard = deadlineCards.querySelector('.js-card-warning');
 const overdueCard = deadlineCards.querySelector('.js-card-overdue');
+const finishDialogEl = document.querySelector('.js-finish-dialog');
+const finishDetails = finishDialogEl.querySelector('.js-finish-details');
 
 // ── Estado (espelhado na query string) ───────────────────────
 
@@ -75,7 +80,12 @@ const table = initAuthorizationTable(results, {
   onView(id, opener) {
     detailDialog.open(state.itemsById.get(id), opener);
   },
+  onFinish(id, opener) {
+    finishAuthorization(state.itemsById.get(id), opener);
+  },
 });
+
+const finishDialog = initConfirmDialog(finishDialogEl);
 
 const pagination = initPagination(document.querySelector('.js-pagination'), {
   onChange(page) {
@@ -125,9 +135,8 @@ function renderDeadlineCards() {
 
   warningCard.querySelector('.js-warning-count').textContent = numberFormatter.format(warning);
   overdueCard.querySelector('.js-overdue-count').textContent = numberFormatter.format(overdue);
-  warningCard.hidden = warning === 0;
-  overdueCard.hidden = overdue === 0;
-  deadlineCards.hidden = warning === 0 && overdue === 0;
+  // Sempre visíveis, mesmo zerados; só some no erro de carga (renderLoadError) e volta no retry
+  deadlineCards.hidden = false;
 }
 
 function clearFiltersButton() {
@@ -189,6 +198,58 @@ function renderLoadError(error) {
     actions: [retry],
   }));
   handleError(error);
+}
+
+// ── Finalizar ────────────────────────────────────────────────
+
+function elapsedText(requestDate) {
+  const days = businessDaysSince(requestDate);
+  if (days === null) return '—';
+  return `${formatDate(requestDate)} (há ${days} ${days === 1 ? 'dia útil' : 'dias úteis'})`;
+}
+
+async function finishAuthorization(item, opener) {
+  if (!item) return;
+
+  finishDetails.replaceChildren(
+    descriptionItem('Nº da transação', item.transactionNumber),
+    descriptionItem('Beneficiário', item.beneficiaryName),
+    descriptionItem('Telefone', formatPhone(item.beneficiaryPhone)),
+    descriptionItem('Tipo', item.authorizationTypeName),
+    descriptionItem('Status atual', item.authorizationStatusName),
+    descriptionItem('Solicitada em', elapsedText(item.requestDate)),
+  );
+
+  const confirmed = await finishDialog.ask({
+    title: `Finalizar a autorização ${item.transactionNumber}?`,
+    description: `A autorização de ${item.beneficiaryName || 'beneficiário não informado'} será marcada como finalizada `
+      + 'e deixará de contar no prazo da ANS. Não é possível desfazer essa ação pelo portal.',
+    confirmLabel: 'Finalizar autorização',
+    opener,
+  });
+  if (!confirmed) return;
+
+  opener.disabled = true;
+  opener.classList.add('is-loading');
+  try {
+    const updated = await api.patch(`api/authorization-requests/${encodeURIComponent(item.id)}/finish`);
+
+    const index = state.items.findIndex((entry) => entry.id === updated.id);
+    if (index >= 0) state.items[index] = updated;
+    state.itemsById.set(updated.id, updated);
+
+    notify.success(`Autorização ${updated.transactionNumber} finalizada.`);
+    renderDeadlineCards();
+    render();
+
+    // O botão Finalizar sumiu da linha: o foco vai para o Detalhes dela ou, se a linha
+    // saiu do filtro (ex.: prazo vencido), para os resultados — senão cairia no <body>
+    if (!table.focusRowAction(updated.id, '.js-view')) table.focusResults();
+  } catch (error) {
+    opener.disabled = false;
+    opener.classList.remove('is-loading');
+    handleError(error);
+  }
 }
 
 // ── Dados ────────────────────────────────────────────────────

@@ -6,7 +6,7 @@ import { statusBadge } from './authorization-table.js';
 
 const SKELETON_DOCUMENTS = 2;
 
-function descriptionItem(term, value) {
+export function descriptionItem(term, value) {
   return el('div', { className: 'c-description-list__item' }, [
     el('dt', { className: 'c-description-list__term', text: term }),
     el('dd', { className: 'c-description-list__value', text: value || '—' }),
