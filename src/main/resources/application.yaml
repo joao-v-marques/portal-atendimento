@@ -4,7 +4,7 @@ server:
 
 app:
   jwt:
-    secret: ${JWT_SECRET}
+    secret: ${JWT_SECRET:chave_secreta_super_mega_hiper_secreta}
     expiration: ${JWT_EXPIRATION:86400000}
   security:
     # em produção defina COOKIE_SECURE=true (exige HTTPS)
