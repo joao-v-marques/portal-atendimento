@@ -25,6 +25,14 @@ function revealAdminItems(user) {
   document.querySelectorAll('.js-admin-only').forEach((node) => { node.hidden = false; });
 }
 
+// Controle de atendimentos: mesma ideia, liberado também para o colaborador do relacionamento
+const SERVICE_REQUEST_ROLES = ['ADMIN', 'EMPLOYEE_RELATIONSHIP'];
+
+function revealServiceRequestItems(user) {
+  if (!SERVICE_REQUEST_ROLES.includes(user.role)) return;
+  document.querySelectorAll('.js-service-request-only').forEach((node) => { node.hidden = false; });
+}
+
 function renderUser(chip, user) {
   const name = displayName(user);
   chip.querySelector('.js-user-avatar').textContent = getInitials(name);
@@ -32,6 +40,7 @@ function renderUser(chip, user) {
   chip.querySelector('.js-user-role').textContent = roleLabel(user.role);
   chip.removeAttribute('aria-busy');
   revealAdminItems(user);
+  revealServiceRequestItems(user);
 }
 
 function renderUserUnavailable(chip) {
@@ -163,6 +172,20 @@ function initSidebarCollapse({ button, sidebar }) {
   sync();
 }
 
+// ── Itens expansíveis da sidebar ─────────────────────────────
+
+// O estado inicial vem do HTML (aberto na página que está dentro do item); aqui só alterna
+function initNavToggles(sidebar) {
+  sidebar.querySelectorAll('.js-nav-toggle').forEach((button) => {
+    const list = document.getElementById(button.getAttribute('aria-controls'));
+    button.addEventListener('click', () => {
+      const isOpen = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!isOpen));
+      list.hidden = isOpen;
+    });
+  });
+}
+
 // ── Inicialização ────────────────────────────────────────────
 
 /**
@@ -188,6 +211,8 @@ export function initAppShell() {
     button: document.querySelector('.js-menu-open'),
     sidebar: document.querySelector('.js-sidebar'),
   });
+
+  initNavToggles(document.querySelector('.js-sidebar'));
 
   const userMenu = initDropdownMenu(document.querySelector('.js-user-menu'));
   initLogout(document.querySelector('.js-logout'), userMenu);

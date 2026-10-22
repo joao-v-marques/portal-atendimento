@@ -1,0 +1,127 @@
+/* ==========================================================================
+   Registrar atendimento — mobile-first
+   < 37.5em  : cards empilhados, 1 campo por linha, botões 100% (primário em cima)
+   ≥ 37.5em  : 2 campos por linha dentro de cada card, botões lado a lado
+   ≥ 64em    : Atendimento | Solicitante lado a lado (mesma altura), Descrição
+               na largura toda. Sem coluna lateral: o form ocupa toda a área
+   ========================================================================== */
+
+.l-new-sr {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+/* Card esticado até a altura do vizinho: o conteúdo fica no topo, sem espalhar as linhas */
+.l-new-sr .c-fieldset {
+  align-content: start;
+}
+
+/* Grade de campos dentro de cada card. align-items: start mantém os inputs de uma linha
+   com a mesma altura mesmo quando só um deles tem hint */
+.l-new-sr__fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-3) var(--space-2);
+}
+
+/* Subgrupo dentro do card ("Classificação", "Andamento"): título pequeno + divisória */
+.l-new-sr__group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.l-new-sr__group-title::after {
+  content: "";
+  flex: 1;
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.l-new-sr .c-textarea {
+  min-height: 12rem; /* ~8 linhas: a descrição é o campo mais longo do registro */
+}
+
+/* Campo em foco não fica escondido sob a topbar nem sob a barra de ações fixa */
+.l-new-sr :is(input, select, textarea) {
+  scroll-margin-block: calc(var(--topbar-height) + var(--space-2)) 7rem;
+}
+
+/* ── Cabeçalho do card: ícone + título (legend) + resumo ───── */
+
+.c-section-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-half);
+}
+
+.c-section-heading__icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+/* Alinha o resumo com o texto do título, não com o ícone (2.5rem + gap) */
+.c-section-heading__text {
+  margin: 0;
+  padding-left: calc(2.5rem + var(--space-2));
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ── Barra de ações: fixa no rodapé enquanto a pessoa preenche ─ */
+
+.l-new-sr__actions {
+  position: sticky;
+  bottom: var(--space-2);
+  z-index: var(--z-sticky);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+@media (min-width: 37.5em) {
+  .l-new-sr__fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-new-sr__fields-full {
+    grid-column: 1 / -1;
+  }
+
+  .l-new-sr__actions {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (min-width: 64em) {
+  .l-new-sr {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .l-new-sr__full {
+    grid-column: 1 / -1;
+  }
+}

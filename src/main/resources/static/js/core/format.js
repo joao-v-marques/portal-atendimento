@@ -11,6 +11,7 @@ const timeFormatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute
 const STATUS_VARIANTS = {
   'em análise': 'analysis',
   'finalizado': 'done',
+  'em andamento': 'analysis',
 };
 
 const FILE_TYPE_LABELS = {
@@ -22,6 +23,7 @@ const FILE_TYPE_LABELS = {
 const ROLE_LABELS = {
   ADMIN: 'Administrador',
   EMPLOYEE: 'Colaborador',
+  EMPLOYEE_RELATIONSHIP: 'Colaborador do relacionamento',
 };
 
 /**

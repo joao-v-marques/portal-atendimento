@@ -90,11 +90,17 @@
   justify-content: flex-end;
 }
 
-/* margin-top: auto empurra o rodapé para a base da sidebar (flex em coluna) */
+/* margin-top: auto empurra Configurações + rodapé para a base da sidebar (flex em coluna).
+   Fica no wrapper, não em cada item: duas margens auto dividiriam o espaço livre entre elas */
+.l-sidebar__bottom {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
 .l-sidebar__footer {
   display: grid;
   gap: var(--space-half);
-  margin-top: auto;
   padding: var(--space-2) var(--space-2) 0;
   border-top: var(--border-width) solid var(--color-structure-border);
 }
@@ -242,6 +248,15 @@
     position: relative;
     justify-content: center;
     padding-inline: 0;
+  }
+
+  /* Subitens sem recuo no trilho. Seletor mais específico porque components.css vem depois */
+  .has-sidebar-collapsed .c-nav__sublist .c-nav__link {
+    padding-inline: 0;
+  }
+
+  .has-sidebar-collapsed .c-nav__chevron {
+    display: none;
   }
 
   /* No trilho o rótulo da categoria não cabe: o grupo ganha uma divisória no lugar */

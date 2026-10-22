@@ -34,6 +34,10 @@ public class SecurityConfig {
                         .requestMatchers("/configuracoes").hasRole("ADMIN")
                         .requestMatchers("/api/users/**", "/api/user-roles/**").hasRole("ADMIN")
 
+                        // Controle de atendimentos: só ADMIN e colaboradores do relacionamento.
+                        // Não casa com /api/service-request-status etc.: os cadastros auxiliares seguem para qualquer logado
+                        .requestMatchers("/controlar-atendimentos", "/registrar-atendimento", "/api/service-requests/**").hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
+
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())

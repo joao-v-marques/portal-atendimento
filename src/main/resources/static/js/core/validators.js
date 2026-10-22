@@ -159,3 +159,110 @@ export function validateUser(values) {
   }
   return errors;
 }
+
+// ── Atendimentos ─────────────────────────────────────────────
+
+// Limites e mensagens espelhados de ServiceRequestRequest/ServiceRequestFinishRequest
+export const PROTOCOL_NUMBER_MAX = 20;
+export const CARD_NUMBER_MAX = 17;
+export const REQUESTER_NAME_MAX = 150;
+export const REQUESTER_PHONE_MAX = 20;
+export const REQUESTER_EMAIL_MAX = 150;
+
+function requiredId(message, invalidMessage) {
+  return (value) => {
+    if (!value) return message;
+    const id = Number(value);
+    if (!Number.isInteger(id) || id <= 0) return invalidMessage;
+    return null;
+  };
+}
+
+const SERVICE_REQUEST_FIELD_RULES = {
+  protocolNumber(value) {
+    const protocol = String(value ?? '').trim();
+    if (!protocol) return 'Preencha o número do protocolo';
+    if (protocol.length > PROTOCOL_NUMBER_MAX) return `O número do protocolo deve ter no máximo ${PROTOCOL_NUMBER_MAX} caracteres`;
+    return null;
+  },
+  categoryId: requiredId('Preencha a categoria do atendimento', 'Categoria do atendimento inválida'),
+  channelId: requiredId('Preencha o canal do atendimento', 'Canal do atendimento inválido'),
+  typeId: requiredId('Preencha o tipo do atendimento', 'Tipo do atendimento inválido'),
+  statusId: requiredId('Preencha o status do atendimento', 'Status do atendimento inválido'),
+  assignedToId: requiredId('Preencha o responsável pelo atendimento', 'Responsável pelo atendimento inválido'),
+  severityId(value) {
+    if (!value) return null; // opcional
+    const id = Number(value);
+    return Number.isInteger(id) && id > 0 ? null : 'Severidade inválida';
+  },
+  requesterCardNumber(value) {
+    const card = String(value ?? '').trim();
+    if (!card) return 'Preencha o número da carteirinha do solicitante';
+    if (!/^\d+$/.test(card)) return 'O número da carteirinha deve conter apenas números';
+    if (card.length > CARD_NUMBER_MAX) return `O número da carteirinha deve ter no máximo ${CARD_NUMBER_MAX} dígitos`;
+    return null;
+  },
+  requesterName(value) {
+    const name = String(value ?? '').trim();
+    if (!name) return 'Preencha o nome do solicitante';
+    if (name.length > REQUESTER_NAME_MAX) return `O nome do solicitante deve ter no máximo ${REQUESTER_NAME_MAX} caracteres`;
+    return null;
+  },
+  requesterCpf(value) {
+    const cpf = String(value ?? '').trim();
+    if (!cpf) return null; // opcional
+    return /^\d{11}$/.test(cpf) ? null : 'O CPF deve conter exatamente 11 números';
+  },
+  requesterBirthDate(value) {
+    if (!value) return null; // opcional
+    return value < todayIso() ? null : 'A data de nascimento deve ser uma data passada';
+  },
+  requesterPhone(value) {
+    const phone = String(value ?? '').trim();
+    if (phone.length > REQUESTER_PHONE_MAX) return `O telefone do solicitante deve ter no máximo ${REQUESTER_PHONE_MAX} caracteres`;
+    return null;
+  },
+  requesterEmail(value) {
+    const email = String(value ?? '').trim();
+    if (!email) return null; // opcional
+    if (email.length > REQUESTER_EMAIL_MAX) return `O e-mail do solicitante deve ter no máximo ${REQUESTER_EMAIL_MAX} caracteres`;
+    if (!EMAIL_PATTERN.test(email)) return 'Informe um e-mail válido';
+    return null;
+  },
+  description(value) {
+    return String(value ?? '').trim() ? null : 'Preencha a descrição do atendimento';
+  },
+  // Valor do input datetime-local ("AAAA-MM-DDTHH:mm"), no fuso do navegador
+  openedAt(value) {
+    if (!value) return null; // vazio mantém a data atual no backend
+    return new Date(value) <= new Date() ? null : 'A data de abertura não pode ser futura';
+  },
+  resolution(value) {
+    return String(value ?? '').trim() ? null : 'Preencha a resolução do atendimento';
+  },
+};
+
+/**
+ * Valida um campo do atendimento.
+ * @param {string} name nome do campo (= propriedade do DTO)
+ * @param {unknown} value
+ * @returns {string | null} mensagem de erro ou null
+ */
+export function validateServiceRequestField(name, value) {
+  const rule = SERVICE_REQUEST_FIELD_RULES[name];
+  return rule ? rule(value) : null;
+}
+
+/**
+ * Valida só as chaves presentes em `values`: a edição e a finalização mandam campos diferentes.
+ * @param {Record<string, unknown>} values
+ * @returns {Record<string, string>} erros por campo (vazio = válido)
+ */
+export function validateServiceRequest(values) {
+  const errors = {};
+  for (const name of Object.keys(values)) {
+    const message = validateServiceRequestField(name, values[name]);
+    if (message) errors[name] = message;
+  }
+  return errors;
+}

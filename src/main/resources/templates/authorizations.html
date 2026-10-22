@@ -113,44 +113,82 @@
           <span class="c-nav__label">Início</span>
         </a>
       </li>
+      <!-- Item expansível: o botão alterna a sublista (app-shell.js). Vem aberto na página que está dentro dele -->
+      <li>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="nav-sub-autorizacoes"
+        >
+          <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+          <span class="c-nav__label">Autorizações</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-autorizacoes">
+          <li>
+            <a class="c-nav__link" href="autorizacoes" aria-current="page">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Autorizações</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="lancar-autorizacao">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Lançar autorização</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <!-- Só para ADMIN e colaborador do relacionamento: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-service-request-only" hidden>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-sub-atendimentos"
+        >
+          <span class="c-icon c-icon--file-text" aria-hidden="true"></span>
+          <span class="c-nav__label">Registro Atendimentos</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-atendimentos" hidden>
+          <li>
+            <a class="c-nav__link" href="controlar-atendimentos">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Controlar Atendimentos</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="registrar-atendimento">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Registrar Atendimento</span>
+            </a>
+          </li>
+        </ul>
+      </li>
     </ul>
 
-    <!-- Categoria: título + lista rotulada por ele. Nova categoria = novo c-nav__group com id próprio -->
-    <div class="c-nav__group">
-      <p class="c-nav__group-title" id="nav-grupo-autorizacoes">Autorizações</p>
-      <ul class="c-nav__list" aria-labelledby="nav-grupo-autorizacoes">
-        <li>
-          <a class="c-nav__link" href="autorizacoes" aria-current="page">
-            <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
-            <span class="c-nav__label">Autorizações</span>
-          </a>
-        </li>
-        <li>
-          <a class="c-nav__link" href="lancar-autorizacao">
-            <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
-            <span class="c-nav__label">Lançar autorização</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+    <!-- Base da sidebar: Configurações é sempre o último item, logo acima do rodapé -->
+    <div class="l-sidebar__bottom">
+      <!-- Só para ADMIN: revelado em app-shell.js. Esconder é UX; a proteção real é o backend -->
+      <div class="c-nav__group js-admin-only" hidden>
+        <p class="c-nav__group-title" id="nav-grupo-administracao">Administração</p>
+        <ul class="c-nav__list" aria-labelledby="nav-grupo-administracao">
+          <li>
+            <a class="c-nav__link" href="configuracoes">
+              <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+              <span class="c-nav__label">Configurações</span>
+            </a>
+          </li>
+        </ul>
+      </div>
 
-    <!-- Só para ADMIN: revelado em app-shell.js. Esconder é UX; a proteção real é o backend -->
-    <div class="c-nav__group js-admin-only" hidden>
-      <p class="c-nav__group-title" id="nav-grupo-administracao">Administração</p>
-      <ul class="c-nav__list" aria-labelledby="nav-grupo-administracao">
-        <li>
-          <a class="c-nav__link" href="configuracoes">
-            <span class="c-icon c-icon--settings" aria-hidden="true"></span>
-            <span class="c-nav__label">Configurações</span>
-          </a>
-        </li>
-      </ul>
+      <footer class="l-sidebar__footer">
+        <p class="l-sidebar__footer-title">Portal de Atendimento</p>
+        <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>
+      </footer>
     </div>
-
-    <footer class="l-sidebar__footer">
-      <p class="l-sidebar__footer-title">Portal de Atendimento</p>
-      <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>
-    </footer>
   </nav>
 
   <div class="l-shell__backdrop js-menu-backdrop" hidden></div>

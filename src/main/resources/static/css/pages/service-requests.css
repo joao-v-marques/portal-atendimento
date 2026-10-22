@@ -1,0 +1,85 @@
+/* ==========================================================================
+   Controlar atendimentos — filtros, resultados e formulário de edição
+   Filtros e resultados seguem o layout da tela de autorizações
+   ========================================================================== */
+
+/* Ações da linha lado a lado, alinhadas à direita */
+.c-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-half);
+}
+
+.l-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.l-filters__actions {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sem filtro ativo o "Limpar filtros" fica hidden; a célula vazia abriria uma linha em branco no grid */
+.l-filters__actions:not(:has(> :not([hidden]))) {
+  display: none;
+}
+
+.l-results {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.l-results__count {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Campos do modal de edição: uma coluna no celular, duas a partir de 600px */
+.l-form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+/* Até 4 botões no rodapé do detalhe: quebram em vez de espremer */
+.l-detail-footer {
+  flex-wrap: wrap;
+}
+
+@media (min-width: 37.5em) {
+  .l-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-filters__search {
+    grid-column: 1 / -1;
+  }
+
+  /* Com campos lado a lado, reserva a altura do label (linha + gap do c-field) para o botão alinhar */
+  .l-filters__actions::before {
+    content: "";
+    height: calc(var(--leading-sm) + var(--space-1));
+  }
+
+  .l-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-form-grid__full {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 60em) {
+  .l-filters {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .l-filters__search {
+    grid-column: span 2;
+  }
+}

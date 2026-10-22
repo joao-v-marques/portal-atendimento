@@ -277,6 +277,13 @@
   padding: 0 var(--space-2);
 }
 
+/* Textarea: usar junto com .c-input (herda borda, foco e erro); só ajusta altura e respiro */
+.c-textarea {
+  min-height: calc(var(--control-height-md) * 3);
+  padding-block: var(--space-1);
+  resize: vertical;
+}
+
 /* ==========================================================================
    Select (mesmo visual do input, seta própria)
    ========================================================================== */
@@ -878,6 +885,35 @@
   box-shadow: inset var(--space-half) 0 0 var(--color-brand-detail), var(--focus-ring-inverse);
 }
 
+/* Item expansível: <button> com o visual de .c-nav__link */
+.c-nav__toggle {
+  width: 100%;
+  border: 0;
+  font-family: inherit;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+}
+
+.c-nav__chevron {
+  --icon: url("img/icon-chevron-down.svg");
+  margin-left: auto;
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.c-nav__toggle[aria-expanded="true"] .c-nav__chevron {
+  transform: rotate(180deg);
+}
+
+/* Recuo indica que os subitens pertencem ao item acima */
+.c-nav__sublist {
+  margin-top: var(--space-half);
+}
+
+.c-nav__sublist .c-nav__link {
+  padding-left: var(--space-4);
+}
+
 /* ==========================================================================
    Skeleton
    ========================================================================== */
@@ -1323,6 +1359,12 @@ th[aria-sort="descending"] .c-table__sort-icon {
   background: var(--color-surface-muted);
   white-space: pre-wrap;
   user-select: all;
+}
+
+/* Texto livre digitado pelo usuário (descrição, resolução): mantém as quebras de linha */
+.c-dialog__text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .c-dialog__footer {

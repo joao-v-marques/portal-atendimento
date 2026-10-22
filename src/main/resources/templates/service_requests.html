@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controlar atendimentos · Portal de Atendimento</title>
+
+  <!-- Antes do CSS: aplica a sidebar retraída antes da 1ª pintura (chave igual à de app-shell.js) -->
+  <script>try { if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('has-sidebar-collapsed'); } catch (e) {}</script>
+
+  <!-- Antes do CSS: aplica o tema salvo (ou o do sistema) antes da 1ª pintura (chave igual à de core/theme.js) -->
+  <script>try { var t = localStorage.getItem('theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/vendor/notyf.min.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/notyf-theme.css">
+  <link rel="stylesheet" href="css/pages/service-requests.css">
+
+  <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
+  <script src="js/vendor/notyf.min.js" defer></script>
+  <script type="module" src="js/pages/service-requests.js"></script>
+</head>
+<body class="l-shell">
+  <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="l-topbar js-topbar">
+    <button
+      class="c-icon-button c-icon-button--inverse l-topbar__menu-button js-menu-open"
+      type="button"
+      aria-controls="menu-principal"
+      aria-expanded="false"
+      aria-label="Abrir menu"
+      title="Abrir menu"
+    >
+      <span class="c-icon c-icon--menu" aria-hidden="true"></span>
+    </button>
+
+    <a class="c-brand c-brand--logo" href="home">
+      <img class="c-brand__logo" src="css/img/logo-2023.png" alt="Unimed S. S. do Paraíso – Início" width="529" height="195">
+    </a>
+
+    <div class="l-topbar__spacer"></div>
+
+    <div class="l-topbar__actions">
+      <div class="c-user-menu js-user-menu">
+        <button
+          class="c-user-menu__trigger js-dropdown-trigger"
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="menu-usuario"
+        >
+          <span class="c-user-chip js-user-chip" aria-busy="true">
+            <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
+            <span class="c-user-chip__text">
+              <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
+              <span class="c-user-chip__role js-user-role"></span>
+            </span>
+          </span>
+          <span class="c-icon c-icon--sm c-user-menu__chevron" aria-hidden="true"></span>
+        </button>
+
+        <ul class="c-user-menu__list js-dropdown-list" id="menu-usuario" role="menu" aria-label="Opções da conta" hidden>
+          <li role="none">
+            <!-- Estado em aria-checked (core/theme.js); data-keep-open: o menu fica aberto para ver a troca -->
+            <button class="c-user-menu__item js-theme-toggle" type="button" role="menuitemcheckbox" aria-checked="false" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--moon" aria-hidden="true"></span>
+              <span>Tema escuro</span>
+              <span class="c-switch" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="c-user-menu__item js-own-password-open" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--key" aria-hidden="true"></span>
+              Alterar senha
+            </button>
+          </li>
+          <li class="c-user-menu__separator" role="separator"></li>
+          <li role="none">
+            <button class="c-user-menu__item js-logout" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
+              <span class="js-logout-label">Sair</span>
+            </button>
+          </li>
+          <!-- Novas opções: outro <li role="none"> com <button> ou <a> role="menuitem" tabindex="-1" -->
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <nav class="l-sidebar js-sidebar" id="menu-principal" aria-label="Menu principal">
+    <div class="l-sidebar__header">
+      <button
+        class="c-icon-button c-icon-button--inverse js-menu-close"
+        type="button"
+        aria-label="Fechar menu"
+        title="Fechar menu"
+      >
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <ul class="c-nav__list">
+      <li>
+        <a class="c-nav__link" href="home">
+          <span class="c-icon c-icon--home" aria-hidden="true"></span>
+          <span class="c-nav__label">Início</span>
+        </a>
+      </li>
+      <!-- Item expansível: o botão alterna a sublista (app-shell.js). Vem aberto na página que está dentro dele -->
+      <li>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-sub-autorizacoes"
+        >
+          <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+          <span class="c-nav__label">Autorizações</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-autorizacoes" hidden>
+          <li>
+            <a class="c-nav__link" href="autorizacoes">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Autorizações</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="lancar-autorizacao">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Lançar autorização</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <!-- Só para ADMIN e colaborador do relacionamento: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-service-request-only" hidden>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="nav-sub-atendimentos"
+        >
+          <span class="c-icon c-icon--file-text" aria-hidden="true"></span>
+          <span class="c-nav__label">Registro Atendimentos</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-atendimentos">
+          <li>
+            <a class="c-nav__link" href="controlar-atendimentos" aria-current="page">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Controlar Atendimentos</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="registrar-atendimento">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Registrar Atendimento</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <!-- Base da sidebar: Configurações é sempre o último item, logo acima do rodapé -->
+    <div class="l-sidebar__bottom">
+      <!-- Só para ADMIN: revelado em app-shell.js. Esconder é UX; a proteção real é o backend -->
+      <div class="c-nav__group js-admin-only" hidden>
+        <p class="c-nav__group-title" id="nav-grupo-administracao">Administração</p>
+        <ul class="c-nav__list" aria-labelledby="nav-grupo-administracao">
+          <li>
+            <a class="c-nav__link" href="configuracoes">
+              <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+              <span class="c-nav__label">Configurações</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <footer class="l-sidebar__footer">
+        <p class="l-sidebar__footer-title">Portal de Atendimento</p>
+        <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>
+      </footer>
+    </div>
+  </nav>
+
+  <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
+
+  <main class="l-main js-main" id="conteudo" tabindex="-1">
+    <div class="l-container">
+      <header class="l-page-header">
+        <h1>Controlar atendimentos</h1>
+        <p class="l-page-header__subtitle">Consulte, edite, finalize e reabra os atendimentos registrados.</p>
+      </header>
+
+      <div class="l-section">
+        <section class="c-card" aria-labelledby="filtros-title">
+          <h2 class="u-visually-hidden" id="filtros-title">Filtros</h2>
+
+          <form class="l-filters js-filters" role="search" aria-labelledby="filtros-title" novalidate>
+            <div class="c-field l-filters__search">
+              <label class="c-field__label" for="filtro-busca">Buscar</label>
+              <div class="c-search">
+                <input
+                  class="c-input"
+                  id="filtro-busca"
+                  name="busca"
+                  type="search"
+                  aria-describedby="filtro-busca-hint"
+                  placeholder="Protocolo, solicitante ou carteirinha"
+                  autocomplete="off"
+                  spellcheck="false"
+                >
+              </div>
+              <p class="u-visually-hidden" id="filtro-busca-hint">Atalho: tecla barra para focar a busca.</p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-status">Status</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="filtro-status" name="status" disabled>
+                  <option value="">Todos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-tipo">Tipo</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="filtro-tipo" name="tipo" disabled>
+                  <option value="">Todos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-categoria">Categoria</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="filtro-categoria" name="categoria" disabled>
+                  <option value="">Todas</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-responsavel">Responsável</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="filtro-responsavel" name="responsavel" disabled>
+                  <option value="">Todos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-de">Aberto de</label>
+              <input class="c-input" id="filtro-de" name="de" type="date" aria-describedby="filtro-de-error">
+              <p class="c-field__error" id="filtro-de-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-ate">Aberto até</label>
+              <input class="c-input" id="filtro-ate" name="ate" type="date" aria-describedby="filtro-ate-error">
+              <p class="c-field__error" id="filtro-ate-error" hidden></p>
+            </div>
+
+            <div class="l-filters__actions">
+              <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
+                <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                Limpar filtros
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section class="l-results js-results" aria-labelledby="resultados-title">
+          <h2 class="u-visually-hidden" id="resultados-title">Resultados</h2>
+          <p class="l-results__count js-results-count" aria-live="polite"></p>
+
+          <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-title" tabindex="0">
+            <table class="c-table">
+              <caption class="u-visually-hidden">Atendimentos registrados</caption>
+              <thead>
+                <tr>
+                  <th scope="col" data-sort-key="openedAt" aria-sort="descending">
+                    <button class="c-table__sort js-sort" type="button">Abertura <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col" data-sort-key="protocolNumber" aria-sort="none">
+                    <button class="c-table__sort js-sort" type="button">Protocolo <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col" data-sort-key="requesterName" aria-sort="none">
+                    <button class="c-table__sort js-sort" type="button">Solicitante <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col">Categoria / Tipo</th>
+                  <th scope="col">Severidade</th>
+                  <th scope="col" data-sort-key="statusName" aria-sort="none">
+                    <button class="c-table__sort js-sort" type="button">Status <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col" data-sort-key="assignedToName" aria-sort="none">
+                    <button class="c-table__sort js-sort" type="button">Responsável <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                  </th>
+                  <th scope="col" class="u-text-end">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="js-table-body"></tbody>
+            </table>
+          </div>
+
+          <div class="js-table-state" tabindex="-1" hidden></div>
+
+          <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+            <p class="c-pagination__summary js-page-summary"></p>
+            <div class="c-pagination__controls">
+              <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                Anterior
+              </button>
+              <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+              <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                Próxima
+                <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+              </button>
+            </div>
+          </nav>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Detalhe do atendimento. As ações do rodapé fecham este modal e abrem a próxima etapa
+       em sequência, nunca empilhadas (guia 11.7) -->
+  <dialog class="c-dialog js-detail-dialog" aria-labelledby="detalhe-title">
+    <header class="c-dialog__header">
+      <div class="c-dialog__heading">
+        <h2 class="c-dialog__title" id="detalhe-title">
+          Atendimento <span class="c-dialog__title-code js-detail-code"></span>
+        </h2>
+        <div class="js-detail-status"></div>
+      </div>
+      <button class="c-icon-button js-detail-dismiss" type="button" aria-label="Fechar detalhes" title="Fechar detalhes">
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <div class="c-dialog__body">
+      <section class="c-dialog__section" aria-labelledby="detalhe-chamado-title">
+        <h3 class="c-dialog__section-title" id="detalhe-chamado-title">Chamado</h3>
+        <dl class="c-description-list js-detail-request"></dl>
+      </section>
+
+      <section class="c-dialog__section" aria-labelledby="detalhe-solicitante-title">
+        <h3 class="c-dialog__section-title" id="detalhe-solicitante-title">Solicitante</h3>
+        <dl class="c-description-list js-detail-requester"></dl>
+      </section>
+
+      <section class="c-dialog__section" aria-labelledby="detalhe-descricao-title">
+        <h3 class="c-dialog__section-title" id="detalhe-descricao-title">Descrição</h3>
+        <p class="c-dialog__text js-detail-description"></p>
+      </section>
+
+      <!-- Só quando há resolução (finalizado, ou reaberto depois de finalizar) -->
+      <section class="c-dialog__section js-detail-resolution-section" aria-labelledby="detalhe-resolucao-title" hidden>
+        <h3 class="c-dialog__section-title" id="detalhe-resolucao-title">Resolução</h3>
+        <p class="c-dialog__text js-detail-resolution"></p>
+      </section>
+
+      <section class="c-dialog__section" aria-labelledby="detalhe-prazos-title">
+        <h3 class="c-dialog__section-title" id="detalhe-prazos-title">Responsável e prazos</h3>
+        <dl class="c-description-list js-detail-deadlines"></dl>
+      </section>
+
+      <section class="c-dialog__section" aria-labelledby="detalhe-auditoria-title">
+        <h3 class="c-dialog__section-title" id="detalhe-auditoria-title">Auditoria</h3>
+        <dl class="c-description-list js-detail-audit"></dl>
+      </section>
+    </div>
+
+    <footer class="c-dialog__footer l-detail-footer">
+      <button class="c-button c-button--secondary js-detail-dismiss" type="button">Fechar</button>
+      <button class="c-button c-button--secondary js-detail-edit" type="button">
+        <span class="c-icon c-icon--sm c-icon--pencil" aria-hidden="true"></span>
+        Editar
+      </button>
+      <button class="c-button c-button--secondary js-detail-reopen" type="button">Reabrir</button>
+      <button class="c-button c-button--primary js-detail-finish" type="button">
+        <span class="c-icon c-icon--sm c-icon--check-circle" aria-hidden="true"></span>
+        Finalizar
+      </button>
+    </footer>
+  </dialog>
+
+  <!-- Editar atendimento (PUT). Ids atendimento-*: o form.js acha o erro por `${field.id}-error` -->
+  <dialog class="c-dialog c-dialog--form js-edit-dialog" aria-labelledby="editar-title">
+    <!-- Sem method="dialog": ele fecharia no submit e descartaria a requisição -->
+    <form class="c-dialog__form js-edit-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title" id="editar-title">
+            Editar atendimento <span class="c-dialog__title-code js-edit-code"></span>
+          </h2>
+          <p class="c-field__hint">Campos com * são obrigatórios.</p>
+        </div>
+        <button class="c-icon-button js-edit-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <fieldset class="c-fieldset">
+          <legend class="c-fieldset__legend">Chamado</legend>
+          <div class="l-form-grid">
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-protocolo">
+                Protocolo <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <input class="c-input" id="atendimento-protocolo" name="protocolNumber" type="text" maxlength="20" required autocomplete="off" spellcheck="false" aria-describedby="atendimento-protocolo-error">
+              <p class="c-field__error" id="atendimento-protocolo-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-abertura">Aberto em</label>
+              <input class="c-input" id="atendimento-abertura" name="openedAt" type="datetime-local" aria-describedby="atendimento-abertura-error">
+              <p class="c-field__error" id="atendimento-abertura-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-categoria">
+                Categoria <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="atendimento-categoria" name="categoryId" required aria-describedby="atendimento-categoria-error"></select>
+              </div>
+              <p class="c-field__error" id="atendimento-categoria-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-canal">
+                Canal <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="atendimento-canal" name="channelId" required aria-describedby="atendimento-canal-error"></select>
+              </div>
+              <p class="c-field__error" id="atendimento-canal-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-tipo">
+                Tipo <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="atendimento-tipo" name="typeId" required aria-describedby="atendimento-tipo-error"></select>
+              </div>
+              <p class="c-field__error" id="atendimento-tipo-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-severidade">Severidade</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="atendimento-severidade" name="severityId" aria-describedby="atendimento-severidade-error"></select>
+              </div>
+              <p class="c-field__error" id="atendimento-severidade-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-status">
+                Status <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="atendimento-status" name="statusId" required aria-describedby="atendimento-status-hint atendimento-status-error"></select>
+              </div>
+              <p class="c-field__hint" id="atendimento-status-hint">Para finalizar, use o botão Finalizar.</p>
+              <p class="c-field__error" id="atendimento-status-error" hidden></p>
+            </div>
+
+            <!-- Só leitura: a lista de usuários é exclusiva do ADMIN; o PUT reenvia o responsável atual -->
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-responsavel">Responsável</label>
+              <input class="c-input js-edit-assignee" id="atendimento-responsavel" type="text" readonly aria-describedby="atendimento-responsavel-hint">
+              <p class="c-field__hint" id="atendimento-responsavel-hint">O responsável não pode ser alterado por aqui.</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="c-fieldset">
+          <legend class="c-fieldset__legend">Solicitante</legend>
+          <div class="l-form-grid">
+            <div class="c-field l-form-grid__full">
+              <label class="c-field__label" for="atendimento-nome">
+                Nome <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <input class="c-input" id="atendimento-nome" name="requesterName" type="text" maxlength="150" required autocomplete="off" aria-describedby="atendimento-nome-error">
+              <p class="c-field__error" id="atendimento-nome-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-carteirinha">
+                Carteirinha <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <input class="c-input u-text-mono" id="atendimento-carteirinha" name="requesterCardNumber" type="text" inputmode="numeric" maxlength="17" required autocomplete="off" aria-describedby="atendimento-carteirinha-error">
+              <p class="c-field__error" id="atendimento-carteirinha-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-cpf">CPF</label>
+              <input class="c-input u-text-mono" id="atendimento-cpf" name="requesterCpf" type="text" inputmode="numeric" maxlength="11" autocomplete="off" aria-describedby="atendimento-cpf-hint atendimento-cpf-error">
+              <p class="c-field__hint" id="atendimento-cpf-hint">Só os 11 números.</p>
+              <p class="c-field__error" id="atendimento-cpf-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-nascimento">Data de nascimento</label>
+              <input class="c-input" id="atendimento-nascimento" name="requesterBirthDate" type="date" aria-describedby="atendimento-nascimento-error">
+              <p class="c-field__error" id="atendimento-nascimento-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="atendimento-telefone">Telefone</label>
+              <input class="c-input" id="atendimento-telefone" name="requesterPhone" type="tel" maxlength="20" autocomplete="off" aria-describedby="atendimento-telefone-error">
+              <p class="c-field__error" id="atendimento-telefone-error" hidden></p>
+            </div>
+
+            <div class="c-field l-form-grid__full">
+              <label class="c-field__label" for="atendimento-email">E-mail</label>
+              <input class="c-input" id="atendimento-email" name="requesterEmail" type="email" maxlength="150" autocomplete="off" spellcheck="false" aria-describedby="atendimento-email-error">
+              <p class="c-field__error" id="atendimento-email-error" hidden></p>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="c-field">
+          <label class="c-field__label" for="atendimento-descricao">
+            Descrição <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <textarea class="c-input c-textarea" id="atendimento-descricao" name="description" rows="5" required aria-describedby="atendimento-descricao-error"></textarea>
+          <p class="c-field__error" id="atendimento-descricao-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-edit-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary" type="submit">Salvar alterações</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Finalizar (PATCH /finish): a resolução é obrigatória -->
+  <dialog class="c-dialog c-dialog--form js-finish-dialog" aria-labelledby="finalizar-title" aria-describedby="finalizar-description">
+    <form class="c-dialog__form js-finish-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title" id="finalizar-title">
+            Finalizar atendimento <span class="c-dialog__title-code js-finish-code"></span>
+          </h2>
+          <p class="c-field__hint" id="finalizar-description">O atendimento fica com status Finalizado. Se precisar, ele pode ser reaberto depois.</p>
+        </div>
+        <button class="c-icon-button js-finish-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <dl class="c-description-list js-finish-details"></dl>
+
+        <div class="c-field">
+          <label class="c-field__label" for="finalizar-resolucao">
+            Resolução <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <textarea class="c-input c-textarea" id="finalizar-resolucao" name="resolution" rows="5" required aria-describedby="finalizar-resolucao-hint finalizar-resolucao-error"></textarea>
+          <p class="c-field__hint" id="finalizar-resolucao-hint">Descreva o que foi feito para resolver o atendimento.</p>
+          <p class="c-field__error" id="finalizar-resolucao-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-finish-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary" type="submit">Finalizar atendimento</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Reabrir (PATCH /reopen): mesmo confirm-dialog.js das outras telas -->
+  <dialog class="c-dialog c-dialog--confirm js-reopen-dialog" aria-labelledby="reabrir-title" aria-describedby="reabrir-description">
+    <div class="c-dialog__form">
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title js-confirm-title" id="reabrir-title">Reabrir atendimento?</h2>
+        </div>
+      </header>
+
+      <div class="c-dialog__body">
+        <p class="js-confirm-description" id="reabrir-description"></p>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-confirm-cancel" type="button">Cancelar</button>
+        <button class="c-button c-button--primary js-confirm-accept" type="button">Reabrir atendimento</button>
+      </footer>
+    </div>
+  </dialog>
+  <!-- Alterar a própria senha (menu do usuário). Ids minha-senha-* para não colidir com o
+       diálogo de redefinir senha das configurações -->
+  <dialog class="c-dialog c-dialog--form js-own-password-dialog" aria-labelledby="minha-senha-title" aria-describedby="minha-senha-description">
+    <form class="c-dialog__form js-own-password-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title" id="minha-senha-title">Alterar senha</h2>
+          <p class="c-field__hint" id="minha-senha-description">Depois de salvar, você sai do portal e entra de novo com a nova senha.</p>
+        </div>
+        <button class="c-icon-button js-own-password-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-nova">
+            Nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <div class="c-input-group">
+            <input
+              class="c-input"
+              id="minha-senha-nova"
+              name="password"
+              type="password"
+              required
+              autocomplete="new-password"
+              aria-describedby="minha-senha-nova-hint minha-senha-nova-error minha-senha-caps-lock"
+            >
+            <button
+              class="c-input-group__action js-own-password-toggle"
+              type="button"
+              aria-controls="minha-senha-nova"
+              aria-pressed="false"
+              aria-label="Mostrar senha"
+              title="Mostrar senha"
+            >
+              <span class="c-input-group__icon" aria-hidden="true"></span>
+            </button>
+          </div>
+          <p class="c-field__hint" id="minha-senha-nova-hint">De 4 a 72 caracteres.</p>
+          <p class="c-field__hint c-field__hint--warning js-own-password-caps-lock" id="minha-senha-caps-lock" aria-live="polite"></p>
+          <p class="c-field__error" id="minha-senha-nova-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-confirmacao">
+            Repetir a nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input"
+            id="minha-senha-confirmacao"
+            name="passwordConfirm"
+            type="password"
+            required
+            autocomplete="new-password"
+            aria-describedby="minha-senha-confirmacao-error"
+          >
+          <p class="c-field__error" id="minha-senha-confirmacao-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-own-password-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary" type="submit">Alterar senha</button>
+      </footer>
+    </form>
+  </dialog>
+</body>
+</html>

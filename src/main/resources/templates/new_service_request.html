@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registrar atendimento · Portal de Atendimento</title>
+
+  <!-- Antes do CSS: aplica a sidebar retraída antes da 1ª pintura (chave igual à de app-shell.js) -->
+  <script>try { if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('has-sidebar-collapsed'); } catch (e) {}</script>
+
+  <!-- Antes do CSS: aplica o tema salvo (ou o do sistema) antes da 1ª pintura (chave igual à de core/theme.js) -->
+  <script>try { var t = localStorage.getItem('theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/vendor/notyf.min.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/notyf-theme.css">
+  <link rel="stylesheet" href="css/pages/new-service-request.css">
+
+  <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
+  <script src="js/vendor/notyf.min.js" defer></script>
+  <script type="module" src="js/pages/new-service-request.js"></script>
+</head>
+<body class="l-shell">
+  <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="l-topbar js-topbar">
+    <button
+      class="c-icon-button c-icon-button--inverse l-topbar__menu-button js-menu-open"
+      type="button"
+      aria-controls="menu-principal"
+      aria-expanded="false"
+      aria-label="Abrir menu"
+      title="Abrir menu"
+    >
+      <span class="c-icon c-icon--menu" aria-hidden="true"></span>
+    </button>
+
+    <a class="c-brand c-brand--logo" href="home">
+      <img class="c-brand__logo" src="css/img/logo-2023.png" alt="Unimed S. S. do Paraíso – Início" width="529" height="195">
+    </a>
+
+    <div class="l-topbar__spacer"></div>
+
+    <div class="l-topbar__actions">
+      <div class="c-user-menu js-user-menu">
+        <button
+          class="c-user-menu__trigger js-dropdown-trigger"
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="menu-usuario"
+        >
+          <span class="c-user-chip js-user-chip" aria-busy="true">
+            <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
+            <span class="c-user-chip__text">
+              <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
+              <span class="c-user-chip__role js-user-role"></span>
+            </span>
+          </span>
+          <span class="c-icon c-icon--sm c-user-menu__chevron" aria-hidden="true"></span>
+        </button>
+
+        <ul class="c-user-menu__list js-dropdown-list" id="menu-usuario" role="menu" aria-label="Opções da conta" hidden>
+          <li role="none">
+            <!-- Estado em aria-checked (core/theme.js); data-keep-open: o menu fica aberto para ver a troca -->
+            <button class="c-user-menu__item js-theme-toggle" type="button" role="menuitemcheckbox" aria-checked="false" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--moon" aria-hidden="true"></span>
+              <span>Tema escuro</span>
+              <span class="c-switch" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="c-user-menu__item js-own-password-open" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--key" aria-hidden="true"></span>
+              Alterar senha
+            </button>
+          </li>
+          <li class="c-user-menu__separator" role="separator"></li>
+          <li role="none">
+            <button class="c-user-menu__item js-logout" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
+              <span class="js-logout-label">Sair</span>
+            </button>
+          </li>
+          <!-- Novas opções: outro <li role="none"> com <button> ou <a> role="menuitem" tabindex="-1" -->
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <nav class="l-sidebar js-sidebar" id="menu-principal" aria-label="Menu principal">
+    <div class="l-sidebar__header">
+      <button
+        class="c-icon-button c-icon-button--inverse js-menu-close"
+        type="button"
+        aria-label="Fechar menu"
+        title="Fechar menu"
+      >
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <ul class="c-nav__list">
+      <li>
+        <a class="c-nav__link" href="home">
+          <span class="c-icon c-icon--home" aria-hidden="true"></span>
+          <span class="c-nav__label">Início</span>
+        </a>
+      </li>
+      <!-- Item expansível: o botão alterna a sublista (app-shell.js). Vem aberto na página que está dentro dele -->
+      <li>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-sub-autorizacoes"
+        >
+          <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+          <span class="c-nav__label">Autorizações</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-autorizacoes" hidden>
+          <li>
+            <a class="c-nav__link" href="autorizacoes">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Autorizações</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="lancar-autorizacao">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Lançar autorização</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <!-- Só para ADMIN e colaborador do relacionamento: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-service-request-only" hidden>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="nav-sub-atendimentos"
+        >
+          <span class="c-icon c-icon--file-text" aria-hidden="true"></span>
+          <span class="c-nav__label">Registro Atendimentos</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-atendimentos">
+          <li>
+            <a class="c-nav__link" href="controlar-atendimentos">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Controlar Atendimentos</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="registrar-atendimento" aria-current="page">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Registrar Atendimento</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <!-- Base da sidebar: Configurações é sempre o último item, logo acima do rodapé -->
+    <div class="l-sidebar__bottom">
+      <!-- Só para ADMIN: revelado em app-shell.js. Esconder é UX; a proteção real é o backend -->
+      <div class="c-nav__group js-admin-only" hidden>
+        <p class="c-nav__group-title" id="nav-grupo-administracao">Administração</p>
+        <ul class="c-nav__list" aria-labelledby="nav-grupo-administracao">
+          <li>
+            <a class="c-nav__link" href="configuracoes">
+              <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+              <span class="c-nav__label">Configurações</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <footer class="l-sidebar__footer">
+        <p class="l-sidebar__footer-title">Portal de Atendimento</p>
+        <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>
+      </footer>
+    </div>
+  </nav>
+
+  <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
+
+  <main class="l-main js-main" id="conteudo" tabindex="-1">
+    <div class="l-container">
+      <nav class="c-breadcrumb" aria-label="Trilha">
+        <ol class="c-breadcrumb__list">
+          <li class="c-breadcrumb__item"><a class="c-breadcrumb__link" href="controlar-atendimentos">Controlar atendimentos</a></li>
+          <li class="c-breadcrumb__item" aria-current="page">Registrar atendimento</li>
+        </ol>
+      </nav>
+
+      <header class="l-page-header">
+        <h1>Registrar atendimento</h1>
+        <p class="l-page-header__subtitle">Preencha os dados do atendimento e do solicitante. Campos com <span aria-hidden="true">*</span><span class="u-visually-hidden">asterisco</span> são obrigatórios.</p>
+      </header>
+
+      <form class="l-new-sr js-service-request-form" novalidate>
+        <section class="c-card c-form-panel">
+          <fieldset class="c-fieldset" aria-describedby="registro-atendimento-resumo">
+            <legend class="c-fieldset__legend c-section-heading">
+              <span class="c-section-heading__icon" aria-hidden="true"><span class="c-icon c-icon--clipboard"></span></span>
+              Dados do atendimento
+            </legend>
+            <p class="c-section-heading__text" id="registro-atendimento-resumo">Identificação, classificação e responsável.</p>
+
+            <div class="l-new-sr__fields">
+              <div class="c-field">
+                <label class="c-field__label" for="registro-protocolo">
+                  Nº do protocolo <span class="c-field__required" aria-hidden="true">*</span>
+                </label>
+                <input
+                  class="c-input c-input--code"
+                  id="registro-protocolo"
+                  name="protocolNumber"
+                  type="text"
+                  aria-describedby="registro-protocolo-hint registro-protocolo-error"
+                  maxlength="20"
+                  autocomplete="off"
+                  spellcheck="false"
+                  required
+                >
+                <p class="c-field__hint" id="registro-protocolo-hint">Até 20 caracteres. Não pode repetir.</p>
+                <p class="c-field__error" id="registro-protocolo-error" hidden></p>
+              </div>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-abertura">
+                  Data de abertura
+                </label>
+                <input
+                  class="c-input c-input--code"
+                  id="registro-abertura"
+                  name="openedAt"
+                  type="datetime-local"
+                  aria-describedby="registro-abertura-hint registro-abertura-error"
+                >
+                <p class="c-field__hint" id="registro-abertura-hint">Em branco, usa a data e a hora do registro.</p>
+                <p class="c-field__error" id="registro-abertura-error" hidden></p>
+              </div>
+              <p class="l-new-sr__group-title l-new-sr__fields-full">Classificação</p>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-categoria">
+                  Categoria <span class="c-field__required" aria-hidden="true">*</span>
+                </label>
+                <div class="c-select-wrapper">
+                  <select
+                    class="c-select"
+                    id="registro-categoria"
+                    name="categoryId"
+                    aria-describedby="registro-categoria-error"
+                    required
+                    disabled
+                  >
+                    <option value="">Carregando…</option>
+                  </select>
+                </div>
+                <p class="c-field__error" id="registro-categoria-error" hidden></p>
+              </div>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-canal">
+                  Canal <span class="c-field__required" aria-hidden="true">*</span>
+                </label>
+                <div class="c-select-wrapper">
+                  <select
+                    class="c-select"
+                    id="registro-canal"
+                    name="channelId"
+                    aria-describedby="registro-canal-error"
+                    required
+                    disabled
+                  >
+                    <option value="">Carregando…</option>
+                  </select>
+                </div>
+                <p class="c-field__error" id="registro-canal-error" hidden></p>
+              </div>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-tipo">
+                  Tipo <span class="c-field__required" aria-hidden="true">*</span>
+                </label>
+                <div class="c-select-wrapper">
+                  <select
+                    class="c-select"
+                    id="registro-tipo"
+                    name="typeId"
+                    aria-describedby="registro-tipo-error"
+                    required
+                    disabled
+                  >
+                    <option value="">Carregando…</option>
+                  </select>
+                </div>
+                <p class="c-field__error" id="registro-tipo-error" hidden></p>
+              </div>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-severidade">
+                  Severidade
+                </label>
+                <div class="c-select-wrapper">
+                  <select
+                    class="c-select"
+                    id="registro-severidade"
+                    name="severityId"
+                    aria-describedby="registro-severidade-error"
+                    disabled
+                  >
+                    <option value="">Carregando…</option>
+                  </select>
+                </div>
+                <p class="c-field__error" id="registro-severidade-error" hidden></p>
+              </div>
+              <p class="l-new-sr__group-title l-new-sr__fields-full">Andamento</p>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-status">
+                  Status <span class="c-field__required" aria-hidden="true">*</span>
+                </label>
+                <div class="c-select-wrapper">
+                  <select
+                    class="c-select"
+                    id="registro-status"
+                    name="statusId"
+                    aria-describedby="registro-status-hint registro-status-error"
+                    required
+                    disabled
+                  >
+                    <option value="">Carregando…</option>
+                  </select>
+                </div>
+                <p class="c-field__hint" id="registro-status-hint">A finalização é feita em Controlar atendimentos.</p>
+                <p class="c-field__error" id="registro-status-error" hidden></p>
+              </div>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-responsavel">
+                  Responsável <span class="c-field__required" aria-hidden="true">*</span>
+                </label>
+                <div class="c-select-wrapper">
+                  <select
+                    class="c-select"
+                    id="registro-responsavel"
+                    name="assignedToId"
+                    aria-describedby="registro-responsavel-hint registro-responsavel-error"
+                    required
+                    disabled
+                  >
+                    <option value="">Carregando…</option>
+                  </select>
+                </div>
+                <p class="c-field__hint" id="registro-responsavel-hint">Colaboradores do relacionamento ativos.</p>
+                <p class="c-field__error" id="registro-responsavel-error" hidden></p>
+              </div>
+            </div>
+          </fieldset>
+        </section>
+
+        <section class="c-card c-form-panel">
+          <fieldset class="c-fieldset" aria-describedby="registro-solicitante-resumo">
+            <legend class="c-fieldset__legend c-section-heading">
+              <span class="c-section-heading__icon" aria-hidden="true"><span class="c-icon c-icon--users"></span></span>
+              Dados do solicitante
+            </legend>
+            <p class="c-section-heading__text" id="registro-solicitante-resumo">Quem entrou em contato.</p>
+
+            <div class="l-new-sr__fields">
+              <div class="c-field l-new-sr__fields-full">
+                <label class="c-field__label" for="registro-nome">
+                  Nome do solicitante <span class="c-field__required" aria-hidden="true">*</span>
+                </label>
+                <input
+                  class="c-input"
+                  id="registro-nome"
+                  name="requesterName"
+                  type="text"
+                  aria-describedby="registro-nome-error"
+                  maxlength="150"
+                  autocomplete="off"
+                  required
+                >
+                <p class="c-field__error" id="registro-nome-error" hidden></p>
+              </div>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-carteirinha">
+                  Nº da carteirinha <span class="c-field__required" aria-hidden="true">*</span>
+                </label>
+                <input
+                  class="c-input c-input--code"
+                  id="registro-carteirinha"
+                  name="requesterCardNumber"
+                  type="text"
+                  aria-describedby="registro-carteirinha-hint registro-carteirinha-error"
+                  inputmode="numeric"
+                  maxlength="17"
+                  autocomplete="off"
+                  spellcheck="false"
+                  required
+                >
+                <p class="c-field__hint" id="registro-carteirinha-hint">Só números, até 17 dígitos.</p>
+                <p class="c-field__error" id="registro-carteirinha-error" hidden></p>
+              </div>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-cpf">
+                  CPF
+                </label>
+                <input
+                  class="c-input c-input--code"
+                  id="registro-cpf"
+                  name="requesterCpf"
+                  type="text"
+                  aria-describedby="registro-cpf-hint registro-cpf-error"
+                  inputmode="numeric"
+                  maxlength="11"
+                  autocomplete="off"
+                  spellcheck="false"
+                >
+                <p class="c-field__hint" id="registro-cpf-hint">11 números, sem pontos ou traço.</p>
+                <p class="c-field__error" id="registro-cpf-error" hidden></p>
+              </div>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-nascimento">
+                  Data de nascimento
+                </label>
+                <input
+                  class="c-input c-input--code"
+                  id="registro-nascimento"
+                  name="requesterBirthDate"
+                  type="date"
+                  aria-describedby="registro-nascimento-error"
+                >
+                <p class="c-field__error" id="registro-nascimento-error" hidden></p>
+              </div>
+              <div class="c-field">
+                <label class="c-field__label" for="registro-telefone">
+                  Telefone
+                </label>
+                <input
+                  class="c-input c-input--code"
+                  id="registro-telefone"
+                  name="requesterPhone"
+                  type="tel"
+                  aria-describedby="registro-telefone-hint registro-telefone-error"
+                  inputmode="tel"
+                  placeholder="(11) 91234-5678"
+                  autocomplete="off"
+                >
+                <p class="c-field__hint" id="registro-telefone-hint">Com DDD.</p>
+                <p class="c-field__error" id="registro-telefone-error" hidden></p>
+              </div>
+              <div class="c-field l-new-sr__fields-full">
+                <label class="c-field__label" for="registro-email">
+                  E-mail
+                </label>
+                <input
+                  class="c-input"
+                  id="registro-email"
+                  name="requesterEmail"
+                  type="email"
+                  aria-describedby="registro-email-error"
+                  maxlength="150"
+                  autocomplete="off"
+                  spellcheck="false"
+                >
+                <p class="c-field__error" id="registro-email-error" hidden></p>
+              </div>
+            </div>
+          </fieldset>
+        </section>
+
+        <section class="c-card c-form-panel l-new-sr__full">
+          <fieldset class="c-fieldset" aria-describedby="registro-descricao-resumo">
+            <legend class="c-fieldset__legend c-section-heading">
+              <span class="c-section-heading__icon" aria-hidden="true"><span class="c-icon c-icon--file-text"></span></span>
+              Descrição
+            </legend>
+            <p class="c-section-heading__text" id="registro-descricao-resumo">O que foi pedido ou relatado pelo solicitante.</p>
+
+            <div class="l-new-sr__fields">
+              <div class="c-field l-new-sr__fields-full">
+                <label class="c-field__label" for="registro-descricao">
+                  Descrição do atendimento <span class="c-field__required" aria-hidden="true">*</span>
+                </label>
+                <textarea class="c-input c-textarea" id="registro-descricao" name="description" rows="8" required aria-describedby="registro-descricao-error"></textarea>
+                <p class="c-field__error" id="registro-descricao-error" hidden></p>
+              </div>
+            </div>
+          </fieldset>
+        </section>
+
+        <!-- Fixa no rodapé da tela enquanto a pessoa preenche (new-service-request.css) -->
+        <div class="l-new-sr__actions l-new-sr__full">
+          <button class="c-button c-button--primary" type="submit">
+            <span class="c-icon c-icon--sm c-icon--file-plus" aria-hidden="true"></span>
+            Registrar atendimento
+          </button>
+          <a class="c-button c-button--secondary" href="controlar-atendimentos">Cancelar</a>
+          <p class="u-visually-hidden js-submit-status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </main>
+  <!-- Alterar a própria senha (menu do usuário). Ids minha-senha-* para não colidir com o
+       diálogo de redefinir senha das configurações -->
+  <dialog class="c-dialog c-dialog--form js-own-password-dialog" aria-labelledby="minha-senha-title" aria-describedby="minha-senha-description">
+    <form class="c-dialog__form js-own-password-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title" id="minha-senha-title">Alterar senha</h2>
+          <p class="c-field__hint" id="minha-senha-description">Depois de salvar, você sai do portal e entra de novo com a nova senha.</p>
+        </div>
+        <button class="c-icon-button js-own-password-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-nova">
+            Nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <div class="c-input-group">
+            <input
+              class="c-input"
+              id="minha-senha-nova"
+              name="password"
+              type="password"
+              required
+              autocomplete="new-password"
+              aria-describedby="minha-senha-nova-hint minha-senha-nova-error minha-senha-caps-lock"
+            >
+            <button
+              class="c-input-group__action js-own-password-toggle"
+              type="button"
+              aria-controls="minha-senha-nova"
+              aria-pressed="false"
+              aria-label="Mostrar senha"
+              title="Mostrar senha"
+            >
+              <span class="c-input-group__icon" aria-hidden="true"></span>
+            </button>
+          </div>
+          <p class="c-field__hint" id="minha-senha-nova-hint">De 4 a 72 caracteres.</p>
+          <p class="c-field__hint c-field__hint--warning js-own-password-caps-lock" id="minha-senha-caps-lock" aria-live="polite"></p>
+          <p class="c-field__error" id="minha-senha-nova-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-confirmacao">
+            Repetir a nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input"
+            id="minha-senha-confirmacao"
+            name="passwordConfirm"
+            type="password"
+            required
+            autocomplete="new-password"
+            aria-describedby="minha-senha-confirmacao-error"
+          >
+          <p class="c-field__error" id="minha-senha-confirmacao-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-own-password-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary" type="submit">Alterar senha</button>
+      </footer>
+    </form>
+  </dialog>
+</body>
+</html>
