@@ -96,9 +96,10 @@ public class ServiceRequestService {
 
     @Transactional
     public ServiceRequestResponse update(Integer id, ServiceRequestRequest request, Integer currentUserId) {
-        ServiceRequest serviceRequest = findByIdOrThrow(id);
+        ServiceRequest serviceRequest = serviceRequestRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum chamado com o ID informado."));
 
-        if (isFinished(serviceRequest)) {
+        if (STATUS_FINISHED_ID.equals(serviceRequest.getStatus().getId())) {
             throw new IllegalArgumentException("Não é possível editar um chamado finalizado. Reabra o chamado antes de editar.");
         }
 
@@ -116,7 +117,11 @@ public class ServiceRequestService {
             serviceRequest.setOpenedAt(request.openedAt());
         }
 
-        markUpdated(serviceRequest, currentUserId);
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado usuário com o ID informado."));
+
+        serviceRequest.setUpdatedBy(currentUser);
+        serviceRequest.setUpdatedAt(OffsetDateTime.now());
 
         return toResponse(serviceRequest);
     }
@@ -124,16 +129,25 @@ public class ServiceRequestService {
     // PATCH para finalizar: único caminho para o status Finalizado, para closed_at e resolution ficarem consistentes
     @Transactional
     public ServiceRequestResponse finish(Integer id, ServiceRequestFinishRequest request, Integer currentUserId) {
-        ServiceRequest serviceRequest = findByIdOrThrow(id);
+        ServiceRequest serviceRequest = serviceRequestRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum chamado com o ID informado."));
 
-        if (isFinished(serviceRequest)) {
+        if (STATUS_FINISHED_ID.equals(serviceRequest.getStatus().getId())) {
             throw new IllegalArgumentException("Este chamado já está finalizado.");
         }
 
-        serviceRequest.setStatus(findSystemStatus(STATUS_FINISHED_ID));
+        // Status de sistema: não passa pela regra de inativo, senão o fluxo travaria
+        ServiceRequestStatus finishedStatus = serviceRequestStatusRepository.findById(STATUS_FINISHED_ID)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado o status de atendimento com o ID " + STATUS_FINISHED_ID + "."));
+
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado usuário com o ID informado."));
+
+        serviceRequest.setStatus(finishedStatus);
         serviceRequest.setResolution(request.resolution().trim());
         serviceRequest.setClosedAt(OffsetDateTime.now());
-        markUpdated(serviceRequest, currentUserId);
+        serviceRequest.setUpdatedBy(currentUser);
+        serviceRequest.setUpdatedAt(OffsetDateTime.now());
 
         return toResponse(serviceRequest);
     }
@@ -141,15 +155,24 @@ public class ServiceRequestService {
     // PATCH para reabrir: volta para Em andamento e limpa o closed_at. A resolução é mantida até a próxima finalização
     @Transactional
     public ServiceRequestResponse reopen(Integer id, Integer currentUserId) {
-        ServiceRequest serviceRequest = findByIdOrThrow(id);
+        ServiceRequest serviceRequest = serviceRequestRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum chamado com o ID informado."));
 
-        if (!isFinished(serviceRequest)) {
+        if (!STATUS_FINISHED_ID.equals(serviceRequest.getStatus().getId())) {
             throw new IllegalArgumentException("Só é possível reabrir um chamado finalizado.");
         }
 
-        serviceRequest.setStatus(findSystemStatus(STATUS_IN_PROGRESS_ID));
+        // Status de sistema: não passa pela regra de inativo, senão o fluxo travaria
+        ServiceRequestStatus inProgressStatus = serviceRequestStatusRepository.findById(STATUS_IN_PROGRESS_ID)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado o status de atendimento com o ID " + STATUS_IN_PROGRESS_ID + "."));
+
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado usuário com o ID informado."));
+
+        serviceRequest.setStatus(inProgressStatus);
         serviceRequest.setClosedAt(null);
-        markUpdated(serviceRequest, currentUserId);
+        serviceRequest.setUpdatedBy(currentUser);
+        serviceRequest.setUpdatedAt(OffsetDateTime.now());
 
         return toResponse(serviceRequest);
     }
@@ -160,99 +183,79 @@ public class ServiceRequestService {
             throw new IllegalArgumentException("Para finalizar o chamado, use a finalização do chamado.");
         }
 
-        serviceRequest.setCategory(resolveCategory(request.categoryId(), serviceRequest.getCategory()));
-        serviceRequest.setChannel(resolveChannel(request.channelId(), serviceRequest.getChannel()));
-        serviceRequest.setType(resolveType(request.typeId(), serviceRequest.getType()));
-        serviceRequest.setSeverity(resolveSeverity(request.severityId(), serviceRequest.getSeverity()));
-        serviceRequest.setStatus(resolveStatus(request.statusId(), serviceRequest.getStatus()));
+        ServiceRequestCategory category = serviceRequest.getCategory();
+        if (category == null || !category.getId().equals(request.categoryId())) {
+            category = serviceRequestCategoryRepository.findById(request.categoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma categoria de atendimento com o ID informado."));
+
+            if (!category.isActive()) {
+                throw new IllegalArgumentException("Não é possível usar uma categoria de atendimento inativa.");
+            }
+
+            serviceRequest.setCategory(category);
+        }
+
+        ServiceRequestChannel channel = serviceRequest.getChannel();
+        if (channel == null || !channel.getId().equals(request.channelId())) {
+            channel = serviceRequestChannelRepository.findById(request.channelId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum canal de atendimento com o ID informado."));
+
+            if (!channel.isActive()) {
+                throw new IllegalArgumentException("Não é possível usar um canal de atendimento inativo.");
+            }
+
+            serviceRequest.setChannel(channel);
+        }
+
+        ServiceRequestType type = serviceRequest.getType();
+        if (type == null || !type.getId().equals(request.typeId())) {
+            type = serviceRequestTypeRepository.findById(request.typeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum tipo de atendimento com o ID informado."));
+
+            if (!type.isActive()) {
+                throw new IllegalArgumentException("Não é possível usar um tipo de atendimento inativo.");
+            }
+
+            serviceRequest.setType(type);
+        }
+
+        // Severidade é opcional: id nulo remove a severidade do chamado
+        ServiceRequestSeverity severity = serviceRequest.getSeverity();
+        if (request.severityId() == null) {
+            serviceRequest.setSeverity(null);
+        } else if (severity == null || !severity.getId().equals(request.severityId())) {
+            severity = serviceRequestSeverityRepository.findById(request.severityId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma severidade com o ID informado."));
+
+            if (!severity.isActive()) {
+                throw new IllegalArgumentException("Não é possível usar uma severidade inativa.");
+            }
+
+            serviceRequest.setSeverity(severity);
+        }
+
+        ServiceRequestStatus status = serviceRequest.getStatus();
+        if (status == null || !status.getId().equals(request.statusId())) {
+            status = serviceRequestStatusRepository.findById(request.statusId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum status de atendimento com o ID informado."));
+
+            if (!status.isActive()) {
+                throw new IllegalArgumentException("Não é possível usar um status de atendimento inativo.");
+            }
+
+            serviceRequest.setStatus(status);
+        }
+
         serviceRequest.setAssignedTo(resolveAssignee(request.assignedToId(), serviceRequest.getAssignedTo()));
 
         serviceRequest.setRequesterCardNumber(request.requesterCardNumber().trim());
         serviceRequest.setRequesterName(request.requesterName().trim());
-        serviceRequest.setRequesterCpf(blankToNull(request.requesterCpf()));
+        // Campos opcionais em branco viram null, para não gravar "" no banco
+        serviceRequest.setRequesterCpf(request.requesterCpf() == null || request.requesterCpf().isBlank() ? null : request.requesterCpf().trim());
         serviceRequest.setRequesterBirthDate(request.requesterBirthDate());
-        serviceRequest.setRequesterPhone(blankToNull(request.requesterPhone()));
-        serviceRequest.setRequesterEmail(blankToNull(request.requesterEmail()));
+        serviceRequest.setRequesterPhone(request.requesterPhone() == null || request.requesterPhone().isBlank() ? null : request.requesterPhone().trim());
+        serviceRequest.setRequesterEmail(request.requesterEmail() == null || request.requesterEmail().isBlank() ? null : request.requesterEmail().trim());
         serviceRequest.setDescription(request.description().trim());
-    }
-
-    private ServiceRequestCategory resolveCategory(Integer id, ServiceRequestCategory current) {
-        if (current != null && current.getId().equals(id)) {
-            return current;
-        }
-
-        ServiceRequestCategory category = serviceRequestCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma categoria de atendimento com o ID informado."));
-
-        if (!category.isActive()) {
-            throw new IllegalArgumentException("Não é possível usar uma categoria de atendimento inativa.");
-        }
-
-        return category;
-    }
-
-    private ServiceRequestChannel resolveChannel(Integer id, ServiceRequestChannel current) {
-        if (current != null && current.getId().equals(id)) {
-            return current;
-        }
-
-        ServiceRequestChannel channel = serviceRequestChannelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum canal de atendimento com o ID informado."));
-
-        if (!channel.isActive()) {
-            throw new IllegalArgumentException("Não é possível usar um canal de atendimento inativo.");
-        }
-
-        return channel;
-    }
-
-    private ServiceRequestType resolveType(Integer id, ServiceRequestType current) {
-        if (current != null && current.getId().equals(id)) {
-            return current;
-        }
-
-        ServiceRequestType type = serviceRequestTypeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum tipo de atendimento com o ID informado."));
-
-        if (!type.isActive()) {
-            throw new IllegalArgumentException("Não é possível usar um tipo de atendimento inativo.");
-        }
-
-        return type;
-    }
-
-    // Severidade é opcional: id nulo remove a severidade do chamado
-    private ServiceRequestSeverity resolveSeverity(Integer id, ServiceRequestSeverity current) {
-        if (id == null) {
-            return null;
-        }
-        if (current != null && current.getId().equals(id)) {
-            return current;
-        }
-
-        ServiceRequestSeverity severity = serviceRequestSeverityRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma severidade com o ID informado."));
-
-        if (!severity.isActive()) {
-            throw new IllegalArgumentException("Não é possível usar uma severidade inativa.");
-        }
-
-        return severity;
-    }
-
-    private ServiceRequestStatus resolveStatus(Integer id, ServiceRequestStatus current) {
-        if (current != null && current.getId().equals(id)) {
-            return current;
-        }
-
-        ServiceRequestStatus status = serviceRequestStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum status de atendimento com o ID informado."));
-
-        if (!status.isActive()) {
-            throw new IllegalArgumentException("Não é possível usar um status de atendimento inativo.");
-        }
-
-        return status;
     }
 
     private User resolveAssignee(Integer id, User current) {
@@ -271,38 +274,6 @@ public class ServiceRequestService {
         }
 
         return assignee;
-    }
-
-    // Status de sistema (Em andamento/Finalizado): não passa pela regra de inativo, senão o fluxo travaria
-    private ServiceRequestStatus findSystemStatus(Integer id) {
-        return serviceRequestStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado o status de atendimento com o ID " + id + "."));
-    }
-
-    private boolean isFinished(ServiceRequest serviceRequest) {
-        return STATUS_FINISHED_ID.equals(serviceRequest.getStatus().getId());
-    }
-
-    private void markUpdated(ServiceRequest serviceRequest, Integer currentUserId) {
-        User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado usuário com o ID informado."));
-
-        serviceRequest.setUpdatedBy(currentUser);
-        serviceRequest.setUpdatedAt(OffsetDateTime.now());
-    }
-
-    private ServiceRequest findByIdOrThrow(Integer id) {
-        return serviceRequestRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum chamado com o ID informado."));
-    }
-
-    // Campos opcionais em branco viram null, para não gravar "" no banco
-    private String blankToNull(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-
-        return value.trim();
     }
 
     private ServiceRequestResponse toResponse(ServiceRequest serviceRequest) {
