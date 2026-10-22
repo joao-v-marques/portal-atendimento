@@ -6,6 +6,7 @@ import com.joao_v_marques.portal_atendimento.service_requests.category.ServiceRe
 import com.joao_v_marques.portal_atendimento.service_requests.category.ServiceRequestCategoryRepository;
 import com.joao_v_marques.portal_atendimento.service_requests.channel.ServiceRequestChannel;
 import com.joao_v_marques.portal_atendimento.service_requests.channel.ServiceRequestChannelRepository;
+import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestAssigneeResponse;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestFinishRequest;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestRequest;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestResponse;
@@ -66,6 +67,15 @@ public class ServiceRequestService {
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum chamado com o ID informado."));
 
         return toResponse(serviceRequest);
+    }
+
+    // GET dos usuários que podem ser responsáveis: colaboradores do relacionamento ativos
+    @Transactional(readOnly = true)
+    public List<ServiceRequestAssigneeResponse> findAssignees() {
+        return userRepository.findActiveByRoleName(ASSIGNEE_ROLE)
+                .stream()
+                .map(user -> new ServiceRequestAssigneeResponse(user.getId(), user.getName(), user.getUsername()))
+                .toList();
     }
 
     @Transactional

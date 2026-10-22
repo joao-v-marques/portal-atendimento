@@ -1,6 +1,7 @@
 package com.joao_v_marques.portal_atendimento.service_requests.service_request;
 
 import com.joao_v_marques.portal_atendimento.security.UserPrincipal;
+import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestAssigneeResponse;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestFinishRequest;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestRequest;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestResponse;
@@ -27,6 +28,12 @@ public class ServiceRequestController {
     @GetMapping
     public List<ServiceRequestResponse> findAll() {
         return serviceRequestService.findAll();
+    }
+
+    // GET dos usuários que podem ser responsáveis por um chamado
+    @GetMapping("/assignees")
+    public List<ServiceRequestAssigneeResponse> findAssignees() {
+        return serviceRequestService.findAssignees();
     }
 
     // GET de um chamado pelo ID
