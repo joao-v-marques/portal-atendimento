@@ -1,4 +1,4 @@
-import { displayName, initAppShell } from '../components/app-shell.js';
+import { AUTHORIZATION_ROLES, displayName, initAppShell } from '../components/app-shell.js';
 import { deadlineLevel } from '../components/authorization-table.js';
 import { api } from '../core/api.js';
 import { showLoginReasonFromUrl } from '../core/auth.js';
@@ -56,8 +56,8 @@ initAppShell()
   .then((user) => {
     const name = firstName(user);
     renderGreeting(name ? `Olá, ${name}` : 'Olá!');
+    // Indicadores são de autorização: o colaborador do relacionamento não vê nem consulta (a API daria 403)
+    if (AUTHORIZATION_ROLES.includes(user.role)) loadMetrics();
   })
   // O shell já notificou o erro; aqui só evita o skeleton eterno
   .catch(() => renderGreeting('Olá!'));
-
-loadMetrics();

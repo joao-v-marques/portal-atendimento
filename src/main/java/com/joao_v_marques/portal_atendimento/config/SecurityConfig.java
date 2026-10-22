@@ -38,6 +38,10 @@ public class SecurityConfig {
                         // Não casa com /api/service-request-status etc.: os cadastros auxiliares seguem para qualquer logado
                         .requestMatchers("/controlar-atendimentos", "/registrar-atendimento", "/api/service-requests/**").hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
 
+                        // Autorizações: o colaborador do relacionamento só usa Início e o registro de atendimentos
+                        .requestMatchers("/autorizacoes", "/lancar-autorizacao",
+                                "/api/authorization-requests/**", "/api/authorization-status/**", "/api/authorization-types/**").hasAnyRole("ADMIN", "EMPLOYEE")
+
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())

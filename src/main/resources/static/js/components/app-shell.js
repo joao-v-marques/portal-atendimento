@@ -33,6 +33,14 @@ function revealServiceRequestItems(user) {
   document.querySelectorAll('.js-service-request-only').forEach((node) => { node.hidden = false; });
 }
 
+// Autorizações: o colaborador do relacionamento não acessa (backend: hasAnyRole("ADMIN", "EMPLOYEE"))
+export const AUTHORIZATION_ROLES = ['ADMIN', 'EMPLOYEE'];
+
+function revealAuthorizationItems(user) {
+  if (!AUTHORIZATION_ROLES.includes(user.role)) return;
+  document.querySelectorAll('.js-authorization-only').forEach((node) => { node.hidden = false; });
+}
+
 function renderUser(chip, user) {
   const name = displayName(user);
   chip.querySelector('.js-user-avatar').textContent = getInitials(name);
@@ -41,6 +49,7 @@ function renderUser(chip, user) {
   chip.removeAttribute('aria-busy');
   revealAdminItems(user);
   revealServiceRequestItems(user);
+  revealAuthorizationItems(user);
 }
 
 function renderUserUnavailable(chip) {

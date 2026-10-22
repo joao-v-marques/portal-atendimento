@@ -114,7 +114,8 @@
         </a>
       </li>
       <!-- Item expansível: o botão alterna a sublista (app-shell.js). Vem aberto na página que está dentro dele -->
-      <li>
+      <!-- Só para ADMIN e EMPLOYEE: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-authorization-only" hidden>
         <button
           class="c-nav__link c-nav__toggle js-nav-toggle"
           type="button"
@@ -200,7 +201,37 @@
         <p class="l-page-header__subtitle js-today"></p>
       </header>
 
-      <section class="l-section" aria-labelledby="indicadores-title">
+      <!-- Atalhos do registro de atendimentos: revelados em app-shell.js para ADMIN e colaborador do relacionamento -->
+      <section class="l-section js-service-request-only" aria-labelledby="atendimentos-title" hidden>
+        <h2 id="atendimentos-title">Registro de atendimentos</h2>
+
+        <div class="l-metrics">
+          <section class="c-card c-deadline-card c-deadline-card--neutral" aria-labelledby="atalho-registrar-title">
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--file-plus" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="atalho-registrar-title">Registrar atendimento</h3>
+            </div>
+            <p class="c-deadline-card__text">Cadastre um novo atendimento com os dados do solicitante e a descrição.</p>
+            <p class="c-deadline-card__main">
+              <a class="c-deadline-card__action" href="registrar-atendimento">Registrar atendimento</a>
+            </p>
+          </section>
+
+          <section class="c-card c-deadline-card c-deadline-card--neutral" aria-labelledby="atalho-controlar-title">
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="atalho-controlar-title">Controlar atendimentos</h3>
+            </div>
+            <p class="c-deadline-card__text">Consulte, edite, finalize ou reabra os atendimentos registrados.</p>
+            <p class="c-deadline-card__main">
+              <a class="c-deadline-card__action" href="controlar-atendimentos">Controlar atendimentos</a>
+            </p>
+          </section>
+        </div>
+      </section>
+
+      <!-- Indicadores e guia de autorizações: só ADMIN e EMPLOYEE (revelados em app-shell.js) -->
+      <section class="l-section js-authorization-only" aria-labelledby="indicadores-title" hidden>
         <h2 id="indicadores-title">Indicadores</h2>
 
         <!-- Contagens preenchidas em home.js; mesma regra de prazo da página de autorizações. Zerado também aparece -->
@@ -243,7 +274,7 @@
         </div>
       </section>
 
-      <section class="l-section" aria-labelledby="como-funciona-title">
+      <section class="l-section js-authorization-only" aria-labelledby="como-funciona-title" hidden>
         <h2 id="como-funciona-title">Como funciona</h2>
 
         <div class="c-card l-about">

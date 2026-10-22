@@ -31,7 +31,7 @@ const LOGIN_REASONS = {
   'login-necessario': () => notify.info('Entre para continuar.'),
   'senha-alterada': () => notify.success('Senha alterada. Entre novamente com a nova senha.'),
   // RestAccessDeniedHandler manda um 403 de página para home?erro=sem-acesso
-  'sem-acesso': () => notify.error('Você não tem permissão para acessar as configurações.'),
+  'sem-acesso': () => notify.error('Você não tem permissão para acessar essa página.'),
 };
 
 /**

@@ -114,7 +114,8 @@
         </a>
       </li>
       <!-- Item expansível: o botão alterna a sublista (app-shell.js). Vem aberto na página que está dentro dele -->
-      <li>
+      <!-- Só para ADMIN e EMPLOYEE: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-authorization-only" hidden>
         <button
           class="c-nav__link c-nav__toggle js-nav-toggle"
           type="button"
