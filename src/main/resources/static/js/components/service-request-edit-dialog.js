@@ -6,6 +6,7 @@ import { notify } from '../core/notify.js';
 import { todayIso, validateServiceRequest, validateServiceRequestField } from '../core/validators.js';
 import { initDialog } from './dialog.js';
 import { FINISHED_STATUS_ID } from './service-request-table.js';
+import { initTabs } from './tabs.js';
 
 const FIELD_NAMES = [
   'protocolNumber', 'openedAt', 'categoryId', 'channelId', 'typeId', 'severityId', 'statusId',
@@ -63,9 +64,10 @@ export function initServiceRequestEditDialog(dialogEl, { onSaved }) {
   let initialOpenedAt = '';
   let lookups = { categories: [], channels: [], types: [], severities: [], statuses: [] };
 
-  // Clique fora não fecha: perderia a digitação sem confirmação
+  const tabs = initTabs(dialogEl.querySelector('.js-editar-tabs'));
+
+  // Clique fora fecha, como no detalhe (pedido do usuário): o que não foi salvo é descartado
   const dialog = initDialog(dialogEl, {
-    closeOnBackdrop: false,
     dismissSelector: '.js-edit-dismiss',
     onClose() {
       current = null;
@@ -74,6 +76,20 @@ export function initServiceRequestEditDialog(dialogEl, { onSaved }) {
 
   function field(name) {
     return form.elements.namedItem(name);
+  }
+
+  // Campo com erro pode estar numa aba escondida: abre a aba dele (a do primeiro erro),
+  // marca as abas com erro e só então foca, para o foco nunca cair num campo invisível
+  function revealErrors() {
+    const invalid = [...form.querySelectorAll('[aria-invalid="true"]')];
+    if (invalid.length === 0) return;
+
+    const keyOf = (fieldEl) => fieldEl.closest('[data-tab]')?.dataset.tab;
+    tabs.markInvalid([...new Set(invalid.map(keyOf))]);
+
+    const first = invalid[0];
+    if (first.closest('[hidden]')) tabs.select(keyOf(first));
+    first.focus();
   }
 
   function readValues() {
@@ -111,6 +127,7 @@ export function initServiceRequestEditDialog(dialogEl, { onSaved }) {
     const errors = validateServiceRequest(values);
     if (Object.keys(errors).length > 0) {
       showFieldErrors(form, errors);
+      revealErrors();
       notify.error('Revise os campos destacados.');
       return;
     }
@@ -124,6 +141,7 @@ export function initServiceRequestEditDialog(dialogEl, { onSaved }) {
     } catch (error) {
       // Mantém o diálogo aberto e o que foi digitado
       handleError(error, { form });
+      revealErrors(); // erros de campo vindos do backend (400 com "fields")
     } finally {
       setSubmitting(form, false);
     }
@@ -142,7 +160,10 @@ export function initServiceRequestEditDialog(dialogEl, { onSaved }) {
   form.addEventListener('input', (event) => {
     const target = event.target;
     if (!FIELD_NAMES.includes(target.name) || target.getAttribute('aria-invalid') !== 'true') return;
-    if (!validateServiceRequestField(target.name, target.value)) clearFieldError(target);
+    if (validateServiceRequestField(target.name, target.value)) return;
+    clearFieldError(target);
+    tabs.markInvalid([...new Set([...form.querySelectorAll('[aria-invalid="true"]')]
+      .map((fieldEl) => fieldEl.closest('[data-tab]')?.dataset.tab))]);
   });
 
   return {
@@ -158,6 +179,7 @@ export function initServiceRequestEditDialog(dialogEl, { onSaved }) {
       // reset() antes de atribuir: ele volta aos defaults do HTML
       form.reset();
       clearFieldErrors(form);
+      tabs.reset(); // sempre abre no Resumo, sem marcas de erro
 
       code.textContent = item.protocolNumber;
       assignee.value = item.assignedToName || '—';

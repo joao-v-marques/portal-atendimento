@@ -333,9 +333,10 @@
     </div>
   </main>
 
-  <!-- Detalhe do atendimento. As ações do rodapé fecham este modal e abrem a próxima etapa
-       em sequência, nunca empilhadas (guia 11.7) -->
-  <dialog class="c-dialog js-detail-dialog" aria-labelledby="detalhe-title">
+  <!-- Detalhe do atendimento. As abas filtram as seções do painel (components/tabs.js): o Resumo
+       mostra todas. As ações do rodapé fecham este modal e abrem a próxima etapa em sequência,
+       nunca empilhadas (guia 11.7) -->
+  <dialog class="c-dialog c-dialog--wide c-dialog--tabs js-detail-dialog" aria-labelledby="detalhe-title">
     <header class="c-dialog__header">
       <div class="c-dialog__heading">
         <h2 class="c-dialog__title" id="detalhe-title">
@@ -346,39 +347,92 @@
       <button class="c-icon-button js-detail-dismiss" type="button" aria-label="Fechar detalhes" title="Fechar detalhes">
         <span class="c-icon c-icon--close" aria-hidden="true"></span>
       </button>
+      <div class="c-tabs js-detalhe-tabs">
+        <div class="c-tabs__list" role="tablist" aria-label="Seções do atendimento">
+          <button class="c-tabs__tab" type="button" role="tab" id="detalhe-aba-resumo" data-tab-key="resumo" aria-controls="detalhe-painel" aria-selected="true" tabindex="0">
+            <span class="c-icon c-icon--sm c-icon--eye" aria-hidden="true"></span>
+            Resumo
+            <span class="u-visually-hidden js-tab-invalid" hidden>(contém erros)</span>
+          </button>
+          <button class="c-tabs__tab" type="button" role="tab" id="detalhe-aba-atendimento" data-tab-key="atendimento" aria-controls="detalhe-painel" aria-selected="false" tabindex="-1">
+            <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+            Info. atendimento
+            <span class="u-visually-hidden js-tab-invalid" hidden>(contém erros)</span>
+          </button>
+          <button class="c-tabs__tab" type="button" role="tab" id="detalhe-aba-solicitante" data-tab-key="solicitante" aria-controls="detalhe-painel" aria-selected="false" tabindex="-1">
+            <span class="c-icon c-icon--sm c-icon--users" aria-hidden="true"></span>
+            Info. solicitante
+            <span class="u-visually-hidden js-tab-invalid" hidden>(contém erros)</span>
+          </button>
+          <button class="c-tabs__tab" type="button" role="tab" id="detalhe-aba-descricao" data-tab-key="descricao" aria-controls="detalhe-painel" aria-selected="false" tabindex="-1">
+            <span class="c-icon c-icon--sm c-icon--file-text" aria-hidden="true"></span>
+            Descrição e resolução
+            <span class="u-visually-hidden js-tab-invalid" hidden>(contém erros)</span>
+          </button>
+          <button class="c-tabs__tab" type="button" role="tab" id="detalhe-aba-historico" data-tab-key="historico" aria-controls="detalhe-painel" aria-selected="false" tabindex="-1">
+            <span class="c-icon c-icon--sm c-icon--user-check" aria-hidden="true"></span>
+            Histórico
+            <span class="u-visually-hidden js-tab-invalid" hidden>(contém erros)</span>
+          </button>
+        </div>
+      </div>
     </header>
 
-    <div class="c-dialog__body">
-      <section class="c-dialog__section" aria-labelledby="detalhe-chamado-title">
-        <h3 class="c-dialog__section-title" id="detalhe-chamado-title">Chamado</h3>
+    <div class="c-dialog__body l-sr-panel" id="detalhe-painel" role="tabpanel" aria-labelledby="detalhe-aba-resumo" tabindex="0">
+      <!-- Destaques: só no Resumo (nenhuma aba usa a chave "destaques") -->
+      <dl class="l-sr-highlights js-detail-highlights" data-tab="destaques" aria-label="Destaques do atendimento"></dl>
+
+      <section class="c-dialog__section l-sr-block" data-tab="atendimento" aria-labelledby="detalhe-chamado-title">
+        <h3 class="l-sr-block__title" id="detalhe-chamado-title">
+          <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+          Atendimento
+        </h3>
         <dl class="c-description-list js-detail-request"></dl>
       </section>
 
-      <section class="c-dialog__section" aria-labelledby="detalhe-solicitante-title">
-        <h3 class="c-dialog__section-title" id="detalhe-solicitante-title">Solicitante</h3>
+      <section class="c-dialog__section l-sr-block" data-tab="solicitante" aria-labelledby="detalhe-solicitante-title">
+        <h3 class="l-sr-block__title" id="detalhe-solicitante-title">
+          <span class="c-icon c-icon--sm c-icon--users" aria-hidden="true"></span>
+          Solicitante
+        </h3>
         <dl class="c-description-list js-detail-requester"></dl>
       </section>
 
-      <section class="c-dialog__section" aria-labelledby="detalhe-descricao-title">
-        <h3 class="c-dialog__section-title" id="detalhe-descricao-title">Descrição</h3>
-        <p class="c-dialog__text js-detail-description"></p>
-      </section>
-
-      <!-- Só quando há resolução (finalizado, ou reaberto depois de finalizar) -->
-      <section class="c-dialog__section js-detail-resolution-section" aria-labelledby="detalhe-resolucao-title" hidden>
-        <h3 class="c-dialog__section-title" id="detalhe-resolucao-title">Resolução</h3>
-        <p class="c-dialog__text js-detail-resolution"></p>
-      </section>
-
-      <section class="c-dialog__section" aria-labelledby="detalhe-prazos-title">
-        <h3 class="c-dialog__section-title" id="detalhe-prazos-title">Responsável e prazos</h3>
+      <section class="c-dialog__section l-sr-block" data-tab="atendimento" aria-labelledby="detalhe-prazos-title">
+        <h3 class="l-sr-block__title" id="detalhe-prazos-title">
+          <span class="c-icon c-icon--sm c-icon--user-check" aria-hidden="true"></span>
+          Responsável e prazos
+        </h3>
         <dl class="c-description-list js-detail-deadlines"></dl>
       </section>
 
-      <section class="c-dialog__section" aria-labelledby="detalhe-auditoria-title">
-        <h3 class="c-dialog__section-title" id="detalhe-auditoria-title">Auditoria</h3>
+      <section class="c-dialog__section l-sr-block" data-tab="historico" aria-labelledby="detalhe-auditoria-title">
+        <h3 class="l-sr-block__title" id="detalhe-auditoria-title">
+          <span class="c-icon c-icon--sm c-icon--pencil" aria-hidden="true"></span>
+          Histórico
+        </h3>
         <dl class="c-description-list js-detail-audit"></dl>
       </section>
+
+      <section class="c-dialog__section l-sr-block l-sr-block--full" data-tab="descricao" aria-labelledby="detalhe-descricao-title">
+        <h3 class="l-sr-block__title" id="detalhe-descricao-title">
+          <span class="c-icon c-icon--sm c-icon--file-text" aria-hidden="true"></span>
+          Descrição
+        </h3>
+        <p class="c-dialog__text js-detail-description"></p>
+      </section>
+
+      <!-- Só quando há resolução (finalizado, ou reaberto depois de finalizar). O wrapper leva o
+           data-tab: o tabs.js controla o hidden dele e o JS do detalhe controla o da seção -->
+      <div class="l-sr-block--full" data-tab="descricao">
+        <section class="c-dialog__section l-sr-block js-detail-resolution-section" aria-labelledby="detalhe-resolucao-title" hidden>
+          <h3 class="l-sr-block__title" id="detalhe-resolucao-title">
+            <span class="c-icon c-icon--sm c-icon--check-circle" aria-hidden="true"></span>
+            Resolução
+          </h3>
+          <p class="c-dialog__text js-detail-resolution"></p>
+        </section>
+      </div>
     </div>
 
     <footer class="c-dialog__footer l-detail-footer">
@@ -395,8 +449,9 @@
     </footer>
   </dialog>
 
-  <!-- Editar atendimento (PUT). Ids atendimento-*: o form.js acha o erro por `${field.id}-error` -->
-  <dialog class="c-dialog c-dialog--form js-edit-dialog" aria-labelledby="editar-title">
+  <!-- Editar atendimento (PUT). Ids atendimento-*: o form.js acha o erro por `${field.id}-error`.
+       As abas só filtram os fieldsets: cada campo existe uma vez, o form continua um só -->
+  <dialog class="c-dialog c-dialog--form c-dialog--wide c-dialog--tabs js-edit-dialog" aria-labelledby="editar-title">
     <!-- Sem method="dialog": ele fecharia no submit e descartaria a requisição -->
     <form class="c-dialog__form js-edit-form" novalidate>
       <header class="c-dialog__header">
@@ -409,11 +464,38 @@
         <button class="c-icon-button js-edit-dismiss" type="button" aria-label="Fechar" title="Fechar">
           <span class="c-icon c-icon--close" aria-hidden="true"></span>
         </button>
+      <div class="c-tabs js-editar-tabs">
+        <div class="c-tabs__list" role="tablist" aria-label="Seções do formulário">
+          <button class="c-tabs__tab" type="button" role="tab" id="editar-aba-resumo" data-tab-key="resumo" aria-controls="editar-painel" aria-selected="true" tabindex="0">
+            <span class="c-icon c-icon--sm c-icon--eye" aria-hidden="true"></span>
+            Resumo
+            <span class="u-visually-hidden js-tab-invalid" hidden>(contém erros)</span>
+          </button>
+          <button class="c-tabs__tab" type="button" role="tab" id="editar-aba-atendimento" data-tab-key="atendimento" aria-controls="editar-painel" aria-selected="false" tabindex="-1">
+            <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+            Info. atendimento
+            <span class="u-visually-hidden js-tab-invalid" hidden>(contém erros)</span>
+          </button>
+          <button class="c-tabs__tab" type="button" role="tab" id="editar-aba-solicitante" data-tab-key="solicitante" aria-controls="editar-painel" aria-selected="false" tabindex="-1">
+            <span class="c-icon c-icon--sm c-icon--users" aria-hidden="true"></span>
+            Info. solicitante
+            <span class="u-visually-hidden js-tab-invalid" hidden>(contém erros)</span>
+          </button>
+          <button class="c-tabs__tab" type="button" role="tab" id="editar-aba-descricao" data-tab-key="descricao" aria-controls="editar-painel" aria-selected="false" tabindex="-1">
+            <span class="c-icon c-icon--sm c-icon--file-text" aria-hidden="true"></span>
+            Descrição
+            <span class="u-visually-hidden js-tab-invalid" hidden>(contém erros)</span>
+          </button>
+        </div>
+      </div>
       </header>
 
-      <div class="c-dialog__body">
-        <fieldset class="c-fieldset">
-          <legend class="c-fieldset__legend">Chamado</legend>
+      <div class="c-dialog__body l-sr-panel" id="editar-painel" role="tabpanel" aria-labelledby="editar-aba-resumo" tabindex="0">
+        <fieldset class="c-fieldset l-sr-block l-sr-block--full" data-tab="atendimento">
+          <legend class="c-fieldset__legend l-sr-block__title">
+            <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+            Atendimento
+          </legend>
           <div class="l-form-grid">
             <div class="c-field">
               <label class="c-field__label" for="atendimento-protocolo">
@@ -487,8 +569,11 @@
           </div>
         </fieldset>
 
-        <fieldset class="c-fieldset">
-          <legend class="c-fieldset__legend">Solicitante</legend>
+        <fieldset class="c-fieldset l-sr-block l-sr-block--full" data-tab="solicitante">
+          <legend class="c-fieldset__legend l-sr-block__title">
+            <span class="c-icon c-icon--sm c-icon--users" aria-hidden="true"></span>
+            Solicitante
+          </legend>
           <div class="l-form-grid">
             <div class="c-field l-form-grid__full">
               <label class="c-field__label" for="atendimento-nome">
@@ -525,7 +610,7 @@
               <p class="c-field__error" id="atendimento-telefone-error" hidden></p>
             </div>
 
-            <div class="c-field l-form-grid__full">
+            <div class="c-field l-form-grid__span-2">
               <label class="c-field__label" for="atendimento-email">E-mail</label>
               <input class="c-input" id="atendimento-email" name="requesterEmail" type="email" maxlength="150" autocomplete="off" spellcheck="false" aria-describedby="atendimento-email-error">
               <p class="c-field__error" id="atendimento-email-error" hidden></p>
@@ -533,13 +618,19 @@
           </div>
         </fieldset>
 
-        <div class="c-field">
-          <label class="c-field__label" for="atendimento-descricao">
-            Descrição <span class="c-field__required" aria-hidden="true">*</span>
-          </label>
-          <textarea class="c-input c-textarea" id="atendimento-descricao" name="description" rows="5" required aria-describedby="atendimento-descricao-error"></textarea>
-          <p class="c-field__error" id="atendimento-descricao-error" hidden></p>
-        </div>
+        <fieldset class="c-fieldset l-sr-block l-sr-block--full" data-tab="descricao">
+          <legend class="c-fieldset__legend l-sr-block__title">
+            <span class="c-icon c-icon--sm c-icon--file-text" aria-hidden="true"></span>
+            Descrição
+          </legend>
+          <div class="c-field">
+            <label class="c-field__label" for="atendimento-descricao">
+              Descrição do atendimento <span class="c-field__required" aria-hidden="true">*</span>
+            </label>
+            <textarea class="c-input c-textarea" id="atendimento-descricao" name="description" rows="6" required aria-describedby="atendimento-descricao-error"></textarea>
+            <p class="c-field__error" id="atendimento-descricao-error" hidden></p>
+          </div>
+        </fieldset>
       </div>
 
       <footer class="c-dialog__footer">

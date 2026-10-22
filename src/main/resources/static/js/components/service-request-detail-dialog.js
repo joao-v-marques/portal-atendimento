@@ -1,13 +1,25 @@
+import { el } from '../core/dom.js';
 import { formatDate, formatDateTime, formatPhone } from '../core/format.js';
 import { descriptionItem } from './authorization-detail-dialog.js';
 import { statusBadge } from './authorization-table.js';
 import { initDialog } from './dialog.js';
 import { isFinished } from './service-request-table.js';
+import { initTabs } from './tabs.js';
 
 // "12345678901" → "123.456.789-01"; fora do padrão aparece como veio
 function formatCpf(value) {
   const cpf = String(value ?? '');
   return /^\d{11}$/.test(cpf) ? `${cpf.slice(0, 3)}.${cpf.slice(3, 6)}.${cpf.slice(6, 9)}-${cpf.slice(9)}` : cpf;
+}
+
+// Destaque do Resumo: rótulo + valor (texto ou elemento, como o badge de status)
+function highlightItem(term, value) {
+  return el('div', { className: 'l-sr-highlights__item' }, [
+    el('dt', { className: 'l-sr-highlights__term', text: term }),
+    typeof value === 'string' || value == null
+      ? el('dd', { className: 'l-sr-highlights__value', text: value || '—' })
+      : el('dd', { className: 'l-sr-highlights__value' }, [value]),
+  ]);
 }
 
 /**
@@ -24,6 +36,7 @@ function formatCpf(value) {
  */
 export function initServiceRequestDetailDialog(dialogEl, { onEdit, onFinish, onReopen }) {
   const code = dialogEl.querySelector('.js-detail-code');
+  const highlights = dialogEl.querySelector('.js-detail-highlights');
   const status = dialogEl.querySelector('.js-detail-status');
   const requestList = dialogEl.querySelector('.js-detail-request');
   const requesterList = dialogEl.querySelector('.js-detail-requester');
@@ -40,6 +53,8 @@ export function initServiceRequestDetailDialog(dialogEl, { onEdit, onFinish, onR
   let current = null;
   let opener = null;
 
+  const tabs = initTabs(dialogEl.querySelector('.js-detalhe-tabs'));
+
   const dialog = initDialog(dialogEl, {
     dismissSelector: '.js-detail-dismiss',
     onClose() {
@@ -51,6 +66,14 @@ export function initServiceRequestDetailDialog(dialogEl, { onEdit, onFinish, onR
   function render(item) {
     code.textContent = item.protocolNumber;
     status.replaceChildren(statusBadge(item.statusName));
+
+    highlights.replaceChildren(
+      highlightItem('Categoria', item.categoryName),
+      highlightItem('Solicitante', item.requesterName),
+      highlightItem('Responsável', item.assignedToName),
+      highlightItem('Aberto em', formatDateTime(item.openedAt)),
+      highlightItem('Severidade', item.severityName),
+    );
 
     requestList.replaceChildren(
       descriptionItem('Protocolo', item.protocolNumber),
@@ -114,6 +137,7 @@ export function initServiceRequestDetailDialog(dialogEl, { onEdit, onFinish, onR
       current = item;
       opener = openerElement;
       render(item);
+      tabs.reset(); // sempre abre no Resumo
       dialog.open(openerElement);
       closeButton.focus();
     },

@@ -188,13 +188,14 @@
   --container-form-max: 45rem;  /*  720px */
   --container-auth-max: 32rem;  /*  512px — card de login */
   --topbar-height:      4rem;   /*   64px */
-  --sidebar-width:      16rem;  /*  256px */
+  --sidebar-width:      18rem;  /*  288px */
   --sidebar-rail-width: 5rem;   /*   80px — sidebar retraída: item de 48px + padding de 16px dos lados */
   --sidebar-item-height: 3rem;  /*   48px */
   --avatar-size:        2rem;   /*   32px */
   --dialog-max-width:   45rem;  /*  720px — modal de detalhe */
   --dialog-max-width-form:    40rem; /* 640px — modal de formulário (guia 11.7) */
   --dialog-max-width-confirm: 30rem; /* 480px — modal de confirmação (guia 11.7) */
+  --dialog-max-width-wide:    75rem; /* 1200px — detalhe/edição com abas (atendimentos) */
   --settings-nav-width: 15rem;  /*  240px — sub-navegação das configurações */
   --logo-height:        2.5rem; /*   40px — logo na topbar */
   --logo-height-lg:     3.5rem; /*   56px — logo na tela de login */

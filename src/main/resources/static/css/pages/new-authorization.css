@@ -2,8 +2,8 @@
    Lançar autorização — mobile-first
    < 37.5em  : cards empilhados, 1 campo por linha, botões 100% (primário em cima)
    ≥ 37.5em  : campos 2 por linha, botões lado a lado
-   ≥ 80em    : 2 colunas (dados | documentos). Só aqui: com a sidebar de 256px,
-               abaixo de 1280px sobram menos de 960px e as colunas apertariam os campos
+   ≥ 80em    : 2 colunas (dados | documentos). Só aqui: com a sidebar de 288px,
+               abaixo de 1280px sobram menos de 992px e as colunas apertariam os campos
    ========================================================================== */
 
 .l-new-auth {

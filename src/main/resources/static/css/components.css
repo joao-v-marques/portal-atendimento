@@ -1384,6 +1384,98 @@ th[aria-sort="descending"] .c-table__sort-icon {
   width: min(var(--dialog-max-width-confirm), calc(100% - var(--space-4)));
 }
 
+/* Detalhe/edição com muitos dados divididos em abas */
+.c-dialog--wide {
+  width: min(var(--dialog-max-width-wide), calc(100% - var(--space-4)));
+}
+
+/* Altura fixa: trocar de aba não faz o modal mudar de tamanho; o body rola por dentro */
+.c-dialog--tabs {
+  height: min(60rem, calc(100dvh - var(--space-6)));
+}
+
+.c-dialog--tabs .c-dialog__body {
+  flex: 1;
+  align-content: start;
+}
+
+.c-dialog--tabs .c-dialog__form {
+  flex: 1;
+}
+
+/* Abas no header: o header perde a borda inferior, que passa a ser a linha das abas */
+.c-dialog--tabs .c-dialog__header {
+  flex-wrap: wrap;
+  padding-bottom: 0;
+}
+
+.c-dialog--tabs .c-dialog__header .c-tabs {
+  flex-basis: 100%;
+  margin-inline: calc(var(--space-3) * -1);
+  padding-inline: var(--space-3);
+}
+
+/* ==========================================================================
+   Tabs (components/tabs.js)
+   ========================================================================== */
+
+/* Rola na horizontal em telas estreitas em vez de quebrar as abas em linhas */
+.c-tabs {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.c-tabs__list {
+  display: flex;
+  gap: var(--space-half);
+  min-width: max-content;
+}
+
+.c-tabs__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 2.75rem; /* 44px: alvo de toque */
+  padding: 0 var(--space-2);
+  border: 0;
+  border-bottom: var(--border-width-thick) solid transparent;
+  background: none;
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
+}
+
+.c-tabs__tab:hover {
+  color: var(--color-text);
+  border-bottom-color: var(--color-border);
+}
+
+.c-tabs__tab[aria-selected="true"] {
+  font-weight: var(--weight-semibold);
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.c-tabs__tab:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: inset var(--focus-ring);
+}
+
+/* Aba com campo inválido: ponto vermelho (o texto "contém erros" fica no span oculto) */
+.c-tabs__tab--invalid::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background: var(--color-error);
+}
+
 /* Com o <form> envolvendo header/body/footer, ele passa a ser o único filho flex do
    dialog: sem min-height 0 o body para de rolar e o conteúdo estoura a altura da tela */
 .c-dialog__form {
@@ -1411,6 +1503,11 @@ th[aria-sort="descending"] .c-table__sort-icon {
 
   .c-dialog__footer .c-button {
     flex: 1;
+  }
+
+  .c-dialog--tabs .c-dialog__header .c-tabs {
+    margin-inline: calc(var(--space-2) * -1);
+    padding-inline: var(--space-2);
   }
 }
 

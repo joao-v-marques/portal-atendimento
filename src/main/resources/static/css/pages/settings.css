@@ -15,8 +15,8 @@
   min-width: 0;
 }
 
-/* Duas colunas só em telas largas: de 60em a 80em a sidebar principal (256px) já ocupa
-   o espaço que a tabela precisa. Com a sidebar recolhida (80px) sobram 176px, então a
+/* Duas colunas só em telas largas: de 60em a 80em a sidebar principal (288px) já ocupa
+   o espaço que a tabela precisa. Com a sidebar recolhida (80px) sobram 208px, então a
    virada acontece mais cedo. */
 @media (min-width: 72em) {
   .has-sidebar-collapsed .l-settings {

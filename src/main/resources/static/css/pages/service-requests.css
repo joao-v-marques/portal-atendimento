@@ -42,6 +42,7 @@
 .l-form-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  align-items: start; /* campo com hint não estica os vizinhos da mesma linha */
   gap: var(--space-2);
 }
 
@@ -81,5 +82,131 @@
 
   .l-filters__search {
     grid-column: span 2;
+  }
+}
+
+/* ==========================================================================
+   Modais de detalhe e edição com abas (components/tabs.js)
+   O painel é um só; as abas escondem as seções que não são delas e o
+   Resumo (data-active-tab="resumo") mostra todas numa grade
+   ========================================================================== */
+
+/* As seções têm display próprio (grid), que venceria o [hidden] do navegador */
+.l-sr-panel [hidden] {
+  display: none !important;
+}
+
+.l-sr-panel {
+  gap: var(--space-2);
+}
+
+/* Valor que quebra em 2 linhas não empurra os vizinhos da mesma linha */
+.l-sr-panel .c-description-list {
+  align-items: start;
+}
+
+/* Wrapper da resolução vazio (atendimento nunca finalizado): não ocupa linha nem gap */
+.l-sr-panel > :has(> [hidden]:only-child) {
+  display: none;
+}
+
+/* Cada categoria num bloco com fundo próprio */
+.l-sr-block {
+  gap: var(--space-2);
+  align-content: start; /* bloco esticado até a altura do vizinho: conteúdo no topo */
+  min-width: 0;
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+
+/* Título do bloco com ícone. Na edição é uma legend: float a tira do lugar especial
+   da borda do fieldset e ela vira um item comum do grid, dentro do padding do bloco */
+.l-sr-block__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  float: left;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-md);
+  color: var(--color-heading);
+}
+
+.l-sr-block__title .c-icon {
+  color: var(--color-primary);
+}
+
+/* Destaques do Resumo: os dados mais consultados sem rolar */
+.l-sr-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.l-sr-highlights__item {
+  display: grid;
+  gap: var(--space-half);
+  align-content: start;
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+  border-left: var(--border-width-thick) solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-subtle);
+}
+
+.l-sr-highlights__term {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.l-sr-highlights__value {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: var(--weight-medium);
+}
+
+@media (min-width: 37.5em) {
+  .l-form-grid__span-2 {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 60em) {
+  /* Resumo do detalhe: blocos em 2 colunas; descrição e resolução na linha inteira */
+  .l-sr-panel[data-active-tab="resumo"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-sr-panel > .l-sr-highlights,
+  .l-sr-panel > .l-sr-block--full {
+    grid-column: 1 / -1;
+  }
+
+  /* Numa aba só, o bloco tem a largura toda: 3 colunas de dados */
+  .l-sr-panel:not([data-active-tab="resumo"]) .c-description-list,
+  .c-dialog--wide .l-form-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .c-dialog--wide .l-form-grid__span-2 {
+    grid-column: span 2;
+  }
+}
+
+/* Modal largo em tela larga: no Resumo, cada bloco já cabe 3 colunas de dados */
+@media (min-width: 80em) {
+  .l-sr-panel[data-active-tab="resumo"] .c-description-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
