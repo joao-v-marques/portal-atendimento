@@ -12,6 +12,9 @@ import java.util.List;
 @Service
 public class ServiceRequestStatusService {
 
+    // Status de sistema (seed da V7): Em andamento e Finalizado sustentam o fluxo do chamado
+    private static final List<Integer> SYSTEM_STATUS_IDS = List.of(1, 2);
+
     private final ServiceRequestStatusRepository serviceRequestStatusRepository;
 
     public ServiceRequestStatusService(ServiceRequestStatusRepository serviceRequestStatusRepository) {
@@ -66,6 +69,11 @@ public class ServiceRequestStatusService {
     @Transactional
     public ServiceRequestStatusResponse deactivate(Integer id) {
         ServiceRequestStatus serviceRequestStatus = findByIdOrThrow(id);
+
+        // Desativar "Em andamento" impediria abrir chamados (o POST recusa status inativo)
+        if (SYSTEM_STATUS_IDS.contains(serviceRequestStatus.getId())) {
+            throw new IllegalArgumentException("Status do sistema não pode ser desativado.");
+        }
 
         if (!serviceRequestStatus.isActive()) {
             throw new IllegalArgumentException("O status de atendimento já está inativo.");

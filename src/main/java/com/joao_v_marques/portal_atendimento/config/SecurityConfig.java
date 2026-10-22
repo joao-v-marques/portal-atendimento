@@ -3,6 +3,7 @@ package com.joao_v_marques.portal_atendimento.config;
 import com.joao_v_marques.portal_atendimento.security.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -20,6 +21,15 @@ import tools.jackson.databind.ObjectMapper;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // Cadastros auxiliares dos atendimentos (configurados em /configurar-atendimentos)
+    private static final String[] LOOKUP_PATHS = {
+            "/api/service-request-categories/**",
+            "/api/service-request-channels/**",
+            "/api/service-request-types/**",
+            "/api/service-request-severities/**",
+            "/api/service-request-status/**",
+    };
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService, CustomUserDetailsService userDetailsService, ObjectMapper objectMapper) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtService, userDetailsService);
@@ -36,7 +46,12 @@ public class SecurityConfig {
 
                         // Controle de atendimentos: só ADMIN e colaboradores do relacionamento.
                         // Não casa com /api/service-request-status etc.: os cadastros auxiliares seguem para qualquer logado
-                        .requestMatchers("/controlar-atendimentos", "/registrar-atendimento", "/api/service-requests/**").hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
+                        .requestMatchers("/controlar-atendimentos", "/registrar-atendimento", "/configurar-atendimentos", "/api/service-requests/**").hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
+
+                        // Cadastros auxiliares: leitura para qualquer logado (preenchem os selects), escrita só para quem configura
+                        .requestMatchers(HttpMethod.POST, LOOKUP_PATHS).hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
+                        .requestMatchers(HttpMethod.PUT, LOOKUP_PATHS).hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
+                        .requestMatchers(HttpMethod.PATCH, LOOKUP_PATHS).hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
 
                         // Autorizações: o colaborador do relacionamento só usa Início e o registro de atendimentos
                         .requestMatchers("/autorizacoes", "/lancar-autorizacao",

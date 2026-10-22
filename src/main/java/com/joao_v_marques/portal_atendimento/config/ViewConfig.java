@@ -16,5 +16,6 @@ public class ViewConfig implements WebMvcConfigurer {
         registry.addViewController("/configuracoes").setViewName("settings");
         registry.addViewController("/controlar-atendimentos").setViewName("service_requests");
         registry.addViewController("/registrar-atendimento").setViewName("new_service_request");
+        registry.addViewController("/configurar-atendimentos").setViewName("service_request_settings");
     }
 }

@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configurar atendimentos · Portal de Atendimento</title>
+
+  <!-- Antes do CSS: aplica a sidebar retraída antes da 1ª pintura (chave igual à de app-shell.js) -->
+  <script>try { if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('has-sidebar-collapsed'); } catch (e) {}</script>
+
+  <!-- Antes do CSS: aplica o tema salvo (ou o do sistema) antes da 1ª pintura (chave igual à de core/theme.js) -->
+  <script>try { var t = localStorage.getItem('theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/vendor/notyf.min.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/notyf-theme.css">
+  <link rel="stylesheet" href="css/pages/settings.css">
+
+  <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
+  <script src="js/vendor/notyf.min.js" defer></script>
+  <script type="module" src="js/pages/service-request-settings.js"></script>
+</head>
+<body class="l-shell">
+  <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="l-topbar js-topbar">
+    <button
+      class="c-icon-button c-icon-button--inverse l-topbar__menu-button js-menu-open"
+      type="button"
+      aria-controls="menu-principal"
+      aria-expanded="false"
+      aria-label="Abrir menu"
+      title="Abrir menu"
+    >
+      <span class="c-icon c-icon--menu" aria-hidden="true"></span>
+    </button>
+
+    <a class="c-brand c-brand--logo" href="home">
+      <img class="c-brand__logo" src="css/img/logo-2023.png" alt="Unimed S. S. do Paraíso – Início" width="529" height="195">
+    </a>
+
+    <div class="l-topbar__spacer"></div>
+
+    <div class="l-topbar__actions">
+      <div class="c-user-menu js-user-menu">
+        <button
+          class="c-user-menu__trigger js-dropdown-trigger"
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="menu-usuario"
+        >
+          <span class="c-user-chip js-user-chip" aria-busy="true">
+            <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
+            <span class="c-user-chip__text">
+              <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
+              <span class="c-user-chip__role js-user-role"></span>
+            </span>
+          </span>
+          <span class="c-icon c-icon--sm c-user-menu__chevron" aria-hidden="true"></span>
+        </button>
+
+        <ul class="c-user-menu__list js-dropdown-list" id="menu-usuario" role="menu" aria-label="Opções da conta" hidden>
+          <li role="none">
+            <!-- Estado em aria-checked (core/theme.js); data-keep-open: o menu fica aberto para ver a troca -->
+            <button class="c-user-menu__item js-theme-toggle" type="button" role="menuitemcheckbox" aria-checked="false" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--moon" aria-hidden="true"></span>
+              <span>Tema escuro</span>
+              <span class="c-switch" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="c-user-menu__item js-own-password-open" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--key" aria-hidden="true"></span>
+              Alterar senha
+            </button>
+          </li>
+          <li class="c-user-menu__separator" role="separator"></li>
+          <li role="none">
+            <button class="c-user-menu__item js-logout" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
+              <span class="js-logout-label">Sair</span>
+            </button>
+          </li>
+          <!-- Novas opções: outro <li role="none"> com <button> ou <a> role="menuitem" tabindex="-1" -->
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <nav class="l-sidebar js-sidebar" id="menu-principal" aria-label="Menu principal">
+    <div class="l-sidebar__header">
+      <button
+        class="c-icon-button c-icon-button--inverse js-menu-close"
+        type="button"
+        aria-label="Fechar menu"
+        title="Fechar menu"
+      >
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <ul class="c-nav__list">
+      <li>
+        <a class="c-nav__link" href="home">
+          <span class="c-icon c-icon--home" aria-hidden="true"></span>
+          <span class="c-nav__label">Início</span>
+        </a>
+      </li>
+      <!-- Item expansível: o botão alterna a sublista (app-shell.js). Vem aberto na página que está dentro dele -->
+      <!-- Só para ADMIN e EMPLOYEE: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-authorization-only" hidden>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-sub-autorizacoes"
+        >
+          <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+          <span class="c-nav__label">Autorizações</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-autorizacoes" hidden>
+          <li>
+            <a class="c-nav__link" href="autorizacoes">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Autorizações</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="lancar-autorizacao">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Lançar autorização</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <!-- Só para ADMIN e colaborador do relacionamento: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-service-request-only" hidden>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="nav-sub-atendimentos"
+        >
+          <span class="c-icon c-icon--file-text" aria-hidden="true"></span>
+          <span class="c-nav__label">Registro Atendimentos</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-atendimentos">
+          <li>
+            <a class="c-nav__link" href="controlar-atendimentos">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Controlar Atendimentos</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="registrar-atendimento">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Registrar Atendimento</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="configurar-atendimentos" aria-current="page">
+              <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+              <span class="c-nav__label">Configurar Atendimentos</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <!-- Base da sidebar: Configurações é sempre o último item, logo acima do rodapé -->
+    <div class="l-sidebar__bottom">
+      <!-- Só para ADMIN: revelado em app-shell.js. Esconder é UX; a proteção real é o backend -->
+      <div class="c-nav__group js-admin-only" hidden>
+        <p class="c-nav__group-title" id="nav-grupo-administracao">Administração</p>
+        <ul class="c-nav__list" aria-labelledby="nav-grupo-administracao">
+          <li>
+            <a class="c-nav__link" href="configuracoes">
+              <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+              <span class="c-nav__label">Configurações</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <footer class="l-sidebar__footer">
+        <p class="l-sidebar__footer-title">Portal de Atendimento</p>
+        <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>
+      </footer>
+    </div>
+  </nav>
+
+  <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
+
+  <main class="l-main js-main" id="conteudo" tabindex="-1">
+    <div class="l-container">
+      <header class="l-page-header">
+        <div class="l-page-header__text">
+          <h1>Configurar atendimentos</h1>
+          <p class="l-page-header__subtitle">Cadastros usados no registro e no controle dos atendimentos.</p>
+        </div>
+      </header>
+
+      <div class="l-settings">
+        <!-- Cada item é um link de verdade (?secao=): a troca de seção recarrega a página e só
+             o cadastro da seção ativa é carregado (js/pages/service-request-settings.js) -->
+        <nav class="l-settings__nav c-subnav js-settings-nav" aria-label="Cadastros dos atendimentos">
+          <ul class="c-subnav__list">
+            <li>
+              <a class="c-subnav__link js-section-link" href="configurar-atendimentos?secao=categorias" data-section="categorias">
+                <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+                Categorias
+              </a>
+            </li>
+            <li>
+              <a class="c-subnav__link js-section-link" href="configurar-atendimentos?secao=canais" data-section="canais">
+                <span class="c-icon c-icon--sm c-icon--users" aria-hidden="true"></span>
+                Canais
+              </a>
+            </li>
+            <li>
+              <a class="c-subnav__link js-section-link" href="configurar-atendimentos?secao=tipos" data-section="tipos">
+                <span class="c-icon c-icon--sm c-icon--file-text" aria-hidden="true"></span>
+                Tipos
+              </a>
+            </li>
+            <li>
+              <a class="c-subnav__link js-section-link" href="configurar-atendimentos?secao=severidades" data-section="severidades">
+                <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+                Severidades
+              </a>
+            </li>
+            <li>
+              <a class="c-subnav__link js-section-link" href="configurar-atendimentos?secao=status" data-section="status">
+                <span class="c-icon c-icon--sm c-icon--check-circle" aria-hidden="true"></span>
+                Status
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <section
+          class="l-settings__panel js-panel"
+          id="painel-categorias"
+          data-section="categorias"
+          aria-labelledby="painel-categorias-title"
+          hidden
+        >
+          <header class="l-page-header l-page-header--with-action">
+            <div class="l-page-header__text">
+              <h2 id="painel-categorias-title">Categorias</h2>
+              <p class="l-page-header__subtitle">Assunto do atendimento (ex.: reclamação, dúvida, elogio).</p>
+            </div>
+            <button class="c-button c-button--primary js-new-item" type="button">
+              <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+              Nova categoria
+            </button>
+          </header>
+
+          <section class="c-card" aria-labelledby="filtros-categorias-title">
+            <h3 class="u-visually-hidden" id="filtros-categorias-title">Filtros</h3>
+
+            <form class="l-filters js-filters" role="search" aria-labelledby="filtros-categorias-title" novalidate>
+              <div class="c-field l-filters__search">
+                <label class="c-field__label" for="cadastro-categorias-busca">Buscar</label>
+                <div class="c-search">
+                  <input
+                    class="c-input"
+                    id="cadastro-categorias-busca"
+                    name="busca"
+                    type="search"
+                    aria-describedby="cadastro-categorias-busca-hint"
+                    placeholder="Nome"
+                    autocomplete="off"
+                    spellcheck="false"
+                  >
+                </div>
+                <p class="u-visually-hidden" id="cadastro-categorias-busca-hint">Atalho: tecla barra para focar a busca.</p>
+              </div>
+
+              <div class="c-field">
+                <label class="c-field__label" for="cadastro-categorias-situacao">Situação</label>
+                <div class="c-select-wrapper">
+                  <select class="c-select" id="cadastro-categorias-situacao" name="situacao">
+                    <option value="ativos">Ativos</option>
+                    <option value="inativos">Inativos</option>
+                    <option value="todos">Todos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="l-filters__actions">
+                <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
+                  <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                  Limpar filtros
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="l-results js-results" aria-labelledby="resultados-categorias-title">
+            <h3 class="u-visually-hidden" id="resultados-categorias-title">Resultados</h3>
+            <p class="l-results__count js-results-count" aria-live="polite"></p>
+
+            <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-categorias-title" tabindex="0">
+              <table class="c-table">
+                <caption class="u-visually-hidden">Categorias cadastrados</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" data-sort-key="name" aria-sort="ascending">
+                      <button class="c-table__sort js-sort" type="button">Nome <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">Situação</th>
+                    <th scope="col" class="u-text-end"><span class="u-visually-hidden">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody class="js-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="js-table-state" tabindex="-1" hidden></div>
+
+            <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+              <p class="c-pagination__summary js-page-summary"></p>
+              <div class="c-pagination__controls">
+                <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                  <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                  Anterior
+                </button>
+                <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+                <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                  Próxima
+                  <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+                </button>
+              </div>
+            </nav>
+          </section>
+        </section>
+        <section
+          class="l-settings__panel js-panel"
+          id="painel-canais"
+          data-section="canais"
+          aria-labelledby="painel-canais-title"
+          hidden
+        >
+          <header class="l-page-header l-page-header--with-action">
+            <div class="l-page-header__text">
+              <h2 id="painel-canais-title">Canais</h2>
+              <p class="l-page-header__subtitle">Por onde o solicitante entrou em contato (ex.: telefone, e-mail, presencial).</p>
+            </div>
+            <button class="c-button c-button--primary js-new-item" type="button">
+              <span class="c-icon c-icon--sm c-icon--users" aria-hidden="true"></span>
+              Novo canal
+            </button>
+          </header>
+
+          <section class="c-card" aria-labelledby="filtros-canais-title">
+            <h3 class="u-visually-hidden" id="filtros-canais-title">Filtros</h3>
+
+            <form class="l-filters js-filters" role="search" aria-labelledby="filtros-canais-title" novalidate>
+              <div class="c-field l-filters__search">
+                <label class="c-field__label" for="cadastro-canais-busca">Buscar</label>
+                <div class="c-search">
+                  <input
+                    class="c-input"
+                    id="cadastro-canais-busca"
+                    name="busca"
+                    type="search"
+                    aria-describedby="cadastro-canais-busca-hint"
+                    placeholder="Nome"
+                    autocomplete="off"
+                    spellcheck="false"
+                  >
+                </div>
+                <p class="u-visually-hidden" id="cadastro-canais-busca-hint">Atalho: tecla barra para focar a busca.</p>
+              </div>
+
+              <div class="c-field">
+                <label class="c-field__label" for="cadastro-canais-situacao">Situação</label>
+                <div class="c-select-wrapper">
+                  <select class="c-select" id="cadastro-canais-situacao" name="situacao">
+                    <option value="ativos">Ativos</option>
+                    <option value="inativos">Inativos</option>
+                    <option value="todos">Todos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="l-filters__actions">
+                <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
+                  <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                  Limpar filtros
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="l-results js-results" aria-labelledby="resultados-canais-title">
+            <h3 class="u-visually-hidden" id="resultados-canais-title">Resultados</h3>
+            <p class="l-results__count js-results-count" aria-live="polite"></p>
+
+            <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-canais-title" tabindex="0">
+              <table class="c-table">
+                <caption class="u-visually-hidden">Canais cadastrados</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" data-sort-key="name" aria-sort="ascending">
+                      <button class="c-table__sort js-sort" type="button">Nome <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">Situação</th>
+                    <th scope="col" class="u-text-end"><span class="u-visually-hidden">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody class="js-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="js-table-state" tabindex="-1" hidden></div>
+
+            <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+              <p class="c-pagination__summary js-page-summary"></p>
+              <div class="c-pagination__controls">
+                <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                  <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                  Anterior
+                </button>
+                <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+                <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                  Próxima
+                  <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+                </button>
+              </div>
+            </nav>
+          </section>
+        </section>
+        <section
+          class="l-settings__panel js-panel"
+          id="painel-tipos"
+          data-section="tipos"
+          aria-labelledby="painel-tipos-title"
+          hidden
+        >
+          <header class="l-page-header l-page-header--with-action">
+            <div class="l-page-header__text">
+              <h2 id="painel-tipos-title">Tipos</h2>
+              <p class="l-page-header__subtitle">O que foi solicitado no atendimento.</p>
+            </div>
+            <button class="c-button c-button--primary js-new-item" type="button">
+              <span class="c-icon c-icon--sm c-icon--file-text" aria-hidden="true"></span>
+              Novo tipo
+            </button>
+          </header>
+
+          <section class="c-card" aria-labelledby="filtros-tipos-title">
+            <h3 class="u-visually-hidden" id="filtros-tipos-title">Filtros</h3>
+
+            <form class="l-filters js-filters" role="search" aria-labelledby="filtros-tipos-title" novalidate>
+              <div class="c-field l-filters__search">
+                <label class="c-field__label" for="cadastro-tipos-busca">Buscar</label>
+                <div class="c-search">
+                  <input
+                    class="c-input"
+                    id="cadastro-tipos-busca"
+                    name="busca"
+                    type="search"
+                    aria-describedby="cadastro-tipos-busca-hint"
+                    placeholder="Nome"
+                    autocomplete="off"
+                    spellcheck="false"
+                  >
+                </div>
+                <p class="u-visually-hidden" id="cadastro-tipos-busca-hint">Atalho: tecla barra para focar a busca.</p>
+              </div>
+
+              <div class="c-field">
+                <label class="c-field__label" for="cadastro-tipos-situacao">Situação</label>
+                <div class="c-select-wrapper">
+                  <select class="c-select" id="cadastro-tipos-situacao" name="situacao">
+                    <option value="ativos">Ativos</option>
+                    <option value="inativos">Inativos</option>
+                    <option value="todos">Todos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="l-filters__actions">
+                <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
+                  <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                  Limpar filtros
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="l-results js-results" aria-labelledby="resultados-tipos-title">
+            <h3 class="u-visually-hidden" id="resultados-tipos-title">Resultados</h3>
+            <p class="l-results__count js-results-count" aria-live="polite"></p>
+
+            <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-tipos-title" tabindex="0">
+              <table class="c-table">
+                <caption class="u-visually-hidden">Tipos cadastrados</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" data-sort-key="name" aria-sort="ascending">
+                      <button class="c-table__sort js-sort" type="button">Nome <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">Situação</th>
+                    <th scope="col" class="u-text-end"><span class="u-visually-hidden">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody class="js-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="js-table-state" tabindex="-1" hidden></div>
+
+            <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+              <p class="c-pagination__summary js-page-summary"></p>
+              <div class="c-pagination__controls">
+                <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                  <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                  Anterior
+                </button>
+                <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+                <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                  Próxima
+                  <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+                </button>
+              </div>
+            </nav>
+          </section>
+        </section>
+        <section
+          class="l-settings__panel js-panel"
+          id="painel-severidades"
+          data-section="severidades"
+          aria-labelledby="painel-severidades-title"
+          hidden
+        >
+          <header class="l-page-header l-page-header--with-action">
+            <div class="l-page-header__text">
+              <h2 id="painel-severidades-title">Severidades</h2>
+              <p class="l-page-header__subtitle">Gravidade do atendimento. O nível define a ordem: 1 é o menos grave.</p>
+            </div>
+            <button class="c-button c-button--primary js-new-item" type="button">
+              <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+              Nova severidade
+            </button>
+          </header>
+
+          <section class="c-card" aria-labelledby="filtros-severidades-title">
+            <h3 class="u-visually-hidden" id="filtros-severidades-title">Filtros</h3>
+
+            <form class="l-filters js-filters" role="search" aria-labelledby="filtros-severidades-title" novalidate>
+              <div class="c-field l-filters__search">
+                <label class="c-field__label" for="cadastro-severidades-busca">Buscar</label>
+                <div class="c-search">
+                  <input
+                    class="c-input"
+                    id="cadastro-severidades-busca"
+                    name="busca"
+                    type="search"
+                    aria-describedby="cadastro-severidades-busca-hint"
+                    placeholder="Nome"
+                    autocomplete="off"
+                    spellcheck="false"
+                  >
+                </div>
+                <p class="u-visually-hidden" id="cadastro-severidades-busca-hint">Atalho: tecla barra para focar a busca.</p>
+              </div>
+
+              <div class="c-field">
+                <label class="c-field__label" for="cadastro-severidades-situacao">Situação</label>
+                <div class="c-select-wrapper">
+                  <select class="c-select" id="cadastro-severidades-situacao" name="situacao">
+                    <option value="ativos">Ativos</option>
+                    <option value="inativos">Inativos</option>
+                    <option value="todos">Todos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="l-filters__actions">
+                <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
+                  <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                  Limpar filtros
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="l-results js-results" aria-labelledby="resultados-severidades-title">
+            <h3 class="u-visually-hidden" id="resultados-severidades-title">Resultados</h3>
+            <p class="l-results__count js-results-count" aria-live="polite"></p>
+
+            <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-severidades-title" tabindex="0">
+              <table class="c-table">
+                <caption class="u-visually-hidden">Severidades cadastrados</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" data-sort-key="name" aria-sort="none">
+                      <button class="c-table__sort js-sort" type="button">Nome <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" data-sort-key="level" aria-sort="ascending">
+                      <button class="c-table__sort js-sort" type="button">Nível <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">Situação</th>
+                    <th scope="col" class="u-text-end"><span class="u-visually-hidden">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody class="js-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="js-table-state" tabindex="-1" hidden></div>
+
+            <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+              <p class="c-pagination__summary js-page-summary"></p>
+              <div class="c-pagination__controls">
+                <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                  <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                  Anterior
+                </button>
+                <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+                <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                  Próxima
+                  <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+                </button>
+              </div>
+            </nav>
+          </section>
+        </section>
+        <section
+          class="l-settings__panel js-panel"
+          id="painel-status"
+          data-section="status"
+          aria-labelledby="painel-status-title"
+          hidden
+        >
+          <header class="l-page-header l-page-header--with-action">
+            <div class="l-page-header__text">
+              <h2 id="painel-status-title">Status</h2>
+              <p class="l-page-header__subtitle">Etapas do atendimento. "Em andamento" e "Finalizado" são do sistema e não podem ser desativados.</p>
+            </div>
+            <button class="c-button c-button--primary js-new-item" type="button">
+              <span class="c-icon c-icon--sm c-icon--check-circle" aria-hidden="true"></span>
+              Novo status
+            </button>
+          </header>
+
+          <section class="c-card" aria-labelledby="filtros-status-title">
+            <h3 class="u-visually-hidden" id="filtros-status-title">Filtros</h3>
+
+            <form class="l-filters js-filters" role="search" aria-labelledby="filtros-status-title" novalidate>
+              <div class="c-field l-filters__search">
+                <label class="c-field__label" for="cadastro-status-busca">Buscar</label>
+                <div class="c-search">
+                  <input
+                    class="c-input"
+                    id="cadastro-status-busca"
+                    name="busca"
+                    type="search"
+                    aria-describedby="cadastro-status-busca-hint"
+                    placeholder="Nome"
+                    autocomplete="off"
+                    spellcheck="false"
+                  >
+                </div>
+                <p class="u-visually-hidden" id="cadastro-status-busca-hint">Atalho: tecla barra para focar a busca.</p>
+              </div>
+
+              <div class="c-field">
+                <label class="c-field__label" for="cadastro-status-situacao">Situação</label>
+                <div class="c-select-wrapper">
+                  <select class="c-select" id="cadastro-status-situacao" name="situacao">
+                    <option value="ativos">Ativos</option>
+                    <option value="inativos">Inativos</option>
+                    <option value="todos">Todos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="l-filters__actions">
+                <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
+                  <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                  Limpar filtros
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="l-results js-results" aria-labelledby="resultados-status-title">
+            <h3 class="u-visually-hidden" id="resultados-status-title">Resultados</h3>
+            <p class="l-results__count js-results-count" aria-live="polite"></p>
+
+            <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-status-title" tabindex="0">
+              <table class="c-table">
+                <caption class="u-visually-hidden">Status cadastrados</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" data-sort-key="name" aria-sort="ascending">
+                      <button class="c-table__sort js-sort" type="button">Nome <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">Situação</th>
+                    <th scope="col" class="u-text-end"><span class="u-visually-hidden">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody class="js-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="js-table-state" tabindex="-1" hidden></div>
+
+            <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+              <p class="c-pagination__summary js-page-summary"></p>
+              <div class="c-pagination__controls">
+                <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                  <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                  Anterior
+                </button>
+                <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+                <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                  Próxima
+                  <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+                </button>
+              </div>
+            </nav>
+          </section>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Criar / editar cadastro. Um <dialog> para os 5 cadastros: o título muda e o Nível só
+       aparece na severidade. Ids cadastro-*: o form.js acha o erro por `${field.id}-error` -->
+  <dialog class="c-dialog c-dialog--form js-lookup-dialog" aria-labelledby="cadastro-dialog-title">
+    <!-- Sem method="dialog": ele fecharia no submit e descartaria a requisição -->
+    <form class="c-dialog__form js-lookup-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title js-lookup-dialog-title" id="cadastro-dialog-title">Novo cadastro</h2>
+          <p class="c-field__hint">Campos com * são obrigatórios.</p>
+        </div>
+        <button class="c-icon-button js-lookup-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <div class="c-field">
+          <label class="c-field__label" for="cadastro-nome">
+            Nome <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input"
+            id="cadastro-nome"
+            name="name"
+            type="text"
+            maxlength="100"
+            required
+            autocomplete="off"
+            aria-describedby="cadastro-nome-hint cadastro-nome-error"
+          >
+          <p class="c-field__hint" id="cadastro-nome-hint">Até 100 caracteres. Não pode repetir.</p>
+          <p class="c-field__error" id="cadastro-nome-error" hidden></p>
+        </div>
+
+        <div class="c-field js-lookup-level-field" hidden>
+          <label class="c-field__label" for="cadastro-nivel">
+            Nível <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input u-text-mono"
+            id="cadastro-nivel"
+            name="level"
+            type="number"
+            min="1"
+            step="1"
+            inputmode="numeric"
+            autocomplete="off"
+            aria-describedby="cadastro-nivel-hint cadastro-nivel-error"
+          >
+          <p class="c-field__hint" id="cadastro-nivel-hint">Número inteiro a partir de 1, sem repetir. Quanto maior, mais grave.</p>
+          <p class="c-field__error" id="cadastro-nivel-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-lookup-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary js-lookup-submit" type="submit">Salvar</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Confirmação de ação destrutiva (guia 11.8). Sem method="dialog": o confirm-dialog.js
+       resolve no clique de cada botão, porque o evento close não é confiável o bastante
+       para carregar a decisão (a ação ficava sem efeito) -->
+  <dialog class="c-dialog c-dialog--confirm js-confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-description">
+    <div class="c-dialog__form">
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title js-confirm-title" id="confirm-title">Confirmar?</h2>
+        </div>
+      </header>
+
+      <div class="c-dialog__body">
+        <p class="js-confirm-description" id="confirm-description"></p>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-confirm-cancel" type="button">Cancelar</button>
+        <button class="c-button c-button--danger js-confirm-accept" type="button">Confirmar</button>
+      </footer>
+    </div>
+  </dialog>
+  <!-- Alterar a própria senha (menu do usuário). Ids minha-senha-* para não colidir com o
+       diálogo de redefinir senha das configurações -->
+  <dialog class="c-dialog c-dialog--form js-own-password-dialog" aria-labelledby="minha-senha-title" aria-describedby="minha-senha-description">
+    <form class="c-dialog__form js-own-password-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title" id="minha-senha-title">Alterar senha</h2>
+          <p class="c-field__hint" id="minha-senha-description">Depois de salvar, você sai do portal e entra de novo com a nova senha.</p>
+        </div>
+        <button class="c-icon-button js-own-password-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-nova">
+            Nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <div class="c-input-group">
+            <input
+              class="c-input"
+              id="minha-senha-nova"
+              name="password"
+              type="password"
+              required
+              autocomplete="new-password"
+              aria-describedby="minha-senha-nova-hint minha-senha-nova-error minha-senha-caps-lock"
+            >
+            <button
+              class="c-input-group__action js-own-password-toggle"
+              type="button"
+              aria-controls="minha-senha-nova"
+              aria-pressed="false"
+              aria-label="Mostrar senha"
+              title="Mostrar senha"
+            >
+              <span class="c-input-group__icon" aria-hidden="true"></span>
+            </button>
+          </div>
+          <p class="c-field__hint" id="minha-senha-nova-hint">De 4 a 72 caracteres.</p>
+          <p class="c-field__hint c-field__hint--warning js-own-password-caps-lock" id="minha-senha-caps-lock" aria-live="polite"></p>
+          <p class="c-field__error" id="minha-senha-nova-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-confirmacao">
+            Repetir a nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input"
+            id="minha-senha-confirmacao"
+            name="passwordConfirm"
+            type="password"
+            required
+            autocomplete="new-password"
+            aria-describedby="minha-senha-confirmacao-error"
+          >
+          <p class="c-field__error" id="minha-senha-confirmacao-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-own-password-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary" type="submit">Alterar senha</button>
+      </footer>
+    </form>
+  </dialog>
+</body>
+</html>

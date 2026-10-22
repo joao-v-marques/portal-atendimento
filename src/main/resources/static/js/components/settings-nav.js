@@ -9,14 +9,15 @@ export const DEFAULT_SECTION = 'usuarios';
  *
  * @param {HTMLElement} root a <nav> da sub-navegação
  * @param {HTMLElement[]} panels seções do painel, cada uma com data-section
+ * @param {string} [defaultSection] seção quando ?secao= falta ou é desconhecida
  * @returns {{ section: string }} a seção realmente ativa
  */
-export function initSettingsNav(root, panels) {
+export function initSettingsNav(root, panels, defaultSection = DEFAULT_SECTION) {
   const links = [...root.querySelectorAll('.js-section-link')];
   const known = new Set(links.map((link) => link.dataset.section));
 
   const requested = new URLSearchParams(window.location.search).get('secao');
-  const section = known.has(requested) ? requested : DEFAULT_SECTION;
+  const section = known.has(requested) ? requested : defaultSection;
 
   // Seção ausente ou desconhecida: normaliza a URL sem Notyf (guia 8.6 não notifica
   // navegação trivial) e sem criar entrada no histórico

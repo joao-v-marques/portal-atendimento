@@ -91,11 +91,6 @@
    Resumo (data-active-tab="resumo") mostra todas numa grade
    ========================================================================== */
 
-/* As seções têm display próprio (grid), que venceria o [hidden] do navegador */
-.l-sr-panel [hidden] {
-  display: none !important;
-}
-
 .l-sr-panel {
   gap: var(--space-2);
 }
