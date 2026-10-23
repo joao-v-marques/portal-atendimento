@@ -18,7 +18,6 @@ public record AuthorizationRequestRequest(
         String transactionNumber,
 
         @NotNull(message = "Preencha a data da requisição/autorização")
-        @FutureOrPresent(message = "A data da requisição/autorização não pode ser retroativa")
         LocalDate requestDate,
 
         @NotNull(message = "Preencha o tipo da autorização")

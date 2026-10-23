@@ -32,7 +32,6 @@ const AUTHORIZATION_FIELD_RULES = {
   },
   requestDate(value) {
     if (!value) return 'Preencha a data da requisição/autorização';
-    if (value < todayIso()) return 'A data da requisição/autorização não pode ser retroativa';
     return null;
   },
   authorizationTypeId(value) {

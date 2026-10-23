@@ -79,9 +79,7 @@ async function loadOptions() {
 // ── Valores padrão (§12.4) ───────────────────────────────────
 
 function applyDefaults() {
-  const today = todayIso();
-  fields.requestDate.min = today;
-  fields.requestDate.value = today;
+  fields.requestDate.value = todayIso();
 
   // Tipo: pré-seleciona quando só existe uma opção; status: "Em análise"
   if (options.types.length === 1) fields.authorizationTypeId.value = String(options.types[0].id);
