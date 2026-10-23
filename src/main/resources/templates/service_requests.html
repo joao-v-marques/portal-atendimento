@@ -277,6 +277,19 @@
               <p class="c-field__error" id="filtro-ate-error" hidden></p>
             </div>
 
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-prazo">Prazo</label>
+              <div class="c-select-wrapper">
+                <select class="c-select" id="filtro-prazo" name="prazo">
+                  <option value="">Todos</option>
+                  <option value="avencer">Prestes a vencer (4º ou 5º dia útil)</option>
+                  <option value="vencido">Vencidos (mais de 5 dias úteis)</option>
+                  <option value="noprazo">Finalizados no prazo</option>
+                  <option value="comatraso">Finalizados com atraso</option>
+                </select>
+              </div>
+            </div>
+
             <div class="l-filters__actions">
               <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
                 <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
@@ -285,6 +298,52 @@
             </div>
           </form>
         </section>
+
+        <!-- Prazo de 5 dias úteis (seg–sex, sem feriados) desde a abertura. Contagens preenchidas em service-requests.js;
+             os cards ficam sempre visíveis, mesmo zerados -->
+        <div class="l-deadline-cards js-deadline-cards">
+          <section class="c-card c-deadline-card c-deadline-card--warning js-card-warning" aria-labelledby="prazo-avencer-title">
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="prazo-avencer-title">Prestes a vencer</h3>
+            </div>
+            <p class="c-deadline-card__main">
+              <span class="c-deadline-card__count js-warning-count">—</span>
+              <button class="c-deadline-card__action js-warning-action" type="button" aria-label="Ver atendimentos prestes a vencer">
+                Ver atendimentos
+              </button>
+            </p>
+            <p class="c-deadline-card__text">Em aberto no 4º ou 5º dia útil: falta 1 dia útil ou vence hoje.</p>
+          </section>
+
+          <section class="c-card c-deadline-card c-deadline-card--overdue js-card-overdue" aria-labelledby="prazo-vencidos-title">
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="prazo-vencidos-title">Vencidos</h3>
+            </div>
+            <p class="c-deadline-card__main">
+              <span class="c-deadline-card__count js-overdue-count">—</span>
+              <button class="c-deadline-card__action js-overdue-action" type="button" aria-label="Ver atendimentos vencidos">
+                Ver atendimentos
+              </button>
+            </p>
+            <p class="c-deadline-card__text">Em aberto há mais de 5 dias úteis sem finalizar.</p>
+          </section>
+
+          <section class="c-card c-deadline-card c-deadline-card--success js-card-on-time" aria-labelledby="prazo-noprazo-title">
+            <div class="c-deadline-card__header">
+              <span class="c-icon c-icon--sm c-icon--check-circle" aria-hidden="true"></span>
+              <h3 class="c-deadline-card__title" id="prazo-noprazo-title">Finalizados no prazo</h3>
+            </div>
+            <p class="c-deadline-card__main">
+              <span class="c-deadline-card__count js-on-time-count">—</span>
+              <button class="c-deadline-card__action js-on-time-action" type="button" aria-label="Ver atendimentos finalizados no prazo">
+                Ver atendimentos
+              </button>
+            </p>
+            <p class="c-deadline-card__text js-on-time-text">Finalizados em até 5 dias úteis após a abertura.</p>
+          </section>
+        </div>
 
         <section class="l-results js-results" aria-labelledby="resultados-title">
           <h2 class="u-visually-hidden" id="resultados-title">Resultados</h2>

@@ -27,9 +27,23 @@
   display: none;
 }
 
+/* Cards de prazo: empilhados no celular; no tablet os 2 de risco lado a lado e o de
+   finalizados na linha toda; a partir de 960px os 3 numa linha */
+.l-deadline-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
 .l-results {
   display: grid;
   gap: var(--space-2);
+}
+
+/* Aviso de prazo na coluna Abertura: frase curta que não pode ser cortada pelas reticências */
+.c-table__stack > .c-table__deadline--warning {
+  max-width: none;
+  white-space: nowrap;
 }
 
 .l-results__count {
@@ -60,6 +74,14 @@
     grid-column: 1 / -1;
   }
 
+  .l-deadline-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-deadline-cards > .c-deadline-card--success {
+    grid-column: 1 / -1;
+  }
+
   /* Com campos lado a lado, reserva a altura do label (linha + gap do c-field) para o botão alinhar */
   .l-filters__actions::before {
     content: "";
@@ -78,6 +100,14 @@
 @media (min-width: 60em) {
   .l-filters {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .l-deadline-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .l-deadline-cards > .c-deadline-card--success {
+    grid-column: auto;
   }
 
   .l-filters__search {

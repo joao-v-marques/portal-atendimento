@@ -121,6 +121,22 @@ export function businessDaysSince(isoDate, today = new Date()) {
   return count;
 }
 
+const isoDayFormatter = new Intl.DateTimeFormat('en-CA'); // "AAAA-MM-DD", no fuso do navegador
+
+/**
+ * businessDaysSince para um OffsetDateTime: conta a partir do dia dele no fuso do navegador.
+ * Mesmas regras: o próprio dia não conta, sexta → segunda = 1, sem feriados.
+ * @param {string | null | undefined} iso
+ * @param {Date} [today]
+ * @returns {number | null} null quando não há data válida
+ */
+export function businessDaysSinceDateTime(iso, today = new Date()) {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return businessDaysSince(isoDayFormatter.format(date), today);
+}
+
 /**
  * OffsetDateTime → "14/09/2026 às 15:30" (no fuso do navegador).
  * @param {string | null | undefined} iso

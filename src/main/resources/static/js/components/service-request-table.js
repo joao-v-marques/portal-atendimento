@@ -1,5 +1,5 @@
 import { el } from '../core/dom.js';
-import { formatDateTime } from '../core/format.js';
+import { businessDaysSinceDateTime, formatDateTime } from '../core/format.js';
 import { statusBadge } from './authorization-table.js';
 
 export const SORTABLE_KEYS = ['openedAt', 'protocolNumber', 'requesterName', 'statusName', 'assignedToName'];
@@ -7,6 +7,14 @@ export const DEFAULT_SORT = { key: 'openedAt', direction: 'desc' };
 
 // Status de sistema "Finalizado", mesmo id do STATUS_FINISHED_ID do ServiceRequestService (seed da V7)
 export const FINISHED_STATUS_ID = 2;
+
+// Prazo: 5 dias úteis desde a abertura (sem feriados). No 4º e 5º o aviso é preventivo; do 6º em diante venceu
+export const DEADLINE_DAYS = 5;
+export const DEADLINE_WARNING_DAYS = 4;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const shortDateFormatter = new Intl.DateTimeFormat('pt-BR');
+const weekdayFormatter = new Intl.DateTimeFormat('pt-BR', { weekday: 'short' });
 
 const DATE_KEYS = new Set(['openedAt', 'createdAt']);
 const COLUMN_COUNT = 8;
@@ -21,6 +29,136 @@ const collator = new Intl.Collator('pt-BR', { sensitivity: 'base', numeric: true
  */
 export function isFinished(item) {
   return item.statusId === FINISHED_STATUS_ID;
+}
+
+/**
+ * Situação do atendimento diante do prazo de 5 dias úteis desde a abertura.
+ * @param {{ statusId?: number, openedAt?: string }} item
+ * @returns {'done' | 'overdue' | 'warning' | 'ok'}
+ */
+export function deadlineLevel(item) {
+  if (isFinished(item)) return 'done';
+  const days = businessDaysSinceDateTime(item.openedAt) ?? 0;
+  if (days > DEADLINE_DAYS) return 'overdue';
+  if (days >= DEADLINE_WARNING_DAYS) return 'warning';
+  return 'ok';
+}
+
+/**
+ * Folga da finalização frente ao prazo, em dias úteis.
+ * early > 0: antecedência; 0: no último dia; < 0: atraso.
+ * @param {{ openedAt?: string, closedAt?: string | null }} item
+ * @returns {{ used: number, early: number } | null} null quando não há closedAt
+ */
+export function finishLead(item) {
+  if (!item.closedAt) return null;
+  const used = businessDaysSinceDateTime(item.openedAt, new Date(item.closedAt)) ?? 0;
+  return { used, early: DEADLINE_DAYS - used };
+}
+
+/**
+ * Último dia do prazo: o 5º dia útil depois do dia da abertura, no fuso do navegador.
+ * @param {{ openedAt?: string }} item
+ * @returns {Date | null}
+ */
+function deadlineDate(item) {
+  const opened = new Date(item.openedAt);
+  if (Number.isNaN(opened.getTime())) return null;
+  const date = new Date(opened.getFullYear(), opened.getMonth(), opened.getDate());
+  for (let added = 0; added < DEADLINE_DAYS;) {
+    date.setDate(date.getDate() + 1);
+    if (date.getDay() !== 0 && date.getDay() !== 6) added++;
+  }
+  return date;
+}
+
+/**
+ * Último dia do prazo ("26/10/2026").
+ * @param {{ openedAt?: string }} item
+ */
+export function deadlineDateText(item) {
+  const date = deadlineDate(item);
+  return date ? shortDateFormatter.format(date) : '—';
+}
+
+// "Vence hoje" / "Vence amanhã" / "Vence seg." (fim de semana no meio: amanhã não é o dia útil seguinte)
+function dueText(item) {
+  const due = deadlineDate(item);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diff = Math.round((due - today) / DAY_MS);
+  if (diff <= 0) return 'Vence hoje';
+  if (diff === 1) return 'Vence amanhã';
+  return `Vence ${weekdayFormatter.format(due)}`;
+}
+
+function daysLabel(days) {
+  return `${days} ${days === 1 ? 'dia útil' : 'dias úteis'}`;
+}
+
+// 0 dias úteis também acontece no fim de semana (aberto sábado, hoje domingo)
+function openedAgoText(days) {
+  return days === 0 ? 'aberto há menos de 1 dia útil' : `aberto há ${daysLabel(days)}`;
+}
+
+// Selo com ícone: a cor nunca é o único sinal. Frase completa no title (mouse) e no texto oculto (leitor de tela)
+function deadlinePill(variant, icon, shortText, fullText) {
+  return el('span', { className: `c-table__lead c-table__lead--${variant}`, attrs: { title: fullText } }, [
+    el('span', { className: `c-icon c-icon--sm c-icon--${icon}`, attrs: { 'aria-hidden': 'true' } }),
+    el('span', { text: shortText, attrs: { 'aria-hidden': 'true' } }),
+    el('span', { className: 'u-visually-hidden', text: fullText }),
+  ]);
+}
+
+/**
+ * Situação do prazo para a tabela e o detalhe: há quantos dias está aberto ou,
+ * se finalizado, quantos dias antes (verde) ou depois (vermelho) do prazo.
+ * @param {{ statusId?: number, openedAt?: string, closedAt?: string | null }} item
+ */
+export function deadlineInfo(item) {
+  const level = deadlineLevel(item);
+
+  if (level === 'done') {
+    const lead = finishLead(item);
+    if (!lead) return el('span', { className: 'c-table__secondary c-table__deadline--done', text: 'Finalizado' });
+
+    const closed = `Finalizado em ${formatDateTime(item.closedAt)}, ${lead.used === 0 ? 'antes de completar 1 dia útil' : `${daysLabel(lead.used)} após a abertura`}`;
+    if (lead.early > 0) {
+      return deadlinePill('on-time', 'check-circle', `${daysLabel(lead.early)} antes do prazo`,
+        `${closed}: ${daysLabel(lead.early)} antes do prazo de ${DEADLINE_DAYS} dias úteis`);
+    }
+    if (lead.early === 0) {
+      return deadlinePill('on-time', 'check-circle', 'No limite do prazo', `${closed}: no último dia útil do prazo`);
+    }
+    return deadlinePill('late', 'alert', `${daysLabel(-lead.early)} de atraso`,
+      `${closed}: ${daysLabel(-lead.early)} depois do prazo de ${DEADLINE_DAYS} dias úteis`);
+  }
+
+  const days = businessDaysSinceDateTime(item.openedAt);
+  if (days === null) return el('span', { className: 'c-table__secondary', text: '—' });
+
+  const opened = days === 0 && new Date(item.openedAt).toDateString() === new Date().toDateString()
+    ? 'aberto hoje'
+    : openedAgoText(days);
+  if (level === 'ok') {
+    return el('span', { className: 'c-table__secondary', text: opened.charAt(0).toUpperCase() + opened.slice(1) });
+  }
+
+  if (level === 'overdue') {
+    const late = days - DEADLINE_DAYS;
+    return deadlinePill('late', 'alert', `Vencido · há ${daysLabel(days)}`,
+      `Prazo vencido: ${opened}, ${daysLabel(late)} além do prazo de ${DEADLINE_DAYS} dias úteis`);
+  }
+
+  const due = dueText(item);
+  return el('span', {
+    className: 'c-table__secondary c-table__deadline--warning',
+    attrs: { title: `${due} (${deadlineDateText(item)}): ${opened}` },
+  }, [
+    el('span', { className: 'c-icon c-icon--sm c-icon--alert', attrs: { 'aria-hidden': 'true' } }),
+    `${due} · há ${daysLabel(days)}`,
+    el('span', { className: 'u-visually-hidden', text: ` (prazo de ${DEADLINE_DAYS} dias úteis prestes a vencer)` }),
+  ]);
 }
 
 function compareValues(key, a, b) {
@@ -102,7 +240,12 @@ function rowActions(item) {
 
 function renderRow(item) {
   return el('tr', {}, [
-    el('td', { text: formatDateTime(item.openedAt) }),
+    el('td', {}, [
+      el('span', { className: 'c-table__stack' }, [
+        el('span', { text: formatDateTime(item.openedAt) }),
+        deadlineInfo(item),
+      ]),
+    ]),
     el('td', {}, [
       el('span', { className: 'c-table__stack' }, [
         el('span', { className: 'u-text-mono', text: item.protocolNumber }),

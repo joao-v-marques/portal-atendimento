@@ -3,7 +3,7 @@ import { formatDate, formatDateTime, formatPhone } from '../core/format.js';
 import { descriptionItem } from './authorization-detail-dialog.js';
 import { statusBadge } from './authorization-table.js';
 import { initDialog } from './dialog.js';
-import { isFinished } from './service-request-table.js';
+import { deadlineDateText, deadlineInfo, isFinished } from './service-request-table.js';
 import { initTabs } from './tabs.js';
 
 // "12345678901" → "123.456.789-01"; fora do padrão aparece como veio
@@ -73,6 +73,7 @@ export function initServiceRequestDetailDialog(dialogEl, { onEdit, onFinish, onR
       highlightItem('Responsável', item.assignedToName),
       highlightItem('Aberto em', formatDateTime(item.openedAt)),
       highlightItem('Severidade', item.severityName),
+      highlightItem('Prazo', deadlineInfo(item)),
     );
 
     requestList.replaceChildren(
@@ -102,6 +103,7 @@ export function initServiceRequestDetailDialog(dialogEl, { onEdit, onFinish, onR
     deadlinesList.replaceChildren(
       descriptionItem('Responsável', item.assignedToName),
       descriptionItem('Aberto em', formatDateTime(item.openedAt)),
+      descriptionItem('Prazo final', deadlineDateText(item)),
       descriptionItem('Finalizado em', item.closedAt ? formatDateTime(item.closedAt) : ''),
     );
 

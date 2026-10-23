@@ -1,9 +1,10 @@
 import { debounce } from '../core/dom.js';
 import { clearFieldError, setFieldError } from '../core/form.js';
 import { notify } from '../core/notify.js';
+import { deadlineLevel, finishLead } from './service-request-table.js';
 
 /** Nomes dos campos do formulário = chaves na query string. */
-export const FILTER_KEYS = ['busca', 'status', 'tipo', 'categoria', 'responsavel', 'de', 'ate'];
+export const FILTER_KEYS = ['busca', 'status', 'tipo', 'categoria', 'responsavel', 'de', 'ate', 'prazo'];
 
 // ── Dados (funções puras) ────────────────────────────────────
 
@@ -62,6 +63,12 @@ export function applyFilters(items, filters) {
       if (filters.de && day < filters.de) return false;
       if (filters.ate && day > filters.ate) return false;
     }
+    // Mesma regra dos cards de prazo e do selo da tabela
+    if (filters.prazo === 'avencer' && deadlineLevel(item) !== 'warning') return false;
+    if (filters.prazo === 'vencido' && deadlineLevel(item) !== 'overdue') return false;
+    const lead = filters.prazo ? finishLead(item) : null; // null: não finalizado
+    if (filters.prazo === 'noprazo' && !(lead && lead.early >= 0)) return false;
+    if (filters.prazo === 'comatraso' && !(lead && lead.early < 0)) return false;
     return true;
   });
 }
@@ -98,7 +105,7 @@ function isTypingTarget(target) {
  * Liga os eventos do formulário de filtros (mesmo comportamento da tela de autorizações).
  * @param {HTMLFormElement} form
  * @param {{ onChange: (filters: Record<string, string>) => void }} callbacks
- * @returns {{ clear: () => void }}
+ * @returns {{ clear: () => void, replace: (values: Record<string, string>) => void }}
  */
 export function initFilters(form, { onChange }) {
   const searchField = form.elements.namedItem('busca');
@@ -141,6 +148,12 @@ export function initFilters(form, { onChange }) {
     searchField.focus();
   }
 
+  // Troca todos os filtros pelos informados; chaves ausentes ficam vazias (ex.: atalho dos cards de prazo)
+  function replace(values) {
+    fillFilters(form, values);
+    emit();
+  }
+
   form.addEventListener('input', (event) => {
     if (event.target === searchField) emitDebounced();
   });
@@ -168,5 +181,5 @@ export function initFilters(form, { onChange }) {
   syncDateLimits();
   syncClearButton(readFilters(form));
 
-  return { clear };
+  return { clear, replace };
 }
