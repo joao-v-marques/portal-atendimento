@@ -189,8 +189,11 @@
   --container-auth-max: 32rem;  /*  512px — card de login */
   --topbar-height:      4rem;   /*   64px */
   --sidebar-width:      18rem;  /*  288px */
-  --sidebar-rail-width: 5rem;   /*   80px — sidebar retraída: item de 48px + padding de 16px dos lados */
-  --sidebar-item-height: 3rem;  /*   48px */
+  --sidebar-rail-width: 5rem;   /*   80px — sidebar retraída: item de 40px centralizado + padding de 16px dos lados */
+  --sidebar-item-height: 2.5rem;    /* 40px */
+  --sidebar-subitem-height: 2rem;   /* 32px — subitem de um grupo expansível */
+  --sidebar-icon-size: 1.25rem;     /* 20px */
+  --sidebar-font-size: 0.8125rem;   /* 13px — fora da escala de texto de propósito: menu denso, lido de relance */
   --avatar-size:        2rem;   /*   32px */
   --dialog-max-width:   45rem;  /*  720px — modal de detalhe */
   --dialog-max-width-form:    40rem; /* 640px — modal de formulário (guia 11.7) */

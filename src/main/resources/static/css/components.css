@@ -835,7 +835,7 @@
 
 /* Alinhado ao ícone dos links (mesmo padding lateral); caixa alta só visual, o HTML fica em texto normal */
 .c-nav__group-title {
-  padding-inline: var(--space-2);
+  padding-inline: calc(var(--space-1) + var(--space-half));
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-xs);
@@ -845,22 +845,28 @@
   color: var(--color-structure-text-muted);
 }
 
+/* Padding e gap de 12px (sem token próprio): com ícone de 20px o item fica compacto sem apertar */
 .c-nav__link {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: calc(var(--space-1) + var(--space-half));
   min-height: var(--sidebar-item-height);
-  padding: 0 var(--space-2);
+  padding: 0 calc(var(--space-1) + var(--space-half));
   border-radius: var(--radius-md);
-  font-size: var(--text-sm);
+  font-size: var(--sidebar-font-size);
   font-weight: var(--weight-medium);
-  line-height: var(--leading-sm);
+  line-height: var(--leading-xs);
   text-decoration: none;
   /* Rótulo não quebra em duas linhas enquanto a sidebar anima retraindo */
   white-space: nowrap;
   color: var(--color-structure-text-muted);
   transition: background-color var(--duration-fast) var(--ease-standard),
               color var(--duration-fast) var(--ease-standard);
+}
+
+.c-nav__link .c-icon {
+  width: var(--sidebar-icon-size);
+  height: var(--sidebar-icon-size);
 }
 
 .c-nav__link:hover {
@@ -895,23 +901,65 @@
   cursor: pointer;
 }
 
-.c-nav__chevron {
-  --icon: url("img/icon-chevron-down.svg");
+/* Seta para a direita = fechado; gira para baixo ao abrir, apontando para os subitens */
+.c-nav__link .c-nav__chevron {
+  --icon: url("img/icon-chevron-right.svg");
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
   margin-left: auto;
+  opacity: 0.72;
   transition: transform var(--duration-base) var(--ease-standard);
 }
 
 .c-nav__toggle[aria-expanded="true"] .c-nav__chevron {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
 }
 
-/* Recuo indica que os subitens pertencem ao item acima */
+/* Grupo que contém a página atual: o pai fica claro aberto ou fechado,
+   e fechado ganha também o fundo do item ativo (senão a página atual some do menu) */
+.c-nav__list > li:has(.c-nav__sublist [aria-current="page"]) > .c-nav__toggle {
+  color: var(--color-text-inverse);
+}
+
+.c-nav__list > li:has(.c-nav__sublist [aria-current="page"]) > .c-nav__toggle[aria-expanded="false"] {
+  font-weight: var(--weight-semibold);
+  background: var(--color-structure-hover);
+  box-shadow: inset var(--space-half) 0 0 var(--color-brand-detail);
+}
+
+.c-nav__list > li:has(.c-nav__sublist [aria-current="page"]) > .c-nav__toggle[aria-expanded="false"]:focus-visible {
+  box-shadow: inset var(--space-half) 0 0 var(--color-brand-detail), var(--focus-ring-inverse);
+}
+
+/* Linha-guia no centro do ícone do pai: mostra a quem os subitens pertencem sem repetir ícones */
 .c-nav__sublist {
-  margin-top: var(--space-half);
+  gap: 0;
+  margin: var(--space-half) 0 var(--space-1) calc(var(--space-1) + var(--space-half) + var(--sidebar-icon-size) / 2);
+  border-left: var(--border-width) solid var(--color-structure-border);
 }
 
+/* margin negativa: o item ativo pinta a sua barra por cima da linha-guia.
+   padding: texto alinhado ao rótulo do pai */
 .c-nav__sublist .c-nav__link {
-  padding-left: var(--space-4);
+  min-height: var(--sidebar-subitem-height);
+  margin-left: calc(-1 * var(--border-width));
+  padding-left: calc(var(--sidebar-icon-size) / 2 + var(--space-1) + var(--space-half));
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-weight: var(--weight-regular);
+}
+
+.c-nav__sublist .c-nav__link[aria-current="page"] {
+  font-weight: var(--weight-semibold);
+  box-shadow: inset 2px 0 0 var(--color-brand-detail);
+}
+
+.c-nav__sublist .c-nav__link[aria-current="page"]:focus-visible {
+  box-shadow: inset 2px 0 0 var(--color-brand-detail), var(--focus-ring-inverse);
+}
+
+/* Ícones dos subitens só aparecem no trilho retraído (layout.css), onde são a única identificação */
+.c-nav__sublist .c-icon {
+  display: none;
 }
 
 /* ==========================================================================

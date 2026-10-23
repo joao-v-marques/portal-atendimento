@@ -250,9 +250,26 @@
     padding-inline: 0;
   }
 
-  /* Subitens sem recuo no trilho. Seletor mais específico porque components.css vem depois */
+  /* No trilho os subitens perdem a linha-guia e voltam a ter ícone; o fundo mais escuro
+     agrupa os subitens abertos. Seletores mais específicos porque components.css vem depois */
+  .has-sidebar-collapsed .c-nav__sublist {
+    gap: var(--space-half);
+    margin-left: 0;
+    padding-block: var(--space-half);
+    border-left: 0;
+    border-radius: var(--radius-md);
+    background: var(--color-structure-deep);
+  }
+
   .has-sidebar-collapsed .c-nav__sublist .c-nav__link {
+    min-height: var(--sidebar-item-height);
+    margin-left: 0;
     padding-inline: 0;
+    border-radius: var(--radius-md);
+  }
+
+  .has-sidebar-collapsed .c-nav__sublist .c-icon {
+    display: block;
   }
 
   .has-sidebar-collapsed .c-nav__chevron {
