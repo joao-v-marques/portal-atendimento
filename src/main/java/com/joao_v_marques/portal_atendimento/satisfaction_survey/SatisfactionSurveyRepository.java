@@ -53,7 +53,7 @@ public class SatisfactionSurveyRepository {
                 cache = List.of();
                 cacheModifyMs = -1;
                 cacheSize = -1;
-                throw new SatisfactionSurveyException("Arquivo CSV não encontrado. Confira 'relatorio-geral.csv.caminho' e o acesso à pasta do servidor.");
+                throw new SatisfactionSurveyException("Arquivo CSV não encontrado. Confira 'app.satisfaction-survey.csv-path' e o acesso à pasta do servidor.");
             }
 
             BasicFileAttributes attrs = Files.readAttributes(file, BasicFileAttributes.class);
@@ -69,7 +69,7 @@ public class SatisfactionSurveyRepository {
             cacheSize = tamanho;
             return cache;
         } catch (IOException e) {
-            throw new SatisfactionSurveyException("Não foi possível ler o arquivo CSV. Confira o caminho, as permissões e a codificação (app: relatorio-geral.csv.charset).", e);
+            throw new SatisfactionSurveyException("Não foi possível ler o arquivo CSV. Confira o caminho, as permissões e a codificação (app.satisfaction-survey.charset).", e);
         } finally {
             lock.unlock();
         }
