@@ -1,6 +1,5 @@
 package com.joao_v_marques.portal_atendimento.satisfaction_survey;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -9,13 +8,13 @@ import java.util.List;
 public record SatisfactionSurvey(
         LocalDate date,
         LocalTime hour,
-        Integer ask1,
+        Integer question1,
         String finisher,
         Integer time,
         Integer status,
         Integer month,
         String weekDay,
-        Integer answerTime,
+        Integer answerHour,
         String grade
 ) {
 
@@ -32,8 +31,8 @@ public record SatisfactionSurvey(
     public Object[] values() {
         return new Object[] {
                 date.format(DATE_FORMAT), hour.format(HOUR_FORMAT),
-                ask1, finisher, time, status,
-                month, weekDay, answerTime, grade
+                question1, finisher, time, status,
+                month, weekDay, answerHour, grade
         };
     }
 }
