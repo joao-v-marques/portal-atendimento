@@ -1,5 +1,6 @@
 package com.joao_v_marques.portal_atendimento.satisfaction_survey;
 
+import com.joao_v_marques.portal_atendimento.satisfaction_survey.dto.PageResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;

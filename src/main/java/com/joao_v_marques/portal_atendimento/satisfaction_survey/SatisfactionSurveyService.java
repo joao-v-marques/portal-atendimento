@@ -1,6 +1,7 @@
 package com.joao_v_marques.portal_atendimento.satisfaction_survey;
 
 import com.joao_v_marques.portal_atendimento.exception.SatisfactionSurveyException;
+import com.joao_v_marques.portal_atendimento.satisfaction_survey.dto.PageResponse;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Service;

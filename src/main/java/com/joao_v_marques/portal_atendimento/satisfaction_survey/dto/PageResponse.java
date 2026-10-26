@@ -1,4 +1,4 @@
-package com.joao_v_marques.portal_atendimento.satisfaction_survey;
+package com.joao_v_marques.portal_atendimento.satisfaction_survey.dto;
 
 import java.util.List;
 
