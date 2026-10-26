@@ -1,8 +1,5 @@
 package com.joao_v_marques.portal_atendimento.authorization.authorization_request.dto;
 
-import com.joao_v_marques.portal_atendimento.authorization.authorization_status.AuthorizationStatus;
-import com.joao_v_marques.portal_atendimento.authorization.authorization_type.AuthorizationType;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

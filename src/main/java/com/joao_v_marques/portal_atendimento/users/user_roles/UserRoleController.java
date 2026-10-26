@@ -4,12 +4,10 @@ import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleIsActi
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleRequest;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleResponse;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.attribute.standard.Media;
 import java.net.URI;
 import java.util.List;
 
