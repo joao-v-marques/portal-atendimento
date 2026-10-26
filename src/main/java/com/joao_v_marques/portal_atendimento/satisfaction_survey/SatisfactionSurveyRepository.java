@@ -83,9 +83,14 @@ public class SatisfactionSurveyRepository {
             List<SatisfactionSurvey> list = new ArrayList<>();
 
             for (int i = 1; i < records.size(); i++) {
+                CSVRecord rec = records.get(i);
+                // Linha só com separadores (";;;;;;;;;"): sobra da planilha, não é registro
+                if (rec.stream().allMatch(String::isBlank)) {
+                    continue;
+                }
                 boolean ultimo = i == records.size() - 1;
                 try {
-                    list.add(convert(records.get(i)));
+                    list.add(convert(rec));
                 } catch (SatisfactionSurveyException e) {
                     if (!ultimo) {
                         throw e;
