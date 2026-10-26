@@ -1087,7 +1087,8 @@
 
 .c-table td {
   height: var(--space-6);
-  padding: 0 var(--space-2);
+  /* Padding vertical só pesa em células de duas linhas (data + pill); as de uma linha seguem com 48px */
+  padding: var(--space-1) var(--space-2);
   border-top: var(--border-width) solid var(--color-border);
   white-space: nowrap;
 }
@@ -1148,12 +1149,12 @@
   justify-self: start;
   align-items: center;
   gap: var(--space-half);
-  margin-top: var(--space-half);
-  padding: 0 var(--space-1);
+  /* Data (24px) + pill (20px) cabem na célula de 48px sem encostar na borda de baixo */
+  padding: calc(var(--space-half) / 2) var(--space-1);
   border-radius: var(--radius-full);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
-  line-height: var(--leading-sm);
+  line-height: var(--leading-xs);
   white-space: nowrap;
 }
 
