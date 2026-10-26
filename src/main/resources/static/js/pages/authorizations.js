@@ -83,6 +83,9 @@ const table = initAuthorizationTable(results, {
   onFinish(id, opener) {
     finishAuthorization(state.itemsById.get(id), opener);
   },
+  onReopen(id, opener) {
+    reopenAuthorization(state.itemsById.get(id), opener);
+  },
 });
 
 const finishDialog = initConfirmDialog(finishDialogEl);
@@ -245,6 +248,51 @@ async function finishAuthorization(item, opener) {
     // O botão Finalizar sumiu da linha: o foco vai para o Detalhes dela ou, se a linha
     // saiu do filtro (ex.: prazo vencido), para os resultados — senão cairia no <body>
     if (!table.focusRowAction(updated.id, '.js-view')) table.focusResults();
+  } catch (error) {
+    opener.disabled = false;
+    opener.classList.remove('is-loading');
+    handleError(error);
+  }
+}
+
+// ── Reabrir ──────────────────────────────────────────────────
+
+async function reopenAuthorization(item, opener) {
+  if (!item) return;
+
+  finishDetails.replaceChildren(
+    descriptionItem('Nº da transação', item.transactionNumber),
+    descriptionItem('Beneficiário', item.beneficiaryName),
+    descriptionItem('Tipo', item.authorizationTypeName),
+    descriptionItem('Status atual', item.authorizationStatusName),
+    descriptionItem('Finalizada em', formatDate(item.finishDate)),
+  );
+
+  // Mesmo diálogo do Finalizar: título, descrição e botão são trocados a cada ask
+  const confirmed = await finishDialog.ask({
+    title: `Reabrir a autorização ${item.transactionNumber}?`,
+    description: `A autorização de ${item.beneficiaryName || 'beneficiário não informado'} voltará a ficar em aberto `
+      + 'e a contar no prazo da ANS. A data de finalização será removida.',
+    confirmLabel: 'Reabrir autorização',
+    opener,
+  });
+  if (!confirmed) return;
+
+  opener.disabled = true;
+  opener.classList.add('is-loading');
+  try {
+    const updated = await api.patch(`api/authorization-requests/${encodeURIComponent(item.id)}/reopen`);
+
+    const index = state.items.findIndex((entry) => entry.id === updated.id);
+    if (index >= 0) state.items[index] = updated;
+    state.itemsById.set(updated.id, updated);
+
+    notify.success(`Autorização ${updated.transactionNumber} reaberta.`);
+    renderDeadlineCards();
+    render();
+
+    // O Reabrir virou Finalizar na mesma linha; se ela saiu do filtro, foco nos resultados
+    if (!table.focusRowAction(updated.id, '.js-finish')) table.focusResults();
   } catch (error) {
     opener.disabled = false;
     opener.classList.remove('is-loading');

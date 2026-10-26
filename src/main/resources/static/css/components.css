@@ -471,6 +471,7 @@
 .c-icon--check-circle  { --icon: url("img/icon-check-circle.svg"); }
 .c-icon--copy          { --icon: url("img/icon-copy.svg"); }
 .c-icon--moon          { --icon: url("img/icon-moon.svg"); }
+.c-icon--rotate-ccw    { --icon: url("img/icon-rotate-ccw.svg"); }
 
 /* ==========================================================================
    Brand (logo do portal)

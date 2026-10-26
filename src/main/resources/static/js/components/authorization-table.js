@@ -183,7 +183,7 @@ function renderRow(item) {
     'Detalhes',
   ]);
 
-  // Já finalizada não tem o que finalizar: o backend recusaria e a coluna Cadastro já diz "Finalizado"
+  // Em aberto pode ser finalizada; já finalizada só pode ser reaberta
   const actions = [viewButton];
   if (deadlineLevel(item) !== 'done') {
     actions.push(el('button', {
@@ -196,6 +196,18 @@ function renderRow(item) {
     }, [
       el('span', { className: 'c-icon c-icon--sm c-icon--check-circle', attrs: { 'aria-hidden': 'true' } }),
       'Finalizar',
+    ]));
+  } else {
+    actions.push(el('button', {
+      className: 'c-button c-button--secondary c-button--sm js-reopen',
+      attrs: {
+        type: 'button',
+        'data-request-id': String(item.id),
+        'aria-label': `Reabrir a autorização ${item.transactionNumber}`,
+      },
+    }, [
+      el('span', { className: 'c-icon c-icon--sm c-icon--rotate-ccw', attrs: { 'aria-hidden': 'true' } }),
+      'Reabrir',
     ]));
   }
 
@@ -243,9 +255,10 @@ function renderSkeletonRow() {
  *   onSort: (key: string) => void,
  *   onView: (id: number, opener: HTMLElement) => void,
  *   onFinish: (id: number, opener: HTMLElement) => void,
+ *   onReopen: (id: number, opener: HTMLElement) => void,
  * }} callbacks
  */
-export function initAuthorizationTable(root, { onSort, onView, onFinish }) {
+export function initAuthorizationTable(root, { onSort, onView, onFinish, onReopen }) {
   const wrapper = root.querySelector('.js-table-wrapper');
   const tbody = root.querySelector('.js-table-body');
   const stateArea = root.querySelector('.js-table-state');
@@ -263,6 +276,9 @@ export function initAuthorizationTable(root, { onSort, onView, onFinish }) {
 
     const finishButton = event.target.closest('.js-finish');
     if (finishButton && !finishButton.disabled) onFinish(Number(finishButton.dataset.requestId), finishButton);
+
+    const reopenButton = event.target.closest('.js-reopen');
+    if (reopenButton && !reopenButton.disabled) onReopen(Number(reopenButton.dataset.requestId), reopenButton);
   });
 
   function showTable() {
