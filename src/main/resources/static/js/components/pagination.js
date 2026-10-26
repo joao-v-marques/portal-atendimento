@@ -6,13 +6,14 @@ const numberFormatter = new Intl.NumberFormat('pt-BR');
  * Recorta a página atual (paginação no cliente enquanto a API não pagina).
  * @param {object[]} items
  * @param {number} page página pedida (é ajustada se passar dos limites)
+ * @param {number} [pageSize] linhas por página (padrão PAGE_SIZE)
  */
-export function paginate(items, page) {
+export function paginate(items, page, pageSize = PAGE_SIZE) {
   const total = items.length;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const current = Math.min(Math.max(1, page), totalPages);
-  const start = (current - 1) * PAGE_SIZE;
-  const pageItems = items.slice(start, start + PAGE_SIZE);
+  const start = (current - 1) * pageSize;
+  const pageItems = items.slice(start, start + pageSize);
 
   return { pageItems, page: current, totalPages, total, from: start + 1, to: start + pageItems.length };
 }
