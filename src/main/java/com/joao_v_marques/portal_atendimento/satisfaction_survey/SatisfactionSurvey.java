@@ -36,24 +36,4 @@ public record SatisfactionSurvey(
                 month, weekDay, answerTime, grade
         };
     }
-
-    // Para novos registros: calcula mês, dia da semana e hora resposta a partir de data e hora.
-    public static SatisfactionSurvey novo(LocalDate date, LocalTime hour, Integer ask1,
-                                      String finisher, Integer time, Integer status,
-                                      String grade) {
-        return new SatisfactionSurvey(date, hour, ask1, finisher, time, status,
-                date.getMonthValue(), abbreviate(date.getDayOfWeek()), hour.getHour(), grade);
-    }
-
-    private static String abbreviate(DayOfWeek d) {
-        return switch (d) {
-            case MONDAY -> "SEG";
-            case TUESDAY -> "TER";
-            case WEDNESDAY -> "QUA";
-            case THURSDAY -> "QUI";
-            case FRIDAY -> "SEX";
-            case SATURDAY -> "SAB";
-            case SUNDAY -> "DOM";
-        };
-    }
 }
