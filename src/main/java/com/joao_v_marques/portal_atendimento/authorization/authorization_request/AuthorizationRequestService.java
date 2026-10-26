@@ -109,6 +109,26 @@ public class AuthorizationRequestService {
         return toResponse(authorizationRequest);
     }
 
+    @Transactional
+    public AuthorizationRequestResponse reopenAuthorization(Integer authorizationId) {
+        AuthorizationRequest authorizationRequest = authorizationRequestRepository.findByIdForUpdate(authorizationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhuma autorização com o ID informado."));
+        AuthorizationStatus authorizationStatus = authorizationStatusRepository.findById(1)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum status de autorização com o ID informado."));
+
+        if (!authorizationStatus.isActive()) {
+            throw new IllegalArgumentException("Não é possível alterar para um status inativo.");
+        }
+        if (authorizationRequest.getAuthorizationStatus().getId().equals(1)) {
+            throw new IllegalArgumentException("Este pedido já está ativo.");
+        }
+
+        authorizationRequest.setAuthorizationStatus(authorizationStatus);
+        authorizationRequest.setFinishDate(null);
+
+        return toResponse(authorizationRequest);
+    }
+
     private AuthorizationRequestResponse toResponse(AuthorizationRequest authorizationRequest) {
         return new AuthorizationRequestResponse(
                 authorizationRequest.getId(),

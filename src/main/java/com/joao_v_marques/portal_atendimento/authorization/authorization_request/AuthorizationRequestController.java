@@ -55,6 +55,14 @@ public class AuthorizationRequestController {
         return ResponseEntity.ok(authorizationRequest);
     }
 
+    // Reabrir uma autorização fechada.
+    @PatchMapping("/{id}/reopen")
+    public ResponseEntity<AuthorizationRequestResponse> reopenAuthorization(@PathVariable Integer id) {
+        AuthorizationRequestResponse authorizationRequest = authorizationRequestService.reopenAuthorization(id);
+
+        return ResponseEntity.ok(authorizationRequest);
+    }
+
     private ResponseEntity<AuthorizationRequestResponse> created(AuthorizationRequestResponse created) {
         URI location = URI.create("/api/authorization-requests/" + created.id());
 
