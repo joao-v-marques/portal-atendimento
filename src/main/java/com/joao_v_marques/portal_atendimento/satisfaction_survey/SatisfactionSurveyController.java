@@ -1,6 +1,7 @@
 package com.joao_v_marques.portal_atendimento.satisfaction_survey;
 
 import com.joao_v_marques.portal_atendimento.satisfaction_survey.dto.PageResponse;
+import com.joao_v_marques.portal_atendimento.satisfaction_survey.dto.SatisfactionSurveyDashboard;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 @RestController
 @RequestMapping("/api/satisfaction-surveys")
@@ -33,6 +35,14 @@ public class SatisfactionSurveyController {
             @RequestParam(defaultValue = "50") int size) {
 
         return service.list(start, end, page, size);
+    }
+
+    // GET com os indicadores do mês já agrupados. Sem ?month=2022-09 usa o mês mais recente do CSV
+    @GetMapping("/dashboard")
+    public SatisfactionSurveyDashboard dashboard(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
+
+        return service.dashboard(month);
     }
 
     // GET que baixa o CSV do período. attachment + filename* preserva acentos no nome do arquivo
