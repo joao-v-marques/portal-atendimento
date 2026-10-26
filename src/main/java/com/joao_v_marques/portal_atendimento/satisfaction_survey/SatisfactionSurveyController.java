@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/relatorio-geral")
+@RequestMapping("/api/satisfaction-surveys")
 public class SatisfactionSurveyController {
 
     private final SatisfactionSurveyService service;
@@ -25,7 +25,7 @@ public class SatisfactionSurveyController {
 
     // GET paginado. Filtros opcionais: ?inicio=2022-05-01&fim=2022-05-31&pagina=0&tamanho=50
     @GetMapping
-    public PageResponse<SatisfactionSurvey> listar(
+    public PageResponse<SatisfactionSurvey> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
             @RequestParam(defaultValue = "0") int page,
@@ -35,7 +35,7 @@ public class SatisfactionSurveyController {
     }
 
     // GET que baixa o CSV do período. attachment + filename* preserva acentos no nome do arquivo
-    @GetMapping("/exportar")
+    @GetMapping("/export")
     public ResponseEntity<byte[]> export(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
