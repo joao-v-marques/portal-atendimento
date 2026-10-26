@@ -1,0 +1,215 @@
+/* ==========================================================================
+   Pesquisa de Satisfação — abas, listagem e dashboard
+   Filtros e resultados seguem o layout da tela de autorizações
+   ========================================================================== */
+
+/* Escala das notas nos gráficos (lida em components/satisfaction-charts.js):
+   vermelho → laranja → âmbar → verde-claro → verde; sem resposta em cinza */
+:root {
+  --grade-1:    #b3261e;
+  --grade-2:    var(--orange-500);
+  --grade-3:    #d9a400;
+  --grade-4:    var(--green-300);
+  --grade-5:    var(--green-700);
+  --grade-none: var(--neutral-300);
+}
+
+:root[data-theme="dark"] {
+  --grade-1:    #f08a80;
+  --grade-2:    #f2a65e;
+  --grade-3:    #e3c45a;
+  --grade-4:    #3f8f6c;
+  --grade-5:    #5cc597;
+  --grade-none: #4a5155;
+}
+
+/* Abas coladas no conteúdo, com a linha de base separando do painel */
+.l-survey-tabs {
+  margin-bottom: var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+/* ── Listagem ─────────────────────────────────────────────── */
+
+/* Filtros principais sempre visíveis; os extras abrem pelo "Mais filtros" */
+.l-survey-filters {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.l-survey-filters__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  align-items: start;
+}
+
+/* "Mais filtros" à esquerda, "Limpar filtros" à direita */
+.l-survey-filters__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.l-survey-filters__chevron {
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.l-survey-filters__toggle[aria-expanded="true"] .l-survey-filters__chevron {
+  transform: rotate(90deg);
+}
+
+/* Quantos filtros extras estão ativos: aparece mesmo com o painel fechado */
+.l-survey-filters__count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding-inline: var(--space-half);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.l-results {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Contagem à esquerda e "Linhas por página" à direita; empilha no celular estreito */
+.l-results__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-2);
+}
+
+.l-results__count {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+.l-results__page-size {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.l-results__page-size .c-select {
+  min-height: var(--control-height-sm);
+  width: 5.5rem;
+}
+
+.l-survey-table__date {
+  display: grid;
+}
+
+.l-survey-table__number {
+  font-family: var(--font-mono);
+}
+
+/* Selo da nota: a cor acompanha a escala dos gráficos, o texto "Nota N" é o sinal principal */
+.c-grade-badge--1    { background: var(--color-error-bg);       color: var(--color-error); }
+.c-grade-badge--2    { background: var(--color-warning-bg);     color: var(--color-warning); }
+.c-grade-badge--3    { background: var(--status-analysis-bg);   color: var(--status-analysis-text); }
+.c-grade-badge--4,
+.c-grade-badge--5    { background: var(--status-done-bg);       color: var(--status-done-text); }
+.c-grade-badge--none { background: var(--status-neutral-bg);    color: var(--status-neutral-text); }
+
+/* ── Dashboard ────────────────────────────────────────────── */
+
+.l-dashboard {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.l-dashboard-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.l-kpis {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.l-charts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+/* minmax(0, 1fr): sem isso a coluna mede pelo canvas e o gráfico não encolhe ao estreitar a tela */
+.c-chart-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr;
+  gap: var(--space-half);
+  min-width: 0; /* o canvas encolhe junto com a coluna do grid */
+}
+
+.c-chart-card__title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-md);
+}
+
+.c-chart-card__subtitle {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+/* Altura fixa: o Chart.js usa maintainAspectRatio: false e ocupa este espaço */
+.c-chart-card__canvas {
+  position: relative;
+  height: 15rem;
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 37.5em) {
+  .l-survey-filters__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-dashboard-toolbar {
+    grid-template-columns: minmax(0, 18rem);
+  }
+
+  .l-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .c-chart-card__canvas {
+    height: 18rem;
+  }
+}
+
+@media (min-width: 60em) {
+  .l-survey-filters__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .l-kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  /* Barras em pares lado a lado; as linhas do tempo ocupam a largura toda */
+  .l-charts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .c-chart-card--wide {
+    grid-column: 1 / -1;
+  }
+}

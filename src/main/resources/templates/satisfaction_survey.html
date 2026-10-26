@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pesquisa de Satisfação · Portal de Atendimento</title>
+
+  <!-- Antes do CSS: aplica a sidebar retraída antes da 1ª pintura (chave igual à de app-shell.js) -->
+  <script>try { if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('has-sidebar-collapsed'); } catch (e) {}</script>
+
+  <!-- Antes do CSS: aplica o tema salvo (ou o do sistema) antes da 1ª pintura (chave igual à de core/theme.js) -->
+  <script>try { var t = localStorage.getItem('theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/vendor/notyf.min.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/notyf-theme.css">
+  <link rel="stylesheet" href="css/pages/satisfaction-survey.css">
+
+  <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
+  <script src="js/vendor/notyf.min.js" defer></script>
+  <script src="js/vendor/chart.umd.min.js" defer></script>
+  <script type="module" src="js/pages/satisfaction-survey.js"></script>
+</head>
+<body class="l-shell">
+  <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="l-topbar js-topbar">
+    <button
+      class="c-icon-button c-icon-button--inverse l-topbar__menu-button js-menu-open"
+      type="button"
+      aria-controls="menu-principal"
+      aria-expanded="false"
+      aria-label="Abrir menu"
+      title="Abrir menu"
+    >
+      <span class="c-icon c-icon--menu" aria-hidden="true"></span>
+    </button>
+
+    <a class="c-brand c-brand--logo" href="home">
+      <img class="c-brand__logo" src="css/img/logo-2023.png" alt="Unimed S. S. do Paraíso – Início" width="529" height="195">
+    </a>
+
+    <div class="l-topbar__spacer"></div>
+
+    <div class="l-topbar__actions">
+      <div class="c-user-menu js-user-menu">
+        <button
+          class="c-user-menu__trigger js-dropdown-trigger"
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="menu-usuario"
+        >
+          <span class="c-user-chip js-user-chip" aria-busy="true">
+            <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
+            <span class="c-user-chip__text">
+              <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
+              <span class="c-user-chip__role js-user-role"></span>
+            </span>
+          </span>
+          <span class="c-icon c-icon--sm c-user-menu__chevron" aria-hidden="true"></span>
+        </button>
+
+        <ul class="c-user-menu__list js-dropdown-list" id="menu-usuario" role="menu" aria-label="Opções da conta" hidden>
+          <li role="none">
+            <!-- Estado em aria-checked (core/theme.js); data-keep-open: o menu fica aberto para ver a troca -->
+            <button class="c-user-menu__item js-theme-toggle" type="button" role="menuitemcheckbox" aria-checked="false" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--moon" aria-hidden="true"></span>
+              <span>Tema escuro</span>
+              <span class="c-switch" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="c-user-menu__item js-own-password-open" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--key" aria-hidden="true"></span>
+              Alterar senha
+            </button>
+          </li>
+          <li class="c-user-menu__separator" role="separator"></li>
+          <li role="none">
+            <button class="c-user-menu__item js-logout" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
+              <span class="js-logout-label">Sair</span>
+            </button>
+          </li>
+          <!-- Novas opções: outro <li role="none"> com <button> ou <a> role="menuitem" tabindex="-1" -->
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <nav class="l-sidebar js-sidebar" id="menu-principal" aria-label="Menu principal">
+    <div class="l-sidebar__header">
+      <button
+        class="c-icon-button c-icon-button--inverse js-menu-close"
+        type="button"
+        aria-label="Fechar menu"
+        title="Fechar menu"
+      >
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <ul class="c-nav__list">
+      <li>
+        <a class="c-nav__link" href="home">
+          <span class="c-icon c-icon--home" aria-hidden="true"></span>
+          <span class="c-nav__label">Início</span>
+        </a>
+      </li>
+      <li>
+        <a class="c-nav__link" href="pesquisa-satisfacao" aria-current="page">
+          <span class="c-icon c-icon--chart" aria-hidden="true"></span>
+          <span class="c-nav__label">Pesquisa de Satisfação</span>
+        </a>
+      </li>
+      <!-- Item expansível: o botão alterna a sublista (app-shell.js). Vem aberto na página que está dentro dele -->
+      <!-- Só para ADMIN e EMPLOYEE: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-authorization-only" hidden>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-sub-autorizacoes"
+        >
+          <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+          <span class="c-nav__label">Autorizações</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-autorizacoes" hidden>
+          <li>
+            <a class="c-nav__link" href="autorizacoes">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Controlar autorizações</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="lancar-autorizacao">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Lançar autorização</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <!-- Só para ADMIN e colaborador do relacionamento: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-service-request-only" hidden>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-sub-atendimentos"
+        >
+          <span class="c-icon c-icon--file-text" aria-hidden="true"></span>
+          <span class="c-nav__label">Atendimentos</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-atendimentos" hidden>
+          <li>
+            <a class="c-nav__link" href="controlar-atendimentos">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Controlar atendimentos</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="registrar-atendimento">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Registrar atendimento</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="configurar-atendimentos">
+              <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+              <span class="c-nav__label">Configurar atendimentos</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <!-- Base da sidebar: Configurações é sempre o último item, logo acima do rodapé -->
+    <div class="l-sidebar__bottom">
+      <!-- Só para ADMIN: revelado em app-shell.js. Esconder é UX; a proteção real é o backend -->
+      <div class="c-nav__group js-admin-only" hidden>
+        <p class="c-nav__group-title" id="nav-grupo-administracao">Administração</p>
+        <ul class="c-nav__list" aria-labelledby="nav-grupo-administracao">
+          <li>
+            <a class="c-nav__link" href="configuracoes">
+              <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+              <span class="c-nav__label">Configurações</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <footer class="l-sidebar__footer">
+        <p class="l-sidebar__footer-title">Portal de Atendimento</p>
+        <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>
+      </footer>
+    </div>
+  </nav>
+
+  <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
+
+  <main class="l-main js-main" id="conteudo" tabindex="-1">
+    <div class="l-container">
+      <header class="l-page-header l-page-header--with-action">
+        <div class="l-page-header__text">
+          <h1>Pesquisa de Satisfação</h1>
+          <p class="l-page-header__subtitle">Respostas da pesquisa enviada ao fim de cada atendimento.</p>
+        </div>
+        <!-- Exporta o que está na tela: o período da listagem ou o mês do dashboard -->
+        <button class="c-button c-button--secondary js-export" type="button">
+          <span class="c-icon c-icon--sm c-icon--download" aria-hidden="true"></span>
+          Exportar CSV
+        </button>
+      </header>
+
+      <!-- Abas do components/tabs.js: um painel só, cada seção com data-tab (sem aba "resumo") -->
+      <div class="c-tabs l-survey-tabs js-survey-tabs">
+        <div class="c-tabs__list" role="tablist" aria-label="Visualização da pesquisa">
+          <button class="c-tabs__tab" type="button" role="tab" id="aba-listagem" data-tab-key="listagem" aria-controls="painel-pesquisa" aria-selected="true" tabindex="0">
+            <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+            Listagem
+          </button>
+          <button class="c-tabs__tab" type="button" role="tab" id="aba-dashboard" data-tab-key="dashboard" aria-controls="painel-pesquisa" aria-selected="false" tabindex="-1">
+            <span class="c-icon c-icon--sm c-icon--chart" aria-hidden="true"></span>
+            Dashboard
+          </button>
+        </div>
+      </div>
+
+      <div id="painel-pesquisa" role="tabpanel" aria-labelledby="aba-listagem">
+        <!-- ── Listagem ─────────────────────────────────────── -->
+        <div class="l-section" data-tab="listagem">
+          <section class="c-card" aria-labelledby="filtros-title">
+            <h2 class="u-visually-hidden" id="filtros-title">Filtros</h2>
+
+            <!-- Filtros aplicados no navegador (components/satisfaction-survey-filters.js); os selects
+                 desabilitados recebem as opções a partir dos dados carregados -->
+            <form class="l-survey-filters js-filters" role="search" aria-labelledby="filtros-title" novalidate>
+              <div class="l-survey-filters__grid">
+                <div class="c-field">
+                  <label class="c-field__label" for="filtro-de">Data de</label>
+                  <input class="c-input" id="filtro-de" name="de" type="date" aria-describedby="filtro-de-error">
+                  <p class="c-field__error" id="filtro-de-error" hidden></p>
+                </div>
+
+                <div class="c-field">
+                  <label class="c-field__label" for="filtro-ate">Data até</label>
+                  <input class="c-input" id="filtro-ate" name="ate" type="date" aria-describedby="filtro-ate-error">
+                  <p class="c-field__error" id="filtro-ate-error" hidden></p>
+                </div>
+
+                <div class="c-field">
+                  <label class="c-field__label" for="filtro-dia-semana">Dia da semana</label>
+                  <div class="c-select-wrapper">
+                    <select class="c-select" id="filtro-dia-semana" name="diaSemana" disabled>
+                      <option value="">Todos</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="c-field">
+                  <label class="c-field__label" for="filtro-nota">Nota</label>
+                  <div class="c-select-wrapper">
+                    <select class="c-select" id="filtro-nota" name="nota">
+                      <option value="">Todas</option>
+                      <option value="validas">Válidas (1 a 5)</option>
+                      <option value="5">Nota 5</option>
+                      <option value="4">Nota 4</option>
+                      <option value="3">Nota 3</option>
+                      <option value="2">Nota 2</option>
+                      <option value="1">Nota 1</option>
+                      <option value="sem-resposta">Sem resposta</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="l-survey-filters__grid js-extra-filters" id="filtros-extras" hidden>
+                <div class="c-field">
+                  <label class="c-field__label" for="filtro-perg1">Perg. 1</label>
+                  <div class="c-select-wrapper">
+                    <select class="c-select" id="filtro-perg1" name="perg1" disabled>
+                      <option value="">Todas</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="c-field">
+                  <label class="c-field__label" for="filtro-finalizador">Finalizador</label>
+                  <div class="c-select-wrapper">
+                    <select class="c-select" id="filtro-finalizador" name="finalizador" disabled>
+                      <option value="">Todos</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="c-field">
+                  <label class="c-field__label" for="filtro-status">Status</label>
+                  <div class="c-select-wrapper">
+                    <select class="c-select" id="filtro-status" name="status" disabled>
+                      <option value="">Todos</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="c-field">
+                  <label class="c-field__label" for="filtro-horario">Horário da resposta</label>
+                  <div class="c-select-wrapper">
+                    <select class="c-select" id="filtro-horario" name="horario" disabled>
+                      <option value="">Todos</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="l-survey-filters__footer">
+                <!-- O número mostra quantos filtros extras estão ativos mesmo com o painel fechado -->
+                <button class="c-button c-button--ghost c-button--sm l-survey-filters__toggle js-extra-toggle" type="button" aria-expanded="false" aria-controls="filtros-extras">
+                  <span class="c-icon c-icon--sm c-icon--chevron-right l-survey-filters__chevron" aria-hidden="true"></span>
+                  Mais filtros
+                  <span class="l-survey-filters__count js-extra-count" hidden></span>
+                  <span class="u-visually-hidden">ativos</span>
+                </button>
+
+                <button class="c-button c-button--secondary c-button--sm js-clear-filters" type="button" hidden>
+                  <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                  Limpar filtros
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="l-results js-results" aria-labelledby="resultados-title">
+            <h2 class="u-visually-hidden" id="resultados-title">Respostas</h2>
+
+            <div class="l-results__toolbar">
+              <p class="l-results__count js-results-count" aria-live="polite"></p>
+              <div class="l-results__page-size">
+                <label class="c-field__label" for="linhas-por-pagina">Linhas por página</label>
+                <div class="c-select-wrapper">
+                  <select class="c-select js-page-size" id="linhas-por-pagina">
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="250">250</option>
+                    <option value="500">500</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-title" tabindex="0">
+              <table class="c-table l-survey-table">
+                <caption class="u-visually-hidden">Respostas da pesquisa de satisfação</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Data</th>
+                    <th scope="col">Nota</th>
+                    <th scope="col">Finalizador</th>
+                    <th scope="col" class="u-text-end">Tempo</th>
+                    <th scope="col" class="u-text-end">Status</th>
+                    <th scope="col" class="u-text-end">Perg. 1</th>
+                  </tr>
+                </thead>
+                <tbody class="js-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="js-table-state" tabindex="-1" hidden></div>
+
+            <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+              <p class="c-pagination__summary js-page-summary"></p>
+              <div class="c-pagination__controls">
+                <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                  <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                  Anterior
+                </button>
+                <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+                <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                  Próxima
+                  <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+                </button>
+              </div>
+            </nav>
+          </section>
+        </div>
+
+        <!-- ── Dashboard ────────────────────────────────────── -->
+        <div class="l-section js-dashboard" data-tab="dashboard" hidden>
+          <section class="c-card l-dashboard-toolbar" aria-labelledby="dashboard-filtros-title">
+            <h2 class="u-visually-hidden" id="dashboard-filtros-title">Período do dashboard</h2>
+            <div class="c-field">
+              <label class="c-field__label" for="filtro-mes">Mês</label>
+              <div class="c-select-wrapper">
+                <select class="c-select js-month" id="filtro-mes" name="mes" disabled>
+                  <option value="">Carregando…</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <div class="js-dashboard-state" tabindex="-1" hidden></div>
+
+          <div class="l-dashboard js-dashboard-content" aria-busy="true">
+            <!-- Indicadores do mês; números preenchidos em satisfaction-survey.js -->
+            <div class="l-kpis">
+              <section class="c-card c-deadline-card c-deadline-card--neutral" aria-labelledby="kpi-total-title">
+                <div class="c-deadline-card__header">
+                  <span class="c-icon c-icon--sm c-icon--clipboard" aria-hidden="true"></span>
+                  <h3 class="c-deadline-card__title" id="kpi-total-title">Respostas no mês</h3>
+                </div>
+                <p class="c-deadline-card__main"><span class="c-deadline-card__count js-kpi-total">—</span></p>
+                <p class="c-deadline-card__text">Pesquisas registradas, com ou sem nota.</p>
+              </section>
+
+              <section class="c-card c-deadline-card c-deadline-card--success" aria-labelledby="kpi-validas-title">
+                <div class="c-deadline-card__header">
+                  <span class="c-icon c-icon--sm c-icon--check-circle" aria-hidden="true"></span>
+                  <h3 class="c-deadline-card__title" id="kpi-validas-title">Respostas válidas</h3>
+                </div>
+                <p class="c-deadline-card__main"><span class="c-deadline-card__count js-kpi-valid">—</span></p>
+                <p class="c-deadline-card__text js-kpi-valid-text">Com nota de 1 a 5.</p>
+              </section>
+
+              <section class="c-card c-deadline-card c-deadline-card--success" aria-labelledby="kpi-satisfacao-title">
+                <div class="c-deadline-card__header">
+                  <span class="c-icon c-icon--sm c-icon--users" aria-hidden="true"></span>
+                  <h3 class="c-deadline-card__title" id="kpi-satisfacao-title">Satisfação</h3>
+                </div>
+                <p class="c-deadline-card__main"><span class="c-deadline-card__count js-kpi-satisfaction">—</span></p>
+                <p class="c-deadline-card__text">Notas 4 e 5 entre as respostas válidas.</p>
+              </section>
+
+              <section class="c-card c-deadline-card c-deadline-card--warning" aria-labelledby="kpi-sem-resposta-title">
+                <div class="c-deadline-card__header">
+                  <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+                  <h3 class="c-deadline-card__title" id="kpi-sem-resposta-title">Sem resposta</h3>
+                </div>
+                <p class="c-deadline-card__main"><span class="c-deadline-card__count js-kpi-no-answer">—</span></p>
+                <p class="c-deadline-card__text js-kpi-no-answer-text">Pesquisas sem nota.</p>
+              </section>
+            </div>
+
+            <!-- Cada gráfico: título, descrição curta e canvas com aria-label atualizado no JS -->
+            <div class="l-charts">
+              <section class="c-card c-chart-card" aria-labelledby="grafico-horario-title">
+                <h3 class="c-chart-card__title" id="grafico-horario-title">Total de respostas por horário</h3>
+                <p class="c-chart-card__subtitle">Respostas por hora do dia, divididas por nota.</p>
+                <div class="c-chart-card__canvas"><canvas class="js-chart-hour" role="img" aria-label="Gráfico de respostas por horário"></canvas></div>
+              </section>
+
+              <section class="c-card c-chart-card" aria-labelledby="grafico-semana-title">
+                <h3 class="c-chart-card__title" id="grafico-semana-title">Avaliações por dia da semana</h3>
+                <p class="c-chart-card__subtitle">Respostas por dia da semana, divididas por nota.</p>
+                <div class="c-chart-card__canvas"><canvas class="js-chart-weekday" role="img" aria-label="Gráfico de avaliações por dia da semana"></canvas></div>
+              </section>
+
+              <section class="c-card c-chart-card" aria-labelledby="grafico-geral-title">
+                <h3 class="c-chart-card__title" id="grafico-geral-title">Distribuição por nota – Geral</h3>
+                <p class="c-chart-card__subtitle">Percentual de cada nota sobre todas as respostas.</p>
+                <div class="c-chart-card__canvas"><canvas class="js-chart-grade-all" role="img" aria-label="Gráfico de distribuição por nota, geral"></canvas></div>
+              </section>
+
+              <section class="c-card c-chart-card" aria-labelledby="grafico-validas-title">
+                <h3 class="c-chart-card__title" id="grafico-validas-title">Distribuição por nota – Válidas</h3>
+                <p class="c-chart-card__subtitle">Percentual de cada nota, sem contar as sem resposta.</p>
+                <div class="c-chart-card__canvas"><canvas class="js-chart-grade-valid" role="img" aria-label="Gráfico de distribuição por nota, válidas"></canvas></div>
+              </section>
+
+              <section class="c-card c-chart-card c-chart-card--wide" aria-labelledby="grafico-dia-title">
+                <h3 class="c-chart-card__title" id="grafico-dia-title">Avaliações por dia do mês</h3>
+                <p class="c-chart-card__subtitle">Total de respostas em cada dia com pesquisa.</p>
+                <div class="c-chart-card__canvas"><canvas class="js-chart-day" role="img" aria-label="Gráfico de avaliações por dia do mês"></canvas></div>
+              </section>
+
+              <section class="c-card c-chart-card c-chart-card--wide" aria-labelledby="grafico-meses-title">
+                <h3 class="c-chart-card__title" id="grafico-meses-title">Avaliações por mês – Últimos 6 meses</h3>
+                <p class="c-chart-card__subtitle">Total de respostas por mês até o mês selecionado.</p>
+                <div class="c-chart-card__canvas"><canvas class="js-chart-months" role="img" aria-label="Gráfico de avaliações nos últimos 6 meses"></canvas></div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Alterar a própria senha (menu do usuário). Ids minha-senha-* para não colidir com o
+       diálogo de redefinir senha das configurações -->
+  <dialog class="c-dialog c-dialog--form js-own-password-dialog" aria-labelledby="minha-senha-title" aria-describedby="minha-senha-description">
+    <form class="c-dialog__form js-own-password-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title" id="minha-senha-title">Alterar senha</h2>
+          <p class="c-field__hint" id="minha-senha-description">Depois de salvar, você sai do portal e entra de novo com a nova senha.</p>
+        </div>
+        <button class="c-icon-button js-own-password-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-nova">
+            Nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <div class="c-input-group">
+            <input
+              class="c-input"
+              id="minha-senha-nova"
+              name="password"
+              type="password"
+              required
+              autocomplete="new-password"
+              aria-describedby="minha-senha-nova-hint minha-senha-nova-error minha-senha-caps-lock"
+            >
+            <button
+              class="c-input-group__action js-own-password-toggle"
+              type="button"
+              aria-controls="minha-senha-nova"
+              aria-pressed="false"
+              aria-label="Mostrar senha"
+              title="Mostrar senha"
+            >
+              <span class="c-input-group__icon" aria-hidden="true"></span>
+            </button>
+          </div>
+          <p class="c-field__hint" id="minha-senha-nova-hint">De 4 a 72 caracteres.</p>
+          <p class="c-field__hint c-field__hint--warning js-own-password-caps-lock" id="minha-senha-caps-lock" aria-live="polite"></p>
+          <p class="c-field__error" id="minha-senha-nova-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-confirmacao">
+            Repetir a nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input"
+            id="minha-senha-confirmacao"
+            name="passwordConfirm"
+            type="password"
+            required
+            autocomplete="new-password"
+            aria-describedby="minha-senha-confirmacao-error"
+          >
+          <p class="c-field__error" id="minha-senha-confirmacao-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-own-password-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary" type="submit">Alterar senha</button>
+      </footer>
+    </form>
+  </dialog>
+</body>
+</html>
