@@ -12,6 +12,12 @@ app:
   storage:
     documents-root: ${DOCUMENTS_ROOT:./uploads/documents}
     max-files-per-request: 10
+  relatorio-geral:
+    csv:
+      csvPath: ${SATISFACTION_CSV_PATH:\\srvarq\TI\pesquisa_satisfacao_atendimento\relatorio-geral-2.csv}
+      delimiter: ";"
+      charset: UTF-8
+
 
 spring:
   datasource:
