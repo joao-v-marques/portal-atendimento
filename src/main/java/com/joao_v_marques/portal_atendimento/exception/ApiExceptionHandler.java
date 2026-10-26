@@ -92,7 +92,8 @@ public class ApiExceptionHandler {
     // Tratamento para erros na lógica de busca CSV da pesquisa de satisfação
     @ExceptionHandler(SatisfactionSurveyException.class)
     public ResponseEntity<ApiError> handleSatisfactionSurvey(SatisfactionSurveyException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        log.error("Falha na leitura do CSV da pesquisa de satisfação", ex);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(ApiError.of(ex.getMessage()));
     }
 
