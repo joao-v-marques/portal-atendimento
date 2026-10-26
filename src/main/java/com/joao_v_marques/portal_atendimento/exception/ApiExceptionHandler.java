@@ -89,6 +89,13 @@ public class ApiExceptionHandler {
                 .body(ApiError.of(ex.getMessage()));
     }
 
+    // Tratamento para erros na lógica de busca CSV da pesquisa de satisfação
+    @ExceptionHandler(SatisfactionSurveyException.class)
+    public ResponseEntity<ApiError> handleSatisfactionSurvey(SatisfactionSurveyException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiError.of(ex.getMessage()));
+    }
+
     private String messageOf(FieldError error) {
         return error.isBindingFailure()
                 ? "O valor informado não é válido para este campo."
