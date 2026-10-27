@@ -11,8 +11,10 @@ services:
       DOCUMENTS_ROOT: /data/documents
       TZ: America/Sao_Paulo
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=75
+      SATISFACTION_CSV_PATH: /data/srvarq/pesquisa_satisfacao_atendimento/relatorio-geral-2.csv
     volumes:
       - /srv/portal-atendimento/data/documents:/data/documents
+      - /mnt/srvarq/TI:/data/srvarq:ro
     depends_on:
       postgres:
         condition: service_healthy
