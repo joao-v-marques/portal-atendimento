@@ -61,7 +61,7 @@ public class AuthController {
     // dados mínimos do usuário logado para a interface (o JS não lê o cookie HttpOnly)
     @GetMapping("/me")
     public CurrentUserResponse me(@AuthenticationPrincipal UserPrincipal principal) {
-        return new CurrentUserResponse(principal.getName(), principal.getUsername(), principal.getRoleName());
+        return new CurrentUserResponse(principal.getName(), principal.getUsername(), principal.getRoleName(), principal.getRoleLabel());
     }
 
     // PATCH troca da senha do próprio usuário logado (qualquer perfil). O id vem do token, nunca da URL,

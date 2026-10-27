@@ -19,6 +19,9 @@ public class UserRole {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @Column(name = "label", nullable = false, unique = true)
+    private String label;
+
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 }

@@ -3,6 +3,7 @@ package com.joao_v_marques.portal_atendimento.users.user_roles;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleIsActiveResponse;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleRequest;
 import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleResponse;
+import com.joao_v_marques.portal_atendimento.users.user_roles.dto.UserRoleUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +38,9 @@ public class UserRoleController {
         return ResponseEntity.created(location).body(created);
     }
 
-    // PUT de uma role já existente
+    // PUT de uma role já existente (só o nome de exibição; o código não muda)
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserRoleResponse> update(@PathVariable Integer id, @Valid @RequestBody UserRoleRequest request) {
+    public ResponseEntity<UserRoleResponse> update(@PathVariable Integer id, @Valid @RequestBody UserRoleUpdateRequest request) {
         UserRoleResponse updated = userRoleService.update(id, request);
 
         return ResponseEntity.ok(updated);
