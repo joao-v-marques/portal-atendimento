@@ -33,8 +33,8 @@ function revealServiceRequestItems(user) {
   document.querySelectorAll('.js-service-request-only').forEach((node) => { node.hidden = false; });
 }
 
-// Autorizações: o colaborador do relacionamento não acessa (backend: hasAnyRole("ADMIN", "EMPLOYEE_SERVICE"))
-export const AUTHORIZATION_ROLES = ['ADMIN', 'EMPLOYEE_SERVICE'];
+// Autorizações: o colaborador do relacionamento não acessa (backend: hasAnyRole("ADMIN", "EMPLOYEE_SERVICE", "MANAGER_SERVICE"))
+export const AUTHORIZATION_ROLES = ['ADMIN', 'EMPLOYEE_SERVICE', 'MANAGER_SERVICE'];
 
 function revealAuthorizationItems(user) {
   if (!AUTHORIZATION_ROLES.includes(user.role)) return;

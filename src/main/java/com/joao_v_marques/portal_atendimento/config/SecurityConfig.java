@@ -55,7 +55,7 @@ public class SecurityConfig {
 
                         // Autorizações: o colaborador do relacionamento só usa Início e o registro de atendimentos
                         .requestMatchers("/autorizacoes", "/lancar-autorizacao",
-                                "/api/authorization-requests/**", "/api/authorization-status/**", "/api/authorization-types/**").hasAnyRole("ADMIN", "EMPLOYEE_SERVICE")
+                                "/api/authorization-requests/**", "/api/authorization-status/**", "/api/authorization-types/**").hasAnyRole("ADMIN", "EMPLOYEE_SERVICE", "MANAGER_SERVICE")
 
                         // Pesquisa de satisfação: só ADMIN e gestores do atendimento (tela, listagem, dashboard e exportação)
                         .requestMatchers("/pesquisa-satisfacao", "/api/satisfaction-surveys/**").hasAnyRole("ADMIN", "MANAGER_SERVICE")
