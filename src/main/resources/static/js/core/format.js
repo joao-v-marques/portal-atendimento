@@ -22,7 +22,7 @@ const FILE_TYPE_LABELS = {
 
 const ROLE_LABELS = {
   ADMIN: 'Administrador',
-  EMPLOYEE: 'Colaborador',
+  EMPLOYEE_SERVICE: 'Colaborador do atendimento',
   EMPLOYEE_RELATIONSHIP: 'Colaborador do relacionamento',
 };
 

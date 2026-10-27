@@ -55,7 +55,7 @@ public class SecurityConfig {
 
                         // Autorizações: o colaborador do relacionamento só usa Início e o registro de atendimentos
                         .requestMatchers("/autorizacoes", "/lancar-autorizacao",
-                                "/api/authorization-requests/**", "/api/authorization-status/**", "/api/authorization-types/**").hasAnyRole("ADMIN", "EMPLOYEE")
+                                "/api/authorization-requests/**", "/api/authorization-status/**", "/api/authorization-types/**").hasAnyRole("ADMIN", "EMPLOYEE_SERVICE")
 
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
