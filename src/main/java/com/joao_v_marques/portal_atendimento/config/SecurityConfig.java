@@ -57,6 +57,9 @@ public class SecurityConfig {
                         .requestMatchers("/autorizacoes", "/lancar-autorizacao",
                                 "/api/authorization-requests/**", "/api/authorization-status/**", "/api/authorization-types/**").hasAnyRole("ADMIN", "EMPLOYEE_SERVICE")
 
+                        // Pesquisa de satisfação: só ADMIN e gestores do atendimento (tela, listagem, dashboard e exportação)
+                        .requestMatchers("/pesquisa-satisfacao", "/api/satisfaction-surveys/**").hasAnyRole("ADMIN", "MANAGER_SERVICE")
+
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())

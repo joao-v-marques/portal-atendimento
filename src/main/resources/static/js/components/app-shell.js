@@ -41,6 +41,14 @@ function revealAuthorizationItems(user) {
   document.querySelectorAll('.js-authorization-only').forEach((node) => { node.hidden = false; });
 }
 
+// Pesquisa de satisfação: só administrador e gestor do atendimento (backend: hasAnyRole("ADMIN", "MANAGER_SERVICE"))
+const SATISFACTION_SURVEY_ROLES = ['ADMIN', 'MANAGER_SERVICE'];
+
+function revealSatisfactionSurveyItems(user) {
+  if (!SATISFACTION_SURVEY_ROLES.includes(user.role)) return;
+  document.querySelectorAll('.js-satisfaction-survey-only').forEach((node) => { node.hidden = false; });
+}
+
 function renderUser(chip, user) {
   const name = displayName(user);
   chip.querySelector('.js-user-avatar').textContent = getInitials(name);
@@ -50,6 +58,7 @@ function renderUser(chip, user) {
   revealAdminItems(user);
   revealServiceRequestItems(user);
   revealAuthorizationItems(user);
+  revealSatisfactionSurveyItems(user);
 }
 
 function renderUserUnavailable(chip) {
