@@ -1,6 +1,6 @@
 import { getCurrentUser, logout } from '../core/auth.js';
 import { handleError } from '../core/errors.js';
-import { getInitials, roleLabel } from '../core/format.js';
+import { getInitials } from '../core/format.js';
 import { getTheme, toggleTheme } from '../core/theme.js';
 import { initDropdownMenu } from './dropdown-menu.js';
 import { initOwnPasswordDialog } from './own-password-dialog.js';
@@ -45,7 +45,7 @@ function renderUser(chip, user) {
   const name = displayName(user);
   chip.querySelector('.js-user-avatar').textContent = getInitials(name);
   chip.querySelector('.js-user-name').textContent = name;
-  chip.querySelector('.js-user-role').textContent = roleLabel(user.role);
+  chip.querySelector('.js-user-role').textContent = user.roleLabel || user.role;
   chip.removeAttribute('aria-busy');
   revealAdminItems(user);
   revealServiceRequestItems(user);

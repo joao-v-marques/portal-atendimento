@@ -2,15 +2,15 @@ import { initAppShell } from '../components/app-shell.js';
 import { emptyState } from '../components/authorization-table.js';
 import { initConfirmDialog } from '../components/confirm-dialog.js';
 import { initPagination, paginate } from '../components/pagination.js';
+import { initRolesPanel } from '../components/roles-panel.js';
 import { DEFAULT_SECTION, initSettingsNav } from '../components/settings-nav.js';
 import { initUserDialog } from '../components/user-dialog.js';
 import { initUserPasswordDialog } from '../components/user-password-dialog.js';
-import { DEFAULT_SORT, SORTABLE_KEYS, initUsersTable, nextSort, sortUsers, userRoleName } from '../components/users-table.js';
+import { DEFAULT_SORT, SORTABLE_KEYS, initUsersTable, nextSort, sortUsers, userRoleLabel } from '../components/users-table.js';
 import { ApiRequestError, api } from '../core/api.js';
 import { getCurrentUser } from '../core/auth.js';
 import { debounce, el } from '../core/dom.js';
 import { handleError } from '../core/errors.js';
-import { roleLabel } from '../core/format.js';
 import { notify } from '../core/notify.js';
 
 const SITUATIONS = ['ativos', 'inativos', 'todos'];
@@ -89,7 +89,7 @@ function applyFilters(users, { busca, situacao }) {
     if (situacao === 'inativos' && user.isActive) return false;
     if (!term) return true;
 
-    const haystack = [user.username, user.name, user.email, roleLabel(userRoleName(user))]
+    const haystack = [user.username, user.name, user.email, userRoleLabel(user)]
       .map(normalize)
       .join(' ');
 
@@ -388,7 +388,13 @@ document.addEventListener('keydown', (event) => {
   const isTyping = target instanceof Element && target.closest('input, select, textarea, [contenteditable="true"]');
   if (isTyping || document.querySelector('dialog[open]')) return;
   event.preventDefault();
-  searchField.focus();
+  activeSearchField.focus();
 });
 
-loadUsers();
+// A troca de seção recarrega a página (settings-nav.js), então só a aba ativa carrega dados
+let activeSearchField = searchField;
+if (state.section === 'funcoes') {
+  activeSearchField = initRolesPanel(document.querySelector('#painel-funcoes'), { confirmDialog }).searchField;
+} else {
+  loadUsers();
+}

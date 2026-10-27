@@ -226,6 +226,12 @@
                 Usuários
               </a>
             </li>
+            <li>
+              <a class="c-subnav__link js-section-link" href="configuracoes?secao=funcoes" data-section="funcoes">
+                <span class="c-icon c-icon--sm c-icon--shield" aria-hidden="true"></span>
+                Funções
+              </a>
+            </li>
             <!-- Nova seção = novo <li> aqui + nova <section class="l-settings__panel js-panel" data-section="..." hidden> -->
           </ul>
         </nav>
@@ -321,6 +327,110 @@
             <div class="js-table-state" tabindex="-1" hidden></div>
 
             <nav class="c-pagination js-pagination" aria-label="Paginação" hidden>
+              <p class="c-pagination__summary js-page-summary"></p>
+              <div class="c-pagination__controls">
+                <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
+                  <span class="c-icon c-icon--sm c-icon--chevron-left" aria-hidden="true"></span>
+                  Anterior
+                </button>
+                <span class="c-pagination__page js-page-label" aria-live="polite"></span>
+                <button class="c-button c-button--secondary c-button--sm js-page-next" type="button">
+                  Próxima
+                  <span class="c-icon c-icon--sm c-icon--chevron-right" aria-hidden="true"></span>
+                </button>
+              </div>
+            </nav>
+          </section>
+        </section>
+
+        <!-- Ids e classes js-roles-*: o settings.js busca os da aba Usuários por classe no documento inteiro -->
+        <section
+          class="l-settings__panel js-panel"
+          id="painel-funcoes"
+          data-section="funcoes"
+          aria-labelledby="painel-funcoes-title"
+          hidden
+        >
+          <header class="l-page-header l-page-header--with-action">
+            <div class="l-page-header__text">
+              <h2 id="painel-funcoes-title">Funções</h2>
+              <p class="l-page-header__subtitle">Os perfis de acesso que podem ser atribuídos aos usuários.</p>
+            </div>
+            <button class="c-button c-button--primary js-new-role" type="button">
+              <span class="c-icon c-icon--sm c-icon--shield" aria-hidden="true"></span>
+              Nova função
+            </button>
+          </header>
+
+          <section class="c-card" aria-labelledby="filtros-funcoes-title">
+            <h3 class="u-visually-hidden" id="filtros-funcoes-title">Filtros</h3>
+
+            <form class="l-filters js-roles-filters" role="search" aria-labelledby="filtros-funcoes-title" novalidate>
+              <div class="c-field l-filters__search">
+                <label class="c-field__label" for="filtro-funcoes-busca">Buscar</label>
+                <div class="c-search">
+                  <input
+                    class="c-input"
+                    id="filtro-funcoes-busca"
+                    name="busca"
+                    type="search"
+                    aria-describedby="filtro-funcoes-busca-hint"
+                    placeholder="Nome ou código da função"
+                    autocomplete="off"
+                    spellcheck="false"
+                  >
+                </div>
+                <p class="u-visually-hidden" id="filtro-funcoes-busca-hint">Atalho: tecla barra para focar a busca.</p>
+              </div>
+
+              <div class="c-field">
+                <label class="c-field__label" for="filtro-funcoes-situacao">Situação</label>
+                <div class="c-select-wrapper">
+                  <select class="c-select" id="filtro-funcoes-situacao" name="situacao">
+                    <option value="ativos">Ativas</option>
+                    <option value="inativos">Inativas</option>
+                    <option value="todos">Todas</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="l-filters__actions">
+                <button class="c-button c-button--secondary js-roles-clear-filters" type="button" hidden>
+                  <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
+                  Limpar filtros
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="l-results js-roles-results" aria-labelledby="resultados-funcoes-title">
+            <h3 class="u-visually-hidden" id="resultados-funcoes-title">Resultados</h3>
+            <p class="l-results__count js-roles-count" aria-live="polite"></p>
+
+            <div class="c-table-wrapper js-roles-table-wrapper" role="region" aria-labelledby="resultados-funcoes-title" tabindex="0">
+              <table class="c-table c-roles-table">
+                <caption class="u-visually-hidden">Funções cadastradas</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" data-sort-key="label" aria-sort="ascending">
+                      <button class="c-table__sort js-sort" type="button">Função <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" data-sort-key="name" aria-sort="none">
+                      <button class="c-table__sort js-sort" type="button">Código <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" data-sort-key="activeUsers" aria-sort="none">
+                      <button class="c-table__sort js-sort" type="button">Usuários ativos <span class="c-icon c-icon--sm c-table__sort-icon" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" class="u-text-end"><span class="u-visually-hidden">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody class="js-roles-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="js-roles-table-state" tabindex="-1" hidden></div>
+
+            <nav class="c-pagination js-roles-pagination" aria-label="Paginação das funções" hidden>
               <p class="c-pagination__summary js-page-summary"></p>
               <div class="c-pagination__controls">
                 <button class="c-button c-button--secondary c-button--sm js-page-previous" type="button">
@@ -455,6 +565,72 @@
         </button>
         <button class="c-button c-button--secondary js-user-dismiss" type="button">Cancelar</button>
         <button class="c-button c-button--primary js-user-submit" type="submit">Criar usuário</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Criar / editar função. Ids funcao-* para não colidir com o diálogo de usuário -->
+  <dialog class="c-dialog c-dialog--form js-role-dialog" aria-labelledby="funcao-dialog-title">
+    <form class="c-dialog__form js-role-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title js-role-dialog-title" id="funcao-dialog-title">Nova função</h2>
+          <p class="c-field__hint">Campos com * são obrigatórios.</p>
+        </div>
+        <button class="c-icon-button js-role-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <div class="c-field">
+          <label class="c-field__label" for="funcao-label">
+            Nome <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input"
+            id="funcao-label"
+            name="label"
+            type="text"
+            maxlength="100"
+            required
+            autocomplete="off"
+            aria-describedby="funcao-label-hint funcao-label-error"
+          >
+          <p class="c-field__hint" id="funcao-label-hint">Como a função aparece para as pessoas, ex.: Colaborador do financeiro.</p>
+          <p class="c-field__error" id="funcao-label-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="funcao-name">
+            Código <span class="c-field__required js-role-code-required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input u-text-mono"
+            id="funcao-name"
+            name="name"
+            type="text"
+            maxlength="50"
+            required
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            aria-describedby="funcao-name-hint funcao-name-error"
+          >
+          <p class="c-field__hint js-role-code-hint" id="funcao-name-hint"></p>
+          <p class="c-field__error" id="funcao-name-error" hidden></p>
+        </div>
+
+        <!-- Só na criação: quem cria precisa saber que a função nova não libera telas sozinha -->
+        <div class="c-role-note js-role-create-note" role="note">
+          <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
+          <p>Uma função nova dá acesso só ao Início do portal. Liberar Autorizações, Atendimentos ou Configurações para ela exige um ajuste no sistema.</p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-role-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary js-role-submit" type="submit">Criar função</button>
       </footer>
     </form>
   </dialog>

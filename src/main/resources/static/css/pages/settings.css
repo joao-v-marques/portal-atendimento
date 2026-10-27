@@ -164,3 +164,159 @@
   width: var(--border-width);
   background: var(--color-border);
 }
+
+/* ==========================================================================
+   Tabela e diálogo de funções
+   ========================================================================== */
+
+/* Nome com selo, no mesmo ritmo do avatar da tabela de usuários */
+.c-role-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.c-role-cell__icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+/* Nome e selos quebram linha quando falta espaço: a tabela cabe no painel sem rolar
+   e a coluna de ações continua visível */
+.c-role-cell__text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-half) var(--space-1);
+  min-width: 8rem;
+  /* As células da c-table não quebram linha por padrão */
+  white-space: normal;
+}
+
+.c-role-cell__label {
+  font-weight: var(--weight-semibold);
+}
+
+
+/* Código como etiqueta: diferencia do nome de exibição sem pesar na leitura */
+.c-code {
+  display: inline-block;
+  padding: 0 var(--space-1);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  white-space: nowrap;
+  /* Códigos longos não empurram as ações: cortados com reticências, completos no title */
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.c-role-users-link {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.c-role-users-link:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Aviso da criação: informa sem alarmar (não é erro, é consequência da ação) */
+.c-role-note {
+  display: flex;
+  gap: var(--space-1);
+  align-items: flex-start;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.c-role-note .c-icon {
+  flex: none;
+  /* Alinha o ícone à primeira linha do texto */
+  margin-top: calc((var(--leading-sm) - 1rem) / 2);
+}
+
+.c-role-note[hidden] {
+  display: none;
+}
+
+/* Celular: cada função vira um cartão. Com 4 colunas a coluna fixa de ações cobriria
+   o nome, que é justamente o que identifica a linha */
+@media (max-width: 37.49em) {
+  .l-settings .c-roles-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .l-settings .c-roles-table,
+  .l-settings .c-roles-table tbody {
+    display: block;
+  }
+
+  .l-settings .c-roles-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-2);
+    align-items: center;
+    padding: var(--space-2);
+    border-top: var(--border-width) solid var(--color-border);
+    /* A linha inativa usa c-table__secondary, que limita a largura (pensado para células) */
+    max-width: none;
+  }
+
+  .l-settings .c-roles-table tbody tr:first-child {
+    border-top: 0;
+  }
+
+  .l-settings .c-roles-table td {
+    padding: 0;
+    border: 0;
+  }
+
+  /* Nome na linha inteira; código e usuários lado a lado; ações embaixo */
+  .l-settings .c-roles-table td:first-child,
+  .l-settings .c-roles-table td:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .l-settings .c-roles-table td:nth-child(3) {
+    justify-self: end;
+  }
+
+  .l-settings .c-roles-table td:last-child {
+    position: static;
+  }
+
+  .l-settings .c-roles-table td:last-child::before {
+    content: none;
+  }
+
+  .l-settings .c-roles-table .c-row-actions > * {
+    flex: 1;
+  }
+
+  .l-settings .c-roles-table .c-code {
+    max-width: 100%;
+  }
+}

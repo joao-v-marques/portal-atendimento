@@ -20,12 +20,6 @@ const FILE_TYPE_LABELS = {
   'image/png': 'PNG',
 };
 
-const ROLE_LABELS = {
-  ADMIN: 'Administrador',
-  EMPLOYEE_SERVICE: 'Colaborador do atendimento',
-  EMPLOYEE_RELATIONSHIP: 'Colaborador do relacionamento',
-};
-
 /**
  * "Segunda-feira, 14 de setembro de 2026".
  * @param {Date} date
@@ -48,11 +42,11 @@ export function getInitials(name) {
 }
 
 /**
- * Nome do perfil em pt-BR; perfis desconhecidos aparecem como vieram da API.
- * @param {string | null | undefined} role
+ * Nome de exibição da função (cadastrado em Configurações → Funções); sem ele, o código.
+ * @param {{ name?: string | null, label?: string | null } | null | undefined} role
  */
 export function roleLabel(role) {
-  return ROLE_LABELS[role] ?? String(role ?? '');
+  return role?.label?.trim() || role?.name || '';
 }
 
 export const onlyDigits = (value) => String(value ?? '').replace(/\D/g, '');

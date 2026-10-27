@@ -159,6 +159,53 @@ export function validateUser(values) {
   return errors;
 }
 
+// ── Funções (roles) ──────────────────────────────────────────
+
+// Limites e mensagens espelhados de UserRoleRequest/UserRoleUpdateRequest
+export const ROLE_CODE_MAX = 50;
+export const ROLE_LABEL_MAX = 100;
+export const ROLE_CODE_PATTERN = /^[A-Z][A-Z0-9_]*$/;
+
+const ROLE_FIELD_RULES = {
+  label(value) {
+    const label = String(value ?? '').trim();
+    if (!label) return 'Preencha o nome da função';
+    if (label.length > ROLE_LABEL_MAX) return `O nome deve ter no máximo ${ROLE_LABEL_MAX} caracteres`;
+    return null;
+  },
+  name(value) {
+    const code = String(value ?? '').trim();
+    if (!code) return 'Preencha o código da função';
+    if (code.length > ROLE_CODE_MAX) return `O código deve ter no máximo ${ROLE_CODE_MAX} caracteres`;
+    if (!ROLE_CODE_PATTERN.test(code)) return 'Use só letras maiúsculas, números e _, começando por letra';
+    return null;
+  },
+};
+
+/**
+ * @param {string} name nome do campo (= propriedade do DTO)
+ * @param {unknown} value
+ * @returns {string | null} mensagem de erro ou null
+ */
+export function validateRoleField(name, value) {
+  const rule = ROLE_FIELD_RULES[name];
+  return rule ? rule(value) : null;
+}
+
+/**
+ * Como validateUser: só as chaves presentes (o PUT não leva o código).
+ * @param {Record<string, unknown>} values
+ * @returns {Record<string, string>}
+ */
+export function validateRole(values) {
+  const errors = {};
+  for (const name of Object.keys(values)) {
+    const message = validateRoleField(name, values[name]);
+    if (message) errors[name] = message;
+  }
+  return errors;
+}
+
 // ── Atendimentos ─────────────────────────────────────────────
 
 // Limites e mensagens espelhados de ServiceRequestRequest/ServiceRequestFinishRequest

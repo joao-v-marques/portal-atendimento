@@ -16,7 +16,7 @@ const FIELD_NAMES = ['username', 'name', 'email', 'roleId', 'password'];
  * Mantém o perfil atual do usuário na lista mesmo se ele estiver inativo, para não
  * desaparecer da tela ao editar.
  * @param {HTMLSelectElement} select
- * @param {{ id: number, name: string, active?: boolean, isActive?: boolean }[]} roles
+ * @param {{ id: number, name: string, label?: string, active?: boolean, isActive?: boolean }[]} roles
  * @param {number | null} selectedId
  */
 function fillRoleOptions(select, roles, selectedId) {
@@ -24,7 +24,7 @@ function fillRoleOptions(select, roles, selectedId) {
   const available = roles.filter((role) => isActive(role) || role.id === selectedId);
 
   const options = available.map((role) => el('option', {
-    text: roleLabel(role.name),
+    text: roleLabel(role),
     attrs: { value: String(role.id) },
   }));
 

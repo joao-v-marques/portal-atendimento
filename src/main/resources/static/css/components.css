@@ -468,6 +468,7 @@
 .c-icon--user-x        { --icon: url("img/icon-user-x.svg"); }
 .c-icon--user-check    { --icon: url("img/icon-user-check.svg"); }
 .c-icon--key           { --icon: url("img/icon-key.svg"); }
+.c-icon--shield        { --icon: url("img/icon-shield.svg"); }
 .c-icon--check-circle  { --icon: url("img/icon-check-circle.svg"); }
 .c-icon--copy          { --icon: url("img/icon-copy.svg"); }
 .c-icon--moon          { --icon: url("img/icon-moon.svg"); }

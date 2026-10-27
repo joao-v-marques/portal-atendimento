@@ -20,19 +20,19 @@ function formatCreatedAt(iso) {
 
 /**
  * O perfil vem aninhado: UserResponse.roleId serializa a entidade UserRole inteira
- * ({ id, name, active }), não um id. O nome do campo é herdado do DTO de escrita.
- * @param {{ roleId?: { id?: number, name?: string } }} user
+ * ({ id, name, label, active }), não um id. O nome do campo é herdado do DTO de escrita.
+ * @param {{ roleId?: { id?: number, name?: string, label?: string } }} user
  */
 export function userRoleId(user) {
   return user?.roleId?.id ?? null;
 }
 
-export function userRoleName(user) {
-  return user?.roleId?.name ?? '';
+export function userRoleLabel(user) {
+  return roleLabel(user?.roleId);
 }
 
 function sortValue(user, key) {
-  if (key === 'roleName') return roleLabel(userRoleName(user));
+  if (key === 'roleName') return userRoleLabel(user);
   if (key === 'createdAt') return user.createdAt ?? '';
   return user[key] ?? '';
 }
@@ -134,7 +134,7 @@ function renderRow(user, currentUserId) {
     el('td', {}, [el('span', { className: 'u-text-mono', text: user.username })]),
     el('td', {}, [nameCell(user, isCurrentUser)]),
     el('td', {}, [truncated(user.email)]),
-    el('td', { text: roleLabel(userRoleName(user)) || '—' }),
+    el('td', { text: userRoleLabel(user) || '—' }),
     el('td', { text: formatCreatedAt(user.createdAt) }),
     actionsCell(user, isCurrentUser),
   ]);
