@@ -14,13 +14,17 @@ const SKELETON_DOCUMENTS = 2;
  */
 function beneficiaryMessage(item) {
   const name = item.beneficiaryName?.trim();
-  const greeting = name ? `Olá, ${name}!` : 'Olá!';
+  const greeting = name ? `Olá, ${name}!\n` : 'Olá!\n';
   const lead = finishLead(item);
-  const leadText = lead && lead.early > 0
-    ? ` com ${finishLeadText(lead)} em relação ao prazo estabelecido pela ANS`
-    : '';
-  return `${greeting} Sua solicitação de autorização nº ${item.transactionNumber} foi autorizada${leadText}. `
-    + 'Em caso de dúvidas, estamos à disposição. Unimed S. S. do Paraíso.';
+  const authorized = lead && lead.early > 0
+    ? 'Informamos que sua solicitação foi AUTORIZADA ANTES DO PRAZO máximo estabelecido pela Agência Nacional de Saúde Suplementar (ANS).\n\n'
+      + `Solicitação nº ${item.transactionNumber} foi autorizada com ${finishLeadText(lead)}.\n`
+    : `Informamos que sua solicitação nº ${item.transactionNumber} foi AUTORIZADA.\n`;
+  return `${greeting}${authorized}\n`
+    + 'A Unimed busca oferecer agilidade e qualidade no atendimento, mantendo o compromisso com o cuidado e a atenção aos nossos beneficiários.\n'
+    + 'Conte conosco! 💚\n'
+    + 'Em caso de dúvidas, estamos à disposição.\n'
+    + 'Unimed São Sebastião do Paraíso';
 }
 
 export function descriptionItem(term, value) {
