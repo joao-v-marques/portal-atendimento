@@ -10,8 +10,6 @@ import { initServiceRequestFinishDialog } from '../components/service-request-fi
 import {
   DEFAULT_SORT,
   SORTABLE_KEYS,
-  deadlineLevel,
-  finishLead,
   initServiceRequestTable,
   nextSort,
   sortItems,
@@ -23,15 +21,13 @@ import { notify } from '../core/notify.js';
 
 const numberFormatter = new Intl.NumberFormat('pt-BR');
 
+// Linhas compactas: cabem mais por página que o padrão de 25 das outras telas
+const PAGE_SIZE = 50;
+
 const form = document.querySelector('.js-filters');
 const results = document.querySelector('.js-results');
 const countEl = document.querySelector('.js-results-count');
-const deadlineCards = document.querySelector('.js-deadline-cards');
-const warningCard = deadlineCards.querySelector('.js-card-warning');
-const overdueCard = deadlineCards.querySelector('.js-card-overdue');
-const onTimeCard = deadlineCards.querySelector('.js-card-on-time');
 const exportButton = document.querySelector('.js-export');
-const percentFormatter = new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 0 });
 
 // ── Estado (espelhado na query string) ───────────────────────
 
@@ -112,18 +108,6 @@ const filters = initFilters(form, {
   },
 });
 
-// Atalho dos cards: só aquele grupo. Em risco: mais antigos (mais urgentes) primeiro
-function showDeadlineGroup(prazo, sort) {
-  state.sort = sort;
-  filters.replace({ prazo });
-  table.focusResults();
-}
-
-const OLDEST_FIRST = { key: 'openedAt', direction: 'asc' };
-warningCard.querySelector('.js-warning-action').addEventListener('click', () => showDeadlineGroup('avencer', OLDEST_FIRST));
-overdueCard.querySelector('.js-overdue-action').addEventListener('click', () => showDeadlineGroup('vencido', OLDEST_FIRST));
-onTimeCard.querySelector('.js-on-time-action').addEventListener('click', () => showDeadlineGroup('noprazo', DEFAULT_SORT));
-
 // ── Renderização ─────────────────────────────────────────────
 
 function pluralize(count) {
@@ -135,24 +119,6 @@ function renderCount(filteredCount) {
   countEl.textContent = filteredCount === total
     ? `${numberFormatter.format(total)} ${pluralize(total)}`
     : `${numberFormatter.format(filteredCount)} de ${numberFormatter.format(total)} ${pluralize(total)}`;
-}
-
-// Conta a lista inteira, não a filtrada: filtro ou paginação não podem esconder um prazo em risco
-function renderDeadlineCards() {
-  const levels = state.items.map(deadlineLevel);
-  const leads = state.items.map(finishLead).filter(Boolean);
-  const onTime = leads.filter((lead) => lead.early >= 0).length;
-
-  warningCard.querySelector('.js-warning-count').textContent =
-    numberFormatter.format(levels.filter((level) => level === 'warning').length);
-  overdueCard.querySelector('.js-overdue-count').textContent =
-    numberFormatter.format(levels.filter((level) => level === 'overdue').length);
-  onTimeCard.querySelector('.js-on-time-count').textContent = numberFormatter.format(onTime);
-  onTimeCard.querySelector('.js-on-time-text').textContent = leads.length === 0
-    ? 'Nenhum atendimento finalizado ainda.'
-    : `${percentFormatter.format(onTime / leads.length)} dos ${numberFormatter.format(leads.length)} finalizados saíram em até 5 dias úteis.`;
-  // Sempre visíveis, mesmo zerados; só some no erro de carga (renderLoadError) e volta no retry
-  deadlineCards.hidden = false;
 }
 
 function clearFiltersButton() {
@@ -170,7 +136,6 @@ function render() {
   const filtered = applyFilters(state.items, state.filters);
   renderCount(filtered.length);
   if (!exportButton.classList.contains('is-loading')) exportButton.disabled = filtered.length === 0;
-  renderDeadlineCards();
   table.setSort(state.sort);
 
   if (state.items.length === 0) {
@@ -196,7 +161,7 @@ function render() {
     return;
   }
 
-  const pageInfo = paginate(sortItems(filtered, state.sort), state.page);
+  const pageInfo = paginate(sortItems(filtered, state.sort), state.page, PAGE_SIZE);
   state.page = pageInfo.page;
   table.renderRows(pageInfo.pageItems);
   pagination.render(pageInfo);
@@ -205,7 +170,6 @@ function render() {
 
 function renderLoadError(error) {
   countEl.textContent = '';
-  deadlineCards.hidden = true;
   exportButton.disabled = true;
   pagination.render(null);
   const retry = el('button', { className: 'c-button c-button--secondary', text: 'Tentar novamente', attrs: { type: 'button' } });

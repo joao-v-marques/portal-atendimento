@@ -196,13 +196,13 @@ function truncated(text) {
   return el('span', { className: 'c-table__truncate', text: value, attrs: { title: value } });
 }
 
-function actionButton({ action, icon, label, ariaLabel, variant, id }) {
+// Só ícone: o nome vai no aria-label (leitor de tela) e no title (tooltip do mouse)
+function actionButton({ action, icon, label, ariaLabel, id }) {
   return el('button', {
-    className: `c-button c-button--${variant} c-button--sm js-${action}`,
-    attrs: { type: 'button', 'data-request-id': String(id), 'aria-label': ariaLabel },
+    className: `c-button c-button--ghost c-button--sm c-button--icon-only js-${action}`,
+    attrs: { type: 'button', 'data-request-id': String(id), 'aria-label': ariaLabel, title: label },
   }, [
-    ...(icon ? [el('span', { className: `c-icon c-icon--sm c-icon--${icon}`, attrs: { 'aria-hidden': 'true' } })] : []),
-    label,
+    el('span', { className: `c-icon c-icon--sm c-icon--${icon}`, attrs: { 'aria-hidden': 'true' } }),
   ]);
 }
 
@@ -213,23 +213,23 @@ function actionButton({ action, icon, label, ariaLabel, variant, id }) {
 function rowActions(item) {
   const { id, protocolNumber } = item;
   const actions = [actionButton({
-    action: 'view', icon: 'eye', label: 'Detalhar', variant: 'ghost', id,
+    action: 'view', icon: 'eye', label: 'Detalhar', id,
     ariaLabel: `Detalhar o atendimento ${protocolNumber}`,
   })];
 
   if (isFinished(item)) {
     actions.push(actionButton({
-      action: 'reopen', label: 'Reabrir', variant: 'secondary', id,
+      action: 'reopen', icon: 'rotate-ccw', label: 'Reabrir', id,
       ariaLabel: `Reabrir o atendimento ${protocolNumber}`,
     }));
   } else {
     actions.push(
       actionButton({
-        action: 'edit', icon: 'pencil', label: 'Editar', variant: 'secondary', id,
+        action: 'edit', icon: 'pencil', label: 'Editar', id,
         ariaLabel: `Editar o atendimento ${protocolNumber}`,
       }),
       actionButton({
-        action: 'finish', icon: 'check-circle', label: 'Finalizar', variant: 'secondary', id,
+        action: 'finish', icon: 'check-circle', label: 'Finalizar', id,
         ariaLabel: `Finalizar o atendimento ${protocolNumber}`,
       }),
     );
@@ -239,7 +239,11 @@ function rowActions(item) {
 }
 
 function renderRow(item) {
-  return el('tr', {}, [
+  // Faixa de prazo à esquerda (CSS) só para quem está em risco; o selo da coluna Abertura diz o mesmo em texto
+  const level = deadlineLevel(item);
+  const rowAttrs = level === 'warning' || level === 'overdue' ? { 'data-deadline': level } : {};
+
+  return el('tr', { attrs: rowAttrs }, [
     el('td', {}, [
       el('span', { className: 'c-table__stack' }, [
         el('span', { text: formatDateTime(item.openedAt) }),
@@ -268,7 +272,7 @@ function renderRow(item) {
         el('span', { className: 'c-table__secondary', text: item.typeName || '—' }),
       ]),
     ]),
-    el('td', { text: item.severityName || '—' }),
+    el('td', { className: 'c-table__muted', text: item.severityName || '—' }),
     el('td', {}, [statusBadge(item.statusName)]),
     el('td', {}, [truncated(item.assignedToName)]),
     el('td', { className: 'u-text-end' }, [el('div', { className: 'c-row-actions' }, rowActions(item))]),

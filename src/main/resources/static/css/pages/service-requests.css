@@ -1,19 +1,100 @@
 /* ==========================================================================
-   Controlar atendimentos — filtros, resultados e formulário de edição
-   Filtros e resultados seguem o layout da tela de autorizações
+   Controlar atendimentos — tela compacta (cabeçalho, filtros, tabela) e modais
+   Tudo escopado em .l-sr-page (classe do <body>): components.css e layout.css são
+   compartilhados com outras telas e não mudam. Só a densidade muda; cores, fontes
+   e raios continuam os tokens do portal
    ========================================================================== */
 
-/* Ações da linha lado a lado, alinhadas à direita */
-.c-row-actions {
+.l-sr-page {
+  /* Respiro lateral dos modais: menor que os 24px padrão, volta a 16px no celular */
+  --sr-dialog-pad: 1.25rem;
+  /* Altura do rótulo compacto + gap do campo: usado para alinhar botões com os campos */
+  --sr-label-offset: calc(var(--leading-xs) + var(--space-half));
+}
+
+/* ── Página ─────────────────────────────────────────────────── */
+
+.l-sr-page .l-main {
+  padding-block: var(--space-2) var(--space-4);
+}
+
+.l-sr-page .l-section {
+  gap: var(--space-1);
+}
+
+/* Título e contagem na mesma linha; a ação à direita vem do l-page-header--with-action */
+.l-sr-header {
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.l-sr-header__title {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-half) var(--space-2);
+  min-width: 0;
+}
+
+.l-sr-header h1 {
+  font-size: var(--text-lg);
+  line-height: var(--leading-lg);
+}
+
+.l-sr-header__count {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+/* ── Controles compactos (filtros e formulários dos modais) ─── */
+
+.l-sr-page .c-field {
   gap: var(--space-half);
 }
 
+.l-sr-page .c-field__label {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.l-sr-page .c-field__hint,
+.l-sr-page .c-field__error {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+}
+
+/* Ícone do erro/aviso acompanha a linha menor */
+.l-sr-page .c-field__error::before,
+.l-sr-page .c-field__hint--warning:not(:empty)::before {
+  margin-top: 0;
+}
+
+.l-sr-page .c-input,
+.l-sr-page .c-select {
+  min-height: var(--control-height-sm);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+.l-sr-page .c-textarea {
+  min-height: calc(var(--control-height-sm) * 3);
+  padding-block: var(--space-half);
+}
+
+/* ── Filtros ─────────────────────────────────────────────────── */
+
+.l-sr-filters {
+  padding: var(--space-1) var(--space-2) var(--space-2);
+}
+
+/* Colunas automáticas: 1 no celular, 2 no tablet, uma linha só (ou quase) em tela larga */
 .l-filters {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-2);
+  gap: var(--space-1) var(--space-2);
   align-items: start;
 }
 
@@ -27,17 +108,38 @@
   display: none;
 }
 
-/* Cards de prazo: empilhados no celular; no tablet os 2 de risco lado a lado e o de
-   finalizados na linha toda; a partir de 960px os 3 numa linha */
-.l-deadline-cards {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-2);
-}
+/* ── Resultados e tabela ────────────────────────────────────── */
 
 .l-results {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
+}
+
+.l-sr-page .c-table th {
+  height: 2.25rem;
+  padding: 0 var(--space-1);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+}
+
+.l-sr-page .c-table td {
+  height: auto;
+  padding: var(--space-half) var(--space-1);
+  line-height: 1.25rem;
+}
+
+/* Primeira coluna com o respiro da borda do wrapper (e da faixa de prazo) */
+.l-sr-page .c-table :is(th, td):first-child {
+  padding-left: var(--space-2);
+}
+
+.l-sr-page .c-table__truncate,
+.l-sr-page .c-table__secondary {
+  max-width: 12rem;
+}
+
+.l-sr-page .c-table__secondary {
+  line-height: var(--leading-xs);
 }
 
 /* Aviso de prazo na coluna Abertura: frase curta que não pode ser cortada pelas reticências */
@@ -46,10 +148,107 @@
   white-space: nowrap;
 }
 
-.l-results__count {
+/* Dado de apoio numa coluna própria (severidade): mais discreto que os dados principais */
+.c-table__muted {
+  color: var(--color-text-secondary);
+}
+
+/* Faixa de prazo: substitui os antigos cards de alerta. Sombra interna para não mexer na largura;
+   o texto do prazo na coluna Abertura é o sinal principal, a cor só reforça */
+.l-sr-page .c-table tr[data-deadline="warning"] > td:first-child {
+  box-shadow: inset 3px 0 0 var(--color-warning);
+}
+
+.l-sr-page .c-table tr[data-deadline="overdue"] > td:first-child {
+  box-shadow: inset 3px 0 0 var(--color-error);
+}
+
+/* Ações da linha só com ícone, lado a lado e alinhadas à direita */
+.c-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.c-button--icon-only {
+  width: 1.75rem;
+  min-height: 1.75rem;
+  padding: 0;
+  color: var(--color-text-secondary);
+}
+
+.c-button--icon-only:hover:not(:disabled) {
+  color: var(--color-primary);
+}
+
+.l-sr-page .c-pagination {
+  padding-top: var(--space-half);
+}
+
+/* ── Modais (detalhe, edição, finalizar, reabrir) ───────────── */
+
+.l-sr-page .c-dialog__header {
+  gap: var(--space-1);
+  padding: var(--space-2) var(--sr-dialog-pad) var(--space-1);
+}
+
+.l-sr-page .c-dialog__heading {
+  gap: var(--space-half);
+}
+
+.l-sr-page .c-dialog__title {
+  font-size: var(--text-lg);
+  line-height: var(--leading-lg);
+}
+
+.l-sr-page .c-dialog__body {
+  gap: var(--space-2);
+  padding: var(--space-2) var(--sr-dialog-pad);
+}
+
+.l-sr-page .c-dialog__section {
+  gap: var(--space-1);
+}
+
+.l-sr-page .c-dialog__footer {
+  padding: var(--space-1) var(--sr-dialog-pad);
+}
+
+/* Altura fixa menor: o conteúdo compacto não precisa dos 60rem padrão */
+.l-sr-page .c-dialog--tabs {
+  height: min(44rem, calc(100dvh - var(--space-6)));
+}
+
+.l-sr-page .c-dialog--tabs .c-dialog__header {
+  padding-bottom: 0;
+}
+
+.l-sr-page .c-dialog--tabs .c-dialog__header .c-tabs {
+  margin-inline: calc(var(--sr-dialog-pad) * -1);
+  padding-inline: var(--sr-dialog-pad);
+}
+
+.l-sr-page .c-dialog .c-description-list {
+  gap: var(--space-1) var(--space-2);
+}
+
+.l-sr-page .c-description-list__item {
+  gap: 0;
+}
+
+.l-sr-page .c-description-list__term {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+}
+
+.l-sr-page .c-description-list__value,
+.l-sr-page .c-dialog__text {
   font-size: var(--text-sm);
   line-height: var(--leading-sm);
-  color: var(--color-text-secondary);
+}
+
+.l-sr-page .c-fieldset {
+  gap: var(--space-2);
 }
 
 /* Campos do modal de edição: uma coluna no celular, duas a partir de 600px */
@@ -57,7 +256,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: start; /* campo com hint não estica os vizinhos da mesma linha */
-  gap: var(--space-2);
+  gap: var(--space-1) var(--space-2);
 }
 
 /* Até 4 botões no rodapé do detalhe: quebram em vez de espremer */
@@ -65,64 +264,10 @@
   flex-wrap: wrap;
 }
 
-@media (min-width: 37.5em) {
-  .l-filters {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .l-filters__search {
-    grid-column: 1 / -1;
-  }
-
-  .l-deadline-cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .l-deadline-cards > .c-deadline-card--success {
-    grid-column: 1 / -1;
-  }
-
-  /* Com campos lado a lado, reserva a altura do label (linha + gap do c-field) para o botão alinhar */
-  .l-filters__actions::before {
-    content: "";
-    height: calc(var(--leading-sm) + var(--space-1));
-  }
-
-  .l-form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .l-form-grid__full {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (min-width: 60em) {
-  .l-filters {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .l-deadline-cards {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .l-deadline-cards > .c-deadline-card--success {
-    grid-column: auto;
-  }
-
-  .l-filters__search {
-    grid-column: span 2;
-  }
-}
-
-/* ==========================================================================
-   Modais de detalhe e edição com abas (components/tabs.js)
-   O painel é um só; as abas escondem as seções que não são delas e o
-   Resumo (data-active-tab="resumo") mostra todas numa grade
-   ========================================================================== */
-
+/* O painel é um só; as abas (components/tabs.js) escondem as seções que não são delas
+   e o Resumo (data-active-tab="resumo") mostra todas numa grade */
 .l-sr-panel {
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 /* Valor que quebra em 2 linhas não empurra os vizinhos da mesma linha */
@@ -137,10 +282,10 @@
 
 /* Cada categoria num bloco com fundo próprio */
 .l-sr-block {
-  gap: var(--space-2);
+  gap: var(--space-1);
   align-content: start; /* bloco esticado até a altura do vizinho: conteúdo no topo */
   min-width: 0;
-  padding: var(--space-2);
+  padding: var(--space-1) var(--space-2) var(--space-2);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-muted);
@@ -157,9 +302,9 @@
   margin: 0;
   padding: 0;
   font-family: var(--font-heading);
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
-  line-height: var(--leading-md);
+  line-height: var(--leading-sm);
   color: var(--color-heading);
 }
 
@@ -177,10 +322,9 @@
 
 .l-sr-highlights__item {
   display: grid;
-  gap: var(--space-half);
   align-content: start;
   min-width: 0;
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-half) var(--space-1);
   border-left: var(--border-width-thick) solid var(--color-primary);
   border-radius: var(--radius-sm);
   background: var(--color-primary-subtle);
@@ -188,20 +332,68 @@
 
 .l-sr-highlights__term {
   font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-medium);
   line-height: var(--leading-xs);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--color-text-secondary);
 }
 
 .l-sr-highlights__value {
   margin: 0;
   overflow-wrap: anywhere;
+  font-size: var(--text-sm);
   font-weight: var(--weight-medium);
+  line-height: var(--leading-sm);
+}
+
+/* Selo de prazo da tabela (nowrap) dentro do destaque estreito: quebra a linha em vez de vazar do quadrado */
+.l-sr-highlights__value .c-table__lead {
+  align-items: flex-start;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  white-space: normal;
+}
+
+.l-sr-highlights__value .c-table__lead > span {
+  min-width: 0;
+}
+
+.l-sr-highlights__value .c-table__lead > .c-icon {
+  margin-top: calc(var(--space-half) / 2);
+}
+
+/* ── Breakpoints ────────────────────────────────────────────── */
+
+@media (max-width: 37.49em) {
+  .l-sr-page {
+    --sr-dialog-pad: var(--space-2);
+  }
 }
 
 @media (min-width: 37.5em) {
+  .l-filters {
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  }
+
+  .l-filters__search {
+    grid-column: span 2;
+  }
+
+  /* Com campos lado a lado, reserva a altura do rótulo para o botão alinhar com os campos */
+  .l-filters__actions::before {
+    content: "";
+    height: var(--sr-label-offset);
+  }
+
+  /* Abas mais baixas onde não há toque como entrada principal; no celular seguem com 44px */
+  .l-sr-page .c-tabs__tab {
+    min-height: 2.25rem;
+  }
+
+  .l-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .l-form-grid__full,
   .l-form-grid__span-2 {
     grid-column: 1 / -1;
   }

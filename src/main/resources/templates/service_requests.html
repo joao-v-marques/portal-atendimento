@@ -26,7 +26,8 @@
   <script src="js/vendor/notyf.min.js" defer></script>
   <script type="module" src="js/pages/service-requests.js"></script>
 </head>
-<body class="l-shell">
+<!-- l-sr-page: escopo das regras compactas de pages/service-requests.css (tela e modais) -->
+<body class="l-shell l-sr-page">
   <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <header class="l-topbar js-topbar">
@@ -209,20 +210,20 @@
 
   <main class="l-main js-main" id="conteudo" tabindex="-1">
     <div class="l-container">
-      <header class="l-page-header l-page-header--with-action">
-        <div class="l-page-header__text">
+      <header class="l-page-header l-page-header--with-action l-sr-header">
+        <div class="l-sr-header__title">
           <h1>Controlar atendimentos</h1>
-          <p class="l-page-header__subtitle">Consulte, edite, finalize e reabra os atendimentos registrados.</p>
+          <p class="l-sr-header__count js-results-count" aria-live="polite"></p>
         </div>
         <!-- Extrai em .xlsx todos os atendimentos filtrados (todas as páginas), na ordem da tabela -->
-        <button class="c-button c-button--secondary js-export" type="button" disabled>
+        <button class="c-button c-button--secondary c-button--sm js-export" type="button" disabled>
           <span class="c-icon c-icon--sm c-icon--download" aria-hidden="true"></span>
           Extrair Relatório
         </button>
       </header>
 
       <div class="l-section">
-        <section class="c-card" aria-labelledby="filtros-title">
+        <section class="c-card l-sr-filters" aria-labelledby="filtros-title">
           <h2 class="u-visually-hidden" id="filtros-title">Filtros</h2>
 
           <form class="l-filters js-filters" role="search" aria-labelledby="filtros-title" novalidate>
@@ -305,7 +306,7 @@
             </div>
 
             <div class="l-filters__actions">
-              <button class="c-button c-button--secondary js-clear-filters" type="button" hidden>
+              <button class="c-button c-button--ghost c-button--sm js-clear-filters" type="button" hidden>
                 <span class="c-icon c-icon--sm c-icon--filter-x" aria-hidden="true"></span>
                 Limpar filtros
               </button>
@@ -313,55 +314,9 @@
           </form>
         </section>
 
-        <!-- Prazo de 5 dias úteis (seg–sex, sem feriados) desde a abertura. Contagens preenchidas em service-requests.js;
-             os cards ficam sempre visíveis, mesmo zerados -->
-        <div class="l-deadline-cards js-deadline-cards">
-          <section class="c-card c-deadline-card c-deadline-card--warning js-card-warning" aria-labelledby="prazo-avencer-title">
-            <div class="c-deadline-card__header">
-              <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
-              <h3 class="c-deadline-card__title" id="prazo-avencer-title">Prestes a vencer</h3>
-            </div>
-            <p class="c-deadline-card__main">
-              <span class="c-deadline-card__count js-warning-count">—</span>
-              <button class="c-deadline-card__action js-warning-action" type="button" aria-label="Ver atendimentos prestes a vencer">
-                Ver atendimentos
-              </button>
-            </p>
-            <p class="c-deadline-card__text">Em aberto no 4º ou 5º dia útil: falta 1 dia útil ou vence hoje.</p>
-          </section>
-
-          <section class="c-card c-deadline-card c-deadline-card--overdue js-card-overdue" aria-labelledby="prazo-vencidos-title">
-            <div class="c-deadline-card__header">
-              <span class="c-icon c-icon--sm c-icon--alert" aria-hidden="true"></span>
-              <h3 class="c-deadline-card__title" id="prazo-vencidos-title">Vencidos</h3>
-            </div>
-            <p class="c-deadline-card__main">
-              <span class="c-deadline-card__count js-overdue-count">—</span>
-              <button class="c-deadline-card__action js-overdue-action" type="button" aria-label="Ver atendimentos vencidos">
-                Ver atendimentos
-              </button>
-            </p>
-            <p class="c-deadline-card__text">Em aberto há mais de 5 dias úteis sem finalizar.</p>
-          </section>
-
-          <section class="c-card c-deadline-card c-deadline-card--success js-card-on-time" aria-labelledby="prazo-noprazo-title">
-            <div class="c-deadline-card__header">
-              <span class="c-icon c-icon--sm c-icon--check-circle" aria-hidden="true"></span>
-              <h3 class="c-deadline-card__title" id="prazo-noprazo-title">Finalizados no prazo</h3>
-            </div>
-            <p class="c-deadline-card__main">
-              <span class="c-deadline-card__count js-on-time-count">—</span>
-              <button class="c-deadline-card__action js-on-time-action" type="button" aria-label="Ver atendimentos finalizados no prazo">
-                Ver atendimentos
-              </button>
-            </p>
-            <p class="c-deadline-card__text js-on-time-text">Finalizados em até 5 dias úteis após a abertura.</p>
-          </section>
-        </div>
-
+        <!-- Linhas em risco de prazo (5 dias úteis) ganham uma faixa colorida à esquerda: data-deadline em service-request-table.js -->
         <section class="l-results js-results" aria-labelledby="resultados-title">
           <h2 class="u-visually-hidden" id="resultados-title">Resultados</h2>
-          <p class="l-results__count js-results-count" aria-live="polite"></p>
 
           <div class="c-table-wrapper js-table-wrapper" role="region" aria-labelledby="resultados-title" tabindex="0">
             <table class="c-table">
