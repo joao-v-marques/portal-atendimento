@@ -17,7 +17,7 @@ import {
   sortItems,
 } from '../components/service-request-table.js';
 import { api } from '../core/api.js';
-import { el } from '../core/dom.js';
+import { el, saveBlob } from '../core/dom.js';
 import { handleError } from '../core/errors.js';
 import { notify } from '../core/notify.js';
 
@@ -30,6 +30,7 @@ const deadlineCards = document.querySelector('.js-deadline-cards');
 const warningCard = deadlineCards.querySelector('.js-card-warning');
 const overdueCard = deadlineCards.querySelector('.js-card-overdue');
 const onTimeCard = deadlineCards.querySelector('.js-card-on-time');
+const exportButton = document.querySelector('.js-export');
 const percentFormatter = new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 0 });
 
 // ── Estado (espelhado na query string) ───────────────────────
@@ -168,6 +169,7 @@ function render() {
 
   const filtered = applyFilters(state.items, state.filters);
   renderCount(filtered.length);
+  if (!exportButton.classList.contains('is-loading')) exportButton.disabled = filtered.length === 0;
   renderDeadlineCards();
   table.setSort(state.sort);
 
@@ -204,6 +206,7 @@ function render() {
 function renderLoadError(error) {
   countEl.textContent = '';
   deadlineCards.hidden = true;
+  exportButton.disabled = true;
   pagination.render(null);
   const retry = el('button', { className: 'c-button c-button--secondary', text: 'Tentar novamente', attrs: { type: 'button' } });
   retry.addEventListener('click', load);
@@ -253,6 +256,29 @@ async function reopenServiceRequest(item, opener) {
     handleError(error);
   }
 }
+
+// ── Extrair relatório ────────────────────────────────────────
+
+// Os filtros rodam no navegador: manda os IDs filtrados, já na ordem da tabela, e o backend monta o .xlsx
+exportButton.addEventListener('click', async () => {
+  if (exportButton.disabled || !state.loaded) return;
+  const ids = sortItems(applyFilters(state.items, state.filters), state.sort).map((item) => item.id);
+  if (ids.length === 0) return;
+
+  exportButton.disabled = true;
+  exportButton.classList.add('is-loading');
+  try {
+    const { blob, filename } = await api.download('api/service-requests/export', { method: 'POST', body: { ids } });
+    // Sem Notyf de sucesso: o próprio download do navegador é o feedback
+    saveBlob(blob, filename);
+  } catch (error) {
+    handleError(error);
+  } finally {
+    exportButton.classList.remove('is-loading');
+    // O filtro pode ter mudado durante o download
+    exportButton.disabled = applyFilters(state.items, state.filters).length === 0;
+  }
+});
 
 // ── Dados ────────────────────────────────────────────────────
 

@@ -209,9 +209,16 @@
 
   <main class="l-main js-main" id="conteudo" tabindex="-1">
     <div class="l-container">
-      <header class="l-page-header">
-        <h1>Controlar atendimentos</h1>
-        <p class="l-page-header__subtitle">Consulte, edite, finalize e reabra os atendimentos registrados.</p>
+      <header class="l-page-header l-page-header--with-action">
+        <div class="l-page-header__text">
+          <h1>Controlar atendimentos</h1>
+          <p class="l-page-header__subtitle">Consulte, edite, finalize e reabra os atendimentos registrados.</p>
+        </div>
+        <!-- Extrai em .xlsx todos os atendimentos filtrados (todas as páginas), na ordem da tabela -->
+        <button class="c-button c-button--secondary js-export" type="button" disabled>
+          <span class="c-icon c-icon--sm c-icon--download" aria-hidden="true"></span>
+          Extrair Relatório
+        </button>
       </header>
 
       <div class="l-section">

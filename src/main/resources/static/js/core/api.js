@@ -84,6 +84,6 @@ export const api = {
   post:  (path, body, options) => request(path, { ...options, method: 'POST', body }),
   put:   (path, body, options) => request(path, { ...options, method: 'PUT', body }),
   patch: (path, body, options) => request(path, { ...options, method: 'PATCH', body }),
-  /** Baixa um arquivo: resolve com { blob, filename }. Erros viram ApiRequestError como nos demais. */
-  download: (path, options) => request(path, { ...options, method: 'GET', responseType: 'blob' }),
+  /** Baixa um arquivo: resolve com { blob, filename }. GET por padrão; aceita { method: 'POST', body }. */
+  download: (path, options) => request(path, { method: 'GET', ...options, responseType: 'blob' }),
 };

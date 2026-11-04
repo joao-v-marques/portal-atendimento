@@ -2,16 +2,21 @@ package com.joao_v_marques.portal_atendimento.service_requests.service_request;
 
 import com.joao_v_marques.portal_atendimento.security.UserPrincipal;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestAssigneeResponse;
+import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestExportRequest;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestFinishRequest;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestRequest;
 import com.joao_v_marques.portal_atendimento.service_requests.service_request.dto.ServiceRequestResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -66,6 +71,22 @@ public class ServiceRequestController {
         ServiceRequestResponse finished = serviceRequestService.finish(id, request, currentUser.getId());
 
         return ResponseEntity.ok(finished);
+    }
+
+    // POST que baixa o .xlsx dos chamados informados. POST porque a lista de IDs pode estourar a query string
+    @PostMapping(value = "/export", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<byte[]> export(@Valid @RequestBody ServiceRequestExportRequest request) {
+        byte[] content = serviceRequestService.export(request.ids());
+
+        ContentDisposition disposition = ContentDisposition.attachment()
+                .filename("relatorio-atendimentos-" + LocalDate.now() + ".xlsx", StandardCharsets.UTF_8)
+                .build();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .contentLength(content.length)
+                .header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
+                .body(content);
     }
 
     // PATCH para reabrir um chamado finalizado

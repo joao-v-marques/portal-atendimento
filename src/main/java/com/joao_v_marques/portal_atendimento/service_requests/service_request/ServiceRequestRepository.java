@@ -3,6 +3,7 @@ package com.joao_v_marques.portal_atendimento.service_requests.service_request;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,7 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, 
 
     @EntityGraph(attributePaths = {"category", "channel", "type", "severity", "status", "assignedTo", "insertedBy", "updatedBy"})
     Optional<ServiceRequest> findWithDetailsById(Integer id);
+
+    @EntityGraph(attributePaths = {"category", "channel", "type", "severity", "status", "assignedTo", "insertedBy", "updatedBy"})
+    List<ServiceRequest> findWithDetailsByIdIn(Collection<Integer> ids);
 }

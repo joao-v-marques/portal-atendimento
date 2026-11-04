@@ -18,11 +18,27 @@ import com.joao_v_marques.portal_atendimento.service_requests.type.ServiceReques
 import com.joao_v_marques.portal_atendimento.service_requests.type.ServiceRequestTypeRepository;
 import com.joao_v_marques.portal_atendimento.users.user.User;
 import com.joao_v_marques.portal_atendimento.users.user.UserRepository;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class ServiceRequestService {
@@ -33,6 +49,20 @@ public class ServiceRequestService {
 
     // Role exigida do responsável pelo chamado (inserida na V7)
     private static final String ASSIGNEE_ROLE = "EMPLOYEE_RELATIONSHIP";
+
+    // Relatório .xlsx: colunas na ordem em que são preenchidas em export()
+    private static final String[] EXPORT_HEADERS = {
+            "Protocolo", "Aberto em", "Finalizado em", "Status", "Categoria", "Canal", "Tipo", "Severidade",
+            "Responsável", "Solicitante", "Carteirinha", "CPF", "Nascimento", "Telefone", "E-mail",
+            "Descrição", "Resolução", "Registrado por", "Registrado em", "Alterado por", "Alterado em"
+    };
+    private static final ZoneId EXPORT_ZONE = ZoneId.of("America/Sao_Paulo");
+    // Largura de cada coluna em caracteres, na mesma ordem de EXPORT_HEADERS
+    private static final int[] EXPORT_COLUMN_WIDTHS = {
+            16, 17, 17, 18, 22, 18, 22, 14,
+            28, 32, 20, 14, 12, 16, 30,
+            60, 60, 28, 17, 28, 17
+    };
 
     private final ServiceRequestRepository serviceRequestRepository;
     private final ServiceRequestCategoryRepository serviceRequestCategoryRepository;
@@ -185,6 +215,102 @@ public class ServiceRequestService {
         serviceRequest.setUpdatedAt(OffsetDateTime.now());
 
         return toResponse(serviceRequest);
+    }
+
+    // Gera o .xlsx com os chamados informados, na mesma ordem dos IDs (a da listagem filtrada no front)
+    @Transactional(readOnly = true)
+    public byte[] export(List<Integer> ids) {
+        Map<Integer, ServiceRequest> byId = serviceRequestRepository.findWithDetailsByIdIn(ids)
+                .stream()
+                .collect(Collectors.toMap(ServiceRequest::getId, Function.identity()));
+
+        List<ServiceRequestResponse> rows = ids.stream()
+                .distinct()
+                .map(byId::get)
+                .filter(Objects::nonNull)
+                .map(this::toResponse)
+                .toList();
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Atendimentos");
+
+            Font boldFont = workbook.createFont();
+            boldFont.setBold(true);
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(boldFont);
+
+            CreationHelper helper = workbook.getCreationHelper();
+            CellStyle dateTimeStyle = workbook.createCellStyle();
+            dateTimeStyle.setDataFormat(helper.createDataFormat().getFormat("dd/mm/yyyy hh:mm"));
+            CellStyle dateStyle = workbook.createCellStyle();
+            dateStyle.setDataFormat(helper.createDataFormat().getFormat("dd/mm/yyyy"));
+
+            Row header = sheet.createRow(0);
+            for (int i = 0; i < EXPORT_HEADERS.length; i++) {
+                Cell cell = header.createCell(i);
+                cell.setCellValue(EXPORT_HEADERS[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            int rowIndex = 1;
+            for (ServiceRequestResponse item : rows) {
+                Row row = sheet.createRow(rowIndex++);
+                int col = 0;
+                setText(row, col++, item.protocolNumber());
+                setDateTime(row, col++, item.openedAt(), dateTimeStyle);
+                setDateTime(row, col++, item.closedAt(), dateTimeStyle);
+                setText(row, col++, item.statusName());
+                setText(row, col++, item.categoryName());
+                setText(row, col++, item.channelName());
+                setText(row, col++, item.typeName());
+                setText(row, col++, item.severityName());
+                setText(row, col++, item.assignedToName());
+                setText(row, col++, item.requesterName());
+                setText(row, col++, item.requesterCardNumber());
+                setText(row, col++, item.requesterCpf());
+                if (item.requesterBirthDate() != null) {
+                    Cell cell = row.createCell(col);
+                    cell.setCellValue(item.requesterBirthDate());
+                    cell.setCellStyle(dateStyle);
+                }
+                col++;
+                setText(row, col++, item.requesterPhone());
+                setText(row, col++, item.requesterEmail());
+                setText(row, col++, item.description());
+                setText(row, col++, item.resolution());
+                setText(row, col++, item.insertedByName());
+                setDateTime(row, col++, item.createdAt(), dateTimeStyle);
+                setText(row, col++, item.updatedByName());
+                setDateTime(row, col, item.updatedAt(), dateTimeStyle);
+            }
+
+            sheet.createFreezePane(0, 1);
+            sheet.setAutoFilter(new CellRangeAddress(0, Math.max(rowIndex - 1, 0), 0, EXPORT_HEADERS.length - 1));
+            // Larguras fixas: autoSizeColumn depende de fontes AWT, que podem faltar no container
+            for (int i = 0; i < EXPORT_HEADERS.length; i++) {
+                sheet.setColumnWidth(i, EXPORT_COLUMN_WIDTHS[i] * 256);
+            }
+
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new UncheckedIOException("Não foi possível gerar o relatório de atendimentos.", e);
+        }
+    }
+
+    private static void setText(Row row, int col, String value) {
+        if (value != null) {
+            row.createCell(col).setCellValue(value);
+        }
+    }
+
+    // Converte para o horário de Brasília antes de gravar: o Excel não guarda fuso
+    private static void setDateTime(Row row, int col, OffsetDateTime value, CellStyle style) {
+        if (value != null) {
+            Cell cell = row.createCell(col);
+            cell.setCellValue(value.atZoneSameInstant(EXPORT_ZONE).toLocalDateTime());
+            cell.setCellStyle(style);
+        }
     }
 
     // Aplica os campos comuns de POST e PUT. Relações inativas só são recusadas quando o valor muda
