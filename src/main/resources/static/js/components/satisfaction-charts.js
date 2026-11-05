@@ -9,6 +9,9 @@ const percentFormatter = new Intl.NumberFormat('pt-BR', {
 
 const NO_ANSWER = 'Sem resposta';
 
+// Ligado entre beforeprint e afterprint (botão "Baixar PDF")
+let printing = false;
+
 // Cor de cada nota: tokens de satisfaction-survey.css (mudam com o tema)
 const GRADE_TOKENS = {
   1: '--grade-1',
@@ -75,6 +78,8 @@ function baseOptions(colors, { stacked = false, percent = false, labels } = {}) 
   return {
     responsive: true,
     maintainAspectRatio: false, // a altura vem do .c-chart-card__canvas
+    // No PDF: sem animação (a impressão pegaria o gráfico no meio) e com mais resolução
+    ...(printing && { animation: false, devicePixelRatio: 2 }),
     interaction: { mode: 'index', intersect: false },
     layout: { padding: { top: labels ? 8 : 0 } },
     plugins: {
@@ -275,6 +280,21 @@ export function initSatisfactionCharts(root) {
   new MutationObserver(() => {
     if (current) build(current);
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // Impressão: o papel é branco, então o tema escuro vira claro só enquanto imprime
+  // (sem mexer no localStorage) e os gráficos são refeitos na largura da folha
+  let themeBeforePrint;
+  window.addEventListener('beforeprint', () => {
+    printing = true;
+    themeBeforePrint = document.documentElement.dataset.theme;
+    if (themeBeforePrint === 'dark') document.documentElement.dataset.theme = 'light';
+    if (current) build(current);
+  });
+  window.addEventListener('afterprint', () => {
+    printing = false;
+    if (themeBeforePrint === 'dark') document.documentElement.dataset.theme = 'dark'; // o observer refaz
+    else if (current) build(current);
+  });
 
   return {
     /** @param {object} data resposta de GET api/satisfaction-surveys/dashboard */

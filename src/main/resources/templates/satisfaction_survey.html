@@ -221,11 +221,18 @@
           <h1>Pesquisa de Satisfação</h1>
           <p class="l-page-header__subtitle">Respostas da pesquisa enviada ao fim de cada atendimento.</p>
         </div>
-        <!-- Exporta o que está na tela: o período da listagem ou o mês do dashboard -->
-        <button class="c-button c-button--secondary js-export" type="button">
-          <span class="c-icon c-icon--sm c-icon--download" aria-hidden="true"></span>
-          Exportar CSV
-        </button>
+        <div class="l-page-header__actions">
+          <!-- Só no dashboard: abre a impressão do navegador ("Salvar como PDF"); layout em @media print -->
+          <button class="c-button c-button--secondary js-export-pdf" type="button" hidden>
+            <span class="c-icon c-icon--sm c-icon--download" aria-hidden="true"></span>
+            Baixar PDF
+          </button>
+          <!-- Exporta o que está na tela: o período da listagem ou o mês do dashboard -->
+          <button class="c-button c-button--secondary js-export" type="button">
+            <span class="c-icon c-icon--sm c-icon--download" aria-hidden="true"></span>
+            Exportar CSV
+          </button>
+        </div>
       </header>
 
       <!-- Abas do components/tabs.js: um painel só, cada seção com data-tab (sem aba "resumo") -->
@@ -402,6 +409,9 @@
 
         <!-- ── Dashboard ────────────────────────────────────── -->
         <div class="l-section js-dashboard" data-tab="dashboard" hidden>
+          <!-- Só no PDF: o seletor de mês fica escondido na impressão -->
+          <p class="l-print-only js-print-month"></p>
+
           <section class="c-card l-dashboard-toolbar" aria-labelledby="dashboard-filtros-title">
             <h2 class="u-visually-hidden" id="dashboard-filtros-title">Período do dashboard</h2>
             <div class="c-field">

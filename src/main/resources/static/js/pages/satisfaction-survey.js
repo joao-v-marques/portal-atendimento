@@ -32,6 +32,7 @@ const wrapper = results.querySelector('.js-table-wrapper');
 const tbody = results.querySelector('.js-table-body');
 const tableState = results.querySelector('.js-table-state');
 const exportButton = document.querySelector('.js-export');
+const pdfButton = document.querySelector('.js-export-pdf');
 
 const dashboard = document.querySelector('.js-dashboard');
 const monthSelect = dashboard.querySelector('.js-month');
@@ -327,6 +328,7 @@ async function loadDashboard() {
 
     state.month = data.month;
     writeStateToUrl();
+    dashboard.querySelector('.js-print-month').textContent = `Mês: ${monthLabel(data.month)}`;
     fillMonths(data.availableMonths, data.month);
     dashboardContent.removeAttribute('aria-busy');
 
@@ -418,12 +420,16 @@ exportButton.addEventListener('click', async () => {
   }
 });
 
+// PDF: impressão do navegador ("Salvar como PDF"); o que sai no papel está no @media print do CSS
+pdfButton.addEventListener('click', () => window.print());
+
 // ── Abas e carga inicial ─────────────────────────────────────
 
 const tabs = initTabs(document.querySelector('.js-survey-tabs'), {
   onChange(key) {
     state.tab = key;
     writeStateToUrl();
+    pdfButton.hidden = key !== 'dashboard';
     // O dashboard só carrega na primeira visita à aba: quem só usa a listagem não paga pelos gráficos
     if (key === 'dashboard' && !dashboardLoaded) loadDashboard();
   },

@@ -213,3 +213,62 @@
     grid-column: 1 / -1;
   }
 }
+
+/* ── Cabeçalho e PDF ──────────────────────────────────────── */
+
+/* "Baixar PDF" (só no dashboard) ao lado do "Exportar CSV" */
+.l-page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.l-print-only {
+  display: none;
+}
+
+/* "Baixar PDF" chama window.print(): no papel fica só o dashboard */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  .l-shell {
+    display: block;
+  }
+
+  .l-topbar,
+  .l-sidebar,
+  .l-shell__backdrop,
+  .c-skip-link,
+  .l-page-header__actions,
+  .l-survey-tabs,
+  .l-dashboard-toolbar {
+    display: none !important;
+  }
+
+  .l-main {
+    padding: 0;
+  }
+
+  .l-print-only {
+    display: block;
+    color: var(--color-text-secondary);
+  }
+
+  .l-kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  /* Não corta card (KPI ou gráfico) entre duas páginas */
+  .c-card {
+    break-inside: avoid;
+  }
+
+  /* O Chart.js fixa a largura do canvas em px; aqui ele se ajusta à folha */
+  .c-chart-card__canvas canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
