@@ -54,14 +54,14 @@ public class ServiceRequestService {
     private static final String[] EXPORT_HEADERS = {
             "Protocolo", "Aberto em", "Finalizado em", "Status", "Categoria", "Canal", "Tipo", "Severidade",
             "Responsável", "Solicitante", "Carteirinha", "CPF", "Nascimento", "Telefone", "E-mail",
-            "Descrição", "Resolução", "Registrado por", "Registrado em", "Alterado por", "Alterado em"
+            "Descrição", "Resolução", "Resolvido", "Registrado por", "Registrado em", "Alterado por", "Alterado em"
     };
     private static final ZoneId EXPORT_ZONE = ZoneId.of("America/Sao_Paulo");
     // Largura de cada coluna em caracteres, na mesma ordem de EXPORT_HEADERS
     private static final int[] EXPORT_COLUMN_WIDTHS = {
             16, 17, 17, 18, 22, 18, 22, 14,
             28, 32, 20, 14, 12, 16, 30,
-            60, 60, 28, 17, 28, 17
+            60, 60, 11, 28, 17, 28, 17
     };
 
     private final ServiceRequestRepository serviceRequestRepository;
@@ -185,6 +185,7 @@ public class ServiceRequestService {
 
         serviceRequest.setStatus(finishedStatus);
         serviceRequest.setResolution(request.resolution().trim());
+        serviceRequest.setResolved(request.resolved());
         serviceRequest.setClosedAt(OffsetDateTime.now());
         serviceRequest.setUpdatedBy(currentUser);
         serviceRequest.setUpdatedAt(OffsetDateTime.now());
@@ -278,6 +279,7 @@ public class ServiceRequestService {
                 setText(row, col++, item.requesterEmail());
                 setText(row, col++, item.description());
                 setText(row, col++, item.resolution());
+                setText(row, col++, item.resolved() == null ? null : (item.resolved() ? "Sim" : "Não"));
                 setText(row, col++, item.insertedByName());
                 setDateTime(row, col++, item.createdAt(), dateTimeStyle);
                 setText(row, col++, item.updatedByName());
@@ -437,6 +439,7 @@ public class ServiceRequestService {
                 serviceRequest.getRequesterEmail(),
                 serviceRequest.getDescription(),
                 serviceRequest.getResolution(),
+                serviceRequest.getResolved(),
                 serviceRequest.getAssignedTo().getId(),
                 serviceRequest.getAssignedTo().getName(),
                 serviceRequest.getOpenedAt(),

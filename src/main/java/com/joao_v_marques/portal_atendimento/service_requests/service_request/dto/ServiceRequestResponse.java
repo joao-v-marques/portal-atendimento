@@ -25,6 +25,7 @@ public record ServiceRequestResponse(
         String requesterEmail,
         String description,
         String resolution,
+        Boolean resolved,
         Integer assignedToId,
         String assignedToName,
         OffsetDateTime openedAt,

@@ -1,6 +1,6 @@
 import { api } from '../core/api.js';
 import { handleError } from '../core/errors.js';
-import { clearFieldError, clearFieldErrors, setSubmitting, showFieldErrors } from '../core/form.js';
+import { clearFieldError, clearFieldErrors, setFieldError, setSubmitting, showFieldErrors } from '../core/form.js';
 import { formatDateTime } from '../core/format.js';
 import { notify } from '../core/notify.js';
 import { validateServiceRequest, validateServiceRequestField } from '../core/validators.js';
@@ -17,6 +17,9 @@ export function initServiceRequestFinishDialog(dialogEl, { onFinished }) {
   const code = dialogEl.querySelector('.js-finish-code');
   const details = dialogEl.querySelector('.js-finish-details');
   const resolutionField = form.elements.namedItem('resolution');
+  // Grupo de radios: o erro fica no fieldset (#finalizar-resolvido-error), não num campo único
+  const resolvedGroup = dialogEl.querySelector('.js-finish-resolved');
+  const resolvedRadios = form.elements.namedItem('resolved');
 
   let current = null;
 
@@ -37,8 +40,11 @@ export function initServiceRequestFinishDialog(dialogEl, { onFinished }) {
 
     const values = { resolution: resolutionField.value };
     const errors = validateServiceRequest(values);
-    if (Object.keys(errors).length > 0) {
+    const resolvedValue = resolvedRadios.value; // "true" | "false" | "" (nenhum marcado)
+    if (!resolvedValue) setFieldError(resolvedGroup, 'Informe se o problema foi resolvido');
+    if (Object.keys(errors).length > 0 || !resolvedValue) {
       showFieldErrors(form, errors);
+      if (!resolvedValue) resolvedRadios[0].focus(); // pergunta vem antes da resolução no formulário
       return;
     }
 
@@ -46,7 +52,7 @@ export function initServiceRequestFinishDialog(dialogEl, { onFinished }) {
     try {
       const finished = await api.patch(
         `api/service-requests/${encodeURIComponent(current.id)}/finish`,
-        { resolution: values.resolution.trim() },
+        { resolution: values.resolution.trim(), resolved: resolvedValue === 'true' },
       );
       dialog.close();
       notify.success(`Atendimento ${finished.protocolNumber} finalizado.`);
@@ -57,6 +63,8 @@ export function initServiceRequestFinishDialog(dialogEl, { onFinished }) {
       setSubmitting(form, false);
     }
   });
+
+  resolvedGroup.addEventListener('change', () => clearFieldError(resolvedGroup));
 
   resolutionField.addEventListener('input', () => {
     if (resolutionField.getAttribute('aria-invalid') !== 'true') return;
@@ -82,7 +90,7 @@ export function initServiceRequestFinishDialog(dialogEl, { onFinished }) {
       resolutionField.value = item.resolution ?? '';
 
       dialog.open(opener);
-      resolutionField.focus();
+      resolvedRadios[0].focus();
     },
   };
 }

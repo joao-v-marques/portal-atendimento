@@ -693,6 +693,25 @@
       <div class="c-dialog__body">
         <dl class="c-description-list js-finish-details"></dl>
 
+        <!-- Alimenta o indicador "finalizados e resolvidos" do dashboard. Erro tratado em
+             service-request-finish-dialog.js (radios não passam pelo showFieldErrors) -->
+        <fieldset class="c-choice js-finish-resolved" id="finalizar-resolvido" aria-describedby="finalizar-resolvido-error">
+          <legend class="c-field__label">
+            O problema foi resolvido? <span class="c-field__required" aria-hidden="true">*</span>
+          </legend>
+          <div class="c-choice__options">
+            <label class="c-choice__option">
+              <input type="radio" name="resolved" value="true" required>
+              Sim
+            </label>
+            <label class="c-choice__option">
+              <input type="radio" name="resolved" value="false">
+              Não
+            </label>
+          </div>
+          <p class="c-field__error" id="finalizar-resolvido-error" hidden></p>
+        </fieldset>
+
         <div class="c-field">
           <label class="c-field__label" for="finalizar-resolucao">
             Resolução <span class="c-field__required" aria-hidden="true">*</span>

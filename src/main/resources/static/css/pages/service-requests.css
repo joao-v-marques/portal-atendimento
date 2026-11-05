@@ -251,6 +251,62 @@
   gap: var(--space-2);
 }
 
+/* Pergunta Sim/Não do Finalizar: radios nativos dentro de opções clicáveis lado a lado */
+.c-choice {
+  display: grid;
+  gap: var(--space-half);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.c-choice > legend {
+  margin-bottom: var(--space-half);
+  padding: 0;
+}
+
+.c-choice__options {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.c-choice__option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--control-height-sm);
+  padding: 0 var(--space-2) 0 var(--space-1);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.c-choice__option:hover {
+  border-color: var(--color-border-hover);
+}
+
+.c-choice__option:has(:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  font-weight: var(--weight-semibold);
+}
+
+.c-choice__option input {
+  margin: 0;
+  accent-color: var(--color-primary);
+}
+
+.c-choice__option:has(:focus-visible) {
+  box-shadow: var(--focus-ring);
+}
+
+.c-choice[aria-invalid="true"] .c-choice__option {
+  border-color: var(--color-error);
+}
+
 /* Campos do modal de edição: uma coluna no celular, duas a partir de 600px */
 .l-form-grid {
   display: grid;

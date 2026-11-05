@@ -79,6 +79,10 @@ public class ServiceRequest {
     @Column(name = "resolution")
     private String resolution;
 
+    // Informado ao finalizar; null = sem informação (finalizado antes da V11)
+    @Column(name = "resolved")
+    private Boolean resolved;
+
     // Responsável pelo chamado e prazos
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to", nullable = false)

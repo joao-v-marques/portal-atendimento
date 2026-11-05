@@ -105,6 +105,8 @@ export function initServiceRequestDetailDialog(dialogEl, { onEdit, onFinish, onR
       descriptionItem('Aberto em', formatDateTime(item.openedAt)),
       descriptionItem('Prazo final', deadlineDateText(item)),
       descriptionItem('Finalizado em', item.closedAt ? formatDateTime(item.closedAt) : ''),
+      // null: em andamento, ou finalizado antes de a pergunta existir
+      descriptionItem('Resolvido', item.resolved == null ? '' : (item.resolved ? 'Sim' : 'Não')),
     );
 
     auditList.replaceChildren(
