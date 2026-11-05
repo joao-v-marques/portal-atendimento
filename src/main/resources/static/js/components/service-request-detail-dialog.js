@@ -3,6 +3,7 @@ import { formatDate, formatDateTime, formatPhone } from '../core/format.js';
 import { descriptionItem } from './authorization-detail-dialog.js';
 import { statusBadge } from './authorization-table.js';
 import { initDialog } from './dialog.js';
+import { printServiceRequest } from './service-request-pdf.js';
 import { deadlineDateText, deadlineInfo, isFinished } from './service-request-table.js';
 import { initTabs } from './tabs.js';
 
@@ -49,6 +50,7 @@ export function initServiceRequestDetailDialog(dialogEl, { onEdit, onFinish, onR
   const finishButton = dialogEl.querySelector('.js-detail-finish');
   const reopenButton = dialogEl.querySelector('.js-detail-reopen');
   const closeButton = dialogEl.querySelector('.js-detail-dismiss');
+  const pdfButton = dialogEl.querySelector('.js-detail-pdf');
 
   let current = null;
   let opener = null;
@@ -134,6 +136,8 @@ export function initServiceRequestDetailDialog(dialogEl, { onEdit, onFinish, onR
   editButton.addEventListener('click', () => handOff(onEdit));
   finishButton.addEventListener('click', () => handOff(onFinish));
   reopenButton.addEventListener('click', () => handOff(onReopen));
+  // Não fecha o modal: a impressão abre por cima e o usuário volta para onde estava
+  pdfButton.addEventListener('click', () => { if (current) printServiceRequest(current); });
 
   return {
     open(item, openerElement) {
