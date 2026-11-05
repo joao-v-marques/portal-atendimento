@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard de atendimentos · Portal de Atendimento</title>
+
+  <!-- Antes do CSS: aplica a sidebar retraída antes da 1ª pintura (chave igual à de app-shell.js) -->
+  <script>try { if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('has-sidebar-collapsed'); } catch (e) {}</script>
+
+  <!-- Antes do CSS: aplica o tema salvo (ou o do sistema) antes da 1ª pintura (chave igual à de core/theme.js) -->
+  <script>try { var t = localStorage.getItem('theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; } catch (e) {}</script>
+
+  <link rel="preload" href="css/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/vendor/notyf.min.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/utilities.css">
+  <link rel="stylesheet" href="css/notyf-theme.css">
+  <link rel="stylesheet" href="css/pages/service-request-dashboard.css">
+
+  <!-- Scripts defer e module executam na ordem em que aparecem, após o parse -->
+  <script src="js/vendor/notyf.min.js" defer></script>
+  <script src="js/vendor/chart.umd.min.js" defer></script>
+  <script type="module" src="js/pages/service-request-dashboard.js"></script>
+</head>
+<!-- l-srd-page: escopo das regras de pages/service-request-dashboard.css -->
+<body class="l-shell l-srd-page">
+  <a class="c-skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="l-topbar js-topbar">
+    <button
+      class="c-icon-button c-icon-button--inverse l-topbar__menu-button js-menu-open"
+      type="button"
+      aria-controls="menu-principal"
+      aria-expanded="false"
+      aria-label="Abrir menu"
+      title="Abrir menu"
+    >
+      <span class="c-icon c-icon--menu" aria-hidden="true"></span>
+    </button>
+
+    <a class="c-brand c-brand--logo" href="home">
+      <img class="c-brand__logo" src="css/img/logo-2023.png" alt="Unimed S. S. do Paraíso – Início" width="529" height="195">
+    </a>
+
+    <div class="l-topbar__spacer"></div>
+
+    <div class="l-topbar__actions">
+      <div class="c-user-menu js-user-menu">
+        <button
+          class="c-user-menu__trigger js-dropdown-trigger"
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="menu-usuario"
+        >
+          <span class="c-user-chip js-user-chip" aria-busy="true">
+            <span class="c-avatar js-user-avatar" aria-hidden="true"></span>
+            <span class="c-user-chip__text">
+              <span class="c-user-chip__name js-user-name"><span class="c-skeleton c-skeleton--inverse c-skeleton--name" aria-hidden="true"></span></span>
+              <span class="c-user-chip__role js-user-role"></span>
+            </span>
+          </span>
+          <span class="c-icon c-icon--sm c-user-menu__chevron" aria-hidden="true"></span>
+        </button>
+
+        <ul class="c-user-menu__list js-dropdown-list" id="menu-usuario" role="menu" aria-label="Opções da conta" hidden>
+          <li role="none">
+            <!-- Estado em aria-checked (core/theme.js); data-keep-open: o menu fica aberto para ver a troca -->
+            <button class="c-user-menu__item js-theme-toggle" type="button" role="menuitemcheckbox" aria-checked="false" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--moon" aria-hidden="true"></span>
+              <span>Tema escuro</span>
+              <span class="c-switch" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="c-user-menu__item js-own-password-open" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--key" aria-hidden="true"></span>
+              Alterar senha
+            </button>
+          </li>
+          <li class="c-user-menu__separator" role="separator"></li>
+          <li role="none">
+            <button class="c-user-menu__item js-logout" type="button" role="menuitem" tabindex="-1" data-keep-open>
+              <span class="c-icon c-icon--sm c-icon--logout" aria-hidden="true"></span>
+              <span class="js-logout-label">Sair</span>
+            </button>
+          </li>
+          <!-- Novas opções: outro <li role="none"> com <button> ou <a> role="menuitem" tabindex="-1" -->
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <nav class="l-sidebar js-sidebar" id="menu-principal" aria-label="Menu principal">
+    <div class="l-sidebar__header">
+      <button
+        class="c-icon-button c-icon-button--inverse js-menu-close"
+        type="button"
+        aria-label="Fechar menu"
+        title="Fechar menu"
+      >
+        <span class="c-icon c-icon--close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <ul class="c-nav__list">
+      <li>
+        <a class="c-nav__link" href="home">
+          <span class="c-icon c-icon--home" aria-hidden="true"></span>
+          <span class="c-nav__label">Início</span>
+        </a>
+      </li>
+      <!-- Só para ADMIN e MANAGER_SERVICE: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-satisfaction-survey-only" hidden>
+        <a class="c-nav__link" href="pesquisa-satisfacao">
+          <span class="c-icon c-icon--chart" aria-hidden="true"></span>
+          <span class="c-nav__label">Pesquisa de Satisfação</span>
+        </a>
+      </li>
+      <!-- Item expansível: o botão alterna a sublista (app-shell.js). Vem aberto na página que está dentro dele -->
+      <!-- Só para ADMIN, EMPLOYEE_SERVICE e MANAGER_SERVICE: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-authorization-only" hidden>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-sub-autorizacoes"
+        >
+          <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+          <span class="c-nav__label">Autorizações</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-autorizacoes" hidden>
+          <li>
+            <a class="c-nav__link" href="autorizacoes">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Controlar autorizações</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="lancar-autorizacao">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Lançar autorização</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <!-- Só para ADMIN e colaborador do relacionamento: revelado em app-shell.js (a proteção real é o backend) -->
+      <li class="js-service-request-only" hidden>
+        <button
+          class="c-nav__link c-nav__toggle js-nav-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="nav-sub-atendimentos"
+        >
+          <span class="c-icon c-icon--file-text" aria-hidden="true"></span>
+          <span class="c-nav__label">Atendimentos</span>
+          <span class="c-icon c-icon--sm c-nav__chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="c-nav__list c-nav__sublist" id="nav-sub-atendimentos">
+          <li>
+            <a class="c-nav__link" href="dashboard-atendimentos" aria-current="page">
+              <span class="c-icon c-icon--chart" aria-hidden="true"></span>
+              <span class="c-nav__label">Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="controlar-atendimentos">
+              <span class="c-icon c-icon--clipboard" aria-hidden="true"></span>
+              <span class="c-nav__label">Controlar atendimentos</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="registrar-atendimento">
+              <span class="c-icon c-icon--file-plus" aria-hidden="true"></span>
+              <span class="c-nav__label">Registrar atendimento</span>
+            </a>
+          </li>
+          <li>
+            <a class="c-nav__link" href="configurar-atendimentos">
+              <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+              <span class="c-nav__label">Configurar atendimentos</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <!-- Base da sidebar: Configurações é sempre o último item, logo acima do rodapé -->
+    <div class="l-sidebar__bottom">
+      <!-- Só para ADMIN: revelado em app-shell.js. Esconder é UX; a proteção real é o backend -->
+      <div class="c-nav__group js-admin-only" hidden>
+        <p class="c-nav__group-title" id="nav-grupo-administracao">Administração</p>
+        <ul class="c-nav__list" aria-labelledby="nav-grupo-administracao">
+          <li>
+            <a class="c-nav__link" href="configuracoes">
+              <span class="c-icon c-icon--settings" aria-hidden="true"></span>
+              <span class="c-nav__label">Configurações</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <footer class="l-sidebar__footer">
+        <p class="l-sidebar__footer-title">Portal de Atendimento</p>
+        <p class="l-sidebar__footer-text">Controle e solicitações de autorização em um só lugar</p>
+      </footer>
+    </div>
+  </nav>
+
+  <div class="l-shell__backdrop js-menu-backdrop" hidden></div>
+
+  <main class="l-main js-main" id="conteudo" tabindex="-1">
+    <!-- Dashboard de uma tela só (≥ 1280px): faixa de indicadores, tendência + prazo, e três quebras.
+         Tudo calculado no navegador a partir de GET api/service-requests (pages/service-request-dashboard.js) -->
+    <div class="l-container l-srd">
+      <header class="l-srd-header">
+        <div class="l-srd-header__title">
+          <h1>Dashboard de atendimentos</h1>
+          <p class="l-srd-header__meta js-period-label" aria-live="polite">Carregando…</p>
+        </div>
+
+        <form class="l-srd-period js-period" aria-label="Período analisado" novalidate>
+          <div class="c-field">
+            <label class="c-field__label" for="periodo-atalho">Período</label>
+            <div class="c-select-wrapper">
+              <select class="c-select" id="periodo-atalho" name="atalho">
+                <option value="mes">Este mês</option>
+                <option value="mes-anterior">Mês anterior</option>
+                <option value="30d">Últimos 30 dias</option>
+                <option value="90d">Últimos 90 dias</option>
+                <option value="ano">Este ano</option>
+                <option value="personalizado">Personalizado</option>
+              </select>
+            </div>
+          </div>
+          <div class="c-field">
+            <label class="c-field__label" for="periodo-de">De</label>
+            <input class="c-input" id="periodo-de" name="de" type="date" required>
+          </div>
+          <div class="c-field">
+            <label class="c-field__label" for="periodo-ate">Até</label>
+            <input class="c-input" id="periodo-ate" name="ate" type="date" required>
+          </div>
+        </form>
+      </header>
+
+      <!-- Seis indicadores numa faixa só. data-kpi liga cada um ao cálculo no JS -->
+      <section class="c-card l-srd-kpis js-kpis" aria-labelledby="indicadores-title">
+        <h2 class="u-visually-hidden" id="indicadores-title">Indicadores do período</h2>
+
+        <article class="c-kpi" data-kpi="finished">
+          <h3 class="c-kpi__label">Protocolos finalizados</h3>
+          <p class="c-kpi__value js-kpi-value">—</p>
+          <p class="c-kpi__note js-kpi-note"></p>
+          <p class="c-kpi__delta js-kpi-delta"></p>
+        </article>
+
+        <article class="c-kpi" data-kpi="resolved">
+          <h3 class="c-kpi__label">Finalizados e resolvidos</h3>
+          <p class="c-kpi__value js-kpi-value">—</p>
+          <div class="c-meter js-kpi-meter" aria-hidden="true"><span class="c-meter__fill"></span></div>
+          <p class="c-kpi__note js-kpi-note"></p>
+          <p class="c-kpi__delta js-kpi-delta"></p>
+        </article>
+
+        <article class="c-kpi" data-kpi="onTime">
+          <h3 class="c-kpi__label">Finalizados no prazo</h3>
+          <p class="c-kpi__value js-kpi-value">—</p>
+          <div class="c-meter js-kpi-meter" aria-hidden="true"><span class="c-meter__fill"></span></div>
+          <p class="c-kpi__note js-kpi-note"></p>
+          <p class="c-kpi__delta js-kpi-delta"></p>
+        </article>
+
+        <article class="c-kpi" data-kpi="complaints">
+          <h3 class="c-kpi__label">Reclamações</h3>
+          <p class="c-kpi__value js-kpi-value">—</p>
+          <p class="c-kpi__note js-kpi-note"></p>
+          <p class="c-kpi__delta js-kpi-delta"></p>
+        </article>
+
+        <article class="c-kpi" data-kpi="rn">
+          <h3 class="c-kpi__label">Demandas RN 566</h3>
+          <p class="c-kpi__value js-kpi-value">—</p>
+          <p class="c-kpi__note js-kpi-note"></p>
+          <p class="c-kpi__delta js-kpi-delta"></p>
+        </article>
+
+        <article class="c-kpi" data-kpi="rnResolvedOnTime">
+          <h3 class="c-kpi__label">RN resolvidas no prazo</h3>
+          <p class="c-kpi__value js-kpi-value">—</p>
+          <div class="c-meter js-kpi-meter" aria-hidden="true"><span class="c-meter__fill"></span></div>
+          <p class="c-kpi__note js-kpi-note"></p>
+          <p class="c-kpi__delta js-kpi-delta"></p>
+        </article>
+      </section>
+
+      <div class="l-srd-middle">
+        <section class="c-card c-panel l-srd-trend" aria-labelledby="tendencia-title">
+          <header class="c-panel__header">
+            <h2 class="c-panel__title" id="tendencia-title">Abertos e finalizados</h2>
+            <p class="c-panel__meta js-trend-meta"></p>
+            <!-- Legenda em HTML: identifica as séries também pelo traço (Abertos tracejado) -->
+            <ul class="c-legend" aria-hidden="true">
+              <li class="c-legend__item"><span class="c-legend__swatch c-legend__swatch--opened"></span>Abertos</li>
+              <li class="c-legend__item"><span class="c-legend__swatch c-legend__swatch--finished"></span>Finalizados</li>
+            </ul>
+          </header>
+          <div class="c-panel__chart">
+            <canvas class="js-trend-chart" role="img" aria-label="Gráfico de atendimentos abertos e finalizados no período"></canvas>
+          </div>
+        </section>
+
+        <section class="c-card c-panel l-srd-deadline" aria-labelledby="prazo-title">
+          <header class="c-panel__header">
+            <h2 class="c-panel__title" id="prazo-title">Prazo e resolução</h2>
+            <p class="c-panel__meta">Prazo de 5 dias úteis desde a abertura</p>
+          </header>
+          <div class="l-srd-deadline__body js-deadline"></div>
+        </section>
+      </div>
+
+      <div class="l-srd-bottom">
+        <section class="c-card c-panel" aria-labelledby="categoria-title">
+          <header class="c-panel__header">
+            <h2 class="c-panel__title" id="categoria-title">Por categoria</h2>
+            <p class="c-panel__meta">Abertos no período e quantos saíram no prazo</p>
+          </header>
+          <div class="c-panel__body js-by-category"></div>
+        </section>
+
+        <section class="c-card c-panel" aria-labelledby="responsavel-title">
+          <header class="c-panel__header">
+            <h2 class="c-panel__title" id="responsavel-title">Por responsável</h2>
+            <p class="c-panel__meta">Finalizados no período</p>
+          </header>
+          <div class="c-panel__body js-by-assignee"></div>
+        </section>
+
+        <section class="c-card c-panel" aria-labelledby="canal-title">
+          <header class="c-panel__header">
+            <h2 class="c-panel__title" id="canal-title">Por canal e tipo</h2>
+            <p class="c-panel__meta">Abertos no período</p>
+          </header>
+          <div class="c-panel__body l-srd-split">
+            <div class="js-by-channel"></div>
+            <div class="js-by-type"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Alterar a própria senha (menu do usuário). Ids minha-senha-* para não colidir com o
+       diálogo de redefinir senha das configurações -->
+  <dialog class="c-dialog c-dialog--form js-own-password-dialog" aria-labelledby="minha-senha-title" aria-describedby="minha-senha-description">
+    <form class="c-dialog__form js-own-password-form" novalidate>
+      <header class="c-dialog__header">
+        <div class="c-dialog__heading">
+          <h2 class="c-dialog__title" id="minha-senha-title">Alterar senha</h2>
+          <p class="c-field__hint" id="minha-senha-description">Depois de salvar, você sai do portal e entra de novo com a nova senha.</p>
+        </div>
+        <button class="c-icon-button js-own-password-dismiss" type="button" aria-label="Fechar" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body">
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-nova">
+            Nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <div class="c-input-group">
+            <input
+              class="c-input"
+              id="minha-senha-nova"
+              name="password"
+              type="password"
+              required
+              autocomplete="new-password"
+              aria-describedby="minha-senha-nova-hint minha-senha-nova-error minha-senha-caps-lock"
+            >
+            <button
+              class="c-input-group__action js-own-password-toggle"
+              type="button"
+              aria-controls="minha-senha-nova"
+              aria-pressed="false"
+              aria-label="Mostrar senha"
+              title="Mostrar senha"
+            >
+              <span class="c-input-group__icon" aria-hidden="true"></span>
+            </button>
+          </div>
+          <p class="c-field__hint" id="minha-senha-nova-hint">De 4 a 72 caracteres.</p>
+          <p class="c-field__hint c-field__hint--warning js-own-password-caps-lock" id="minha-senha-caps-lock" aria-live="polite"></p>
+          <p class="c-field__error" id="minha-senha-nova-error" hidden></p>
+        </div>
+
+        <div class="c-field">
+          <label class="c-field__label" for="minha-senha-confirmacao">
+            Repetir a nova senha <span class="c-field__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="c-input"
+            id="minha-senha-confirmacao"
+            name="passwordConfirm"
+            type="password"
+            required
+            autocomplete="new-password"
+            aria-describedby="minha-senha-confirmacao-error"
+          >
+          <p class="c-field__error" id="minha-senha-confirmacao-error" hidden></p>
+        </div>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-own-password-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary" type="submit">Alterar senha</button>
+      </footer>
+    </form>
+  </dialog>
+</body>
+</html>

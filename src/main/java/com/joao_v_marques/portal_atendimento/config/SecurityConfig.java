@@ -46,7 +46,7 @@ public class SecurityConfig {
 
                         // Controle de atendimentos: só ADMIN e colaboradores do relacionamento.
                         // Não casa com /api/service-request-status etc.: os cadastros auxiliares seguem para qualquer logado
-                        .requestMatchers("/controlar-atendimentos", "/registrar-atendimento", "/configurar-atendimentos", "/api/service-requests/**").hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
+                        .requestMatchers("/controlar-atendimentos", "/registrar-atendimento", "/configurar-atendimentos", "/dashboard-atendimentos", "/api/service-requests/**").hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
 
                         // Cadastros auxiliares: leitura para qualquer logado (preenchem os selects), escrita só para quem configura
                         .requestMatchers(HttpMethod.POST, LOOKUP_PATHS).hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")

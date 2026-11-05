@@ -1,0 +1,566 @@
+/* ==========================================================================
+   Dashboard de atendimentos — uma tela só a partir de 1280 × 800
+   Escopo .l-srd-page (classe do <body>): components.css e layout.css não mudam.
+   Densidade igual à de /controlar-atendimentos: rótulos de 12px, controles de 32px
+   ========================================================================== */
+
+/* Séries do gráfico (validadas com o validador de paleta: CVD ΔE ≥ 20 nos dois temas).
+   Abertos também é tracejado, para não depender só da cor */
+:root {
+  --srd-opened:   #2a78d6;
+  --srd-finished: #00804e;
+  /* Tons de status das barras segmentadas: separados do verde da série "Finalizados" */
+  --srd-good:     var(--status-done-text);
+  --srd-warning:  var(--orange-500);
+  --srd-critical: var(--color-error);
+  --srd-neutral:  var(--neutral-300);
+}
+
+:root[data-theme="dark"] {
+  --srd-opened:   #3987e5;
+  --srd-finished: #34a374;
+  --srd-good:     var(--status-done-text);
+  --srd-warning:  var(--color-warning);
+  --srd-critical: var(--color-error);
+  --srd-neutral:  var(--gray-dark-700);
+}
+
+/* ── Página ─────────────────────────────────────────────────── */
+
+.l-srd-page .l-main {
+  padding-block: var(--space-2);
+}
+
+.l-srd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+}
+
+.l-srd .c-card {
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+}
+
+/* Controles compactos (mesma escala da listagem de atendimentos) */
+.l-srd-page .c-field {
+  gap: 0;
+}
+
+.l-srd-page .c-field__label {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.l-srd-page .c-input,
+.l-srd-page .c-select {
+  min-height: var(--control-height-sm);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+/* ── Cabeçalho: título + período ───────────────────────────── */
+
+.l-srd-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.l-srd-header__title {
+  display: grid;
+  min-width: 0;
+}
+
+.l-srd-header h1 {
+  font-size: var(--text-lg);
+  line-height: var(--leading-lg);
+}
+
+.l-srd-header__meta {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.l-srd-period {
+  display: grid;
+  grid-template-columns: 11rem 9.5rem 9.5rem;
+  gap: var(--space-1);
+}
+
+/* ── Faixa de indicadores ──────────────────────────────────── */
+
+/* Um card só, seis colunas separadas por divisórias finas: lê-se como uma linha de placar */
+.l-srd-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.l-srd .l-srd-kpis {
+  padding: 0;
+}
+
+.c-kpi {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.c-kpi__label {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.c-kpi__value {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: var(--weight-bold);
+  line-height: 2.25rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-heading);
+}
+
+.c-kpi__note,
+.c-kpi__delta {
+  overflow: hidden;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-kpi__note {
+  color: var(--color-text);
+}
+
+/* Variação: seta + número em tinta secundária; subir não é bom nem ruim por padrão */
+.c-kpi__delta {
+  color: var(--color-text-secondary);
+}
+
+.c-kpi__delta[data-dir="up"]::before   { content: "▲ "; }
+.c-kpi__delta[data-dir="down"]::before { content: "▼ "; }
+
+/* Medidor da proporção (ex.: resolvidos / finalizados). --share vem do JS (0 a 1) */
+.c-meter {
+  height: 4px;
+  margin-block: 2px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-muted);
+}
+
+.c-meter__fill {
+  display: block;
+  width: calc(var(--share, 0) * 100%);
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--srd-finished);
+  transition: width var(--duration-slow) var(--ease-standard);
+}
+
+/* ── Painéis ───────────────────────────────────────────────── */
+
+.c-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--space-1);
+}
+
+.c-panel__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+}
+
+.c-panel__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-sm);
+}
+
+.c-panel__meta {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.c-panel__body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.c-panel__chart {
+  position: relative;
+  min-height: 12rem;
+}
+
+.c-panel__empty {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Legenda do gráfico: traço igual ao da série (sólido / tracejado) */
+.c-legend {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.c-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-half);
+}
+
+.c-legend__swatch {
+  width: 1.25rem;
+  height: 0;
+  border-top: 2px solid;
+}
+
+.c-legend__swatch--opened   { border-top-style: dashed; border-color: var(--srd-opened); }
+.c-legend__swatch--finished { border-color: var(--srd-finished); }
+
+/* ── Prazo e resolução: barras 100% segmentadas ────────────── */
+
+.l-srd-deadline__body {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-height: 0;
+  overflow: auto;
+}
+
+.c-stack {
+  display: grid;
+  gap: var(--space-half);
+}
+
+.c-stack__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1);
+}
+
+.c-stack__title {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-xs);
+  color: var(--color-text);
+}
+
+.c-stack__caption {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+/* 2px de superfície entre os segmentos (gap); pontas arredondadas só nas extremidades */
+.c-stack-bar {
+  display: flex;
+  gap: 2px;
+  height: 0.625rem;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.c-stack-bar__segment,
+.c-stack-bar__empty {
+  flex-basis: 0;
+  min-width: 2px;
+}
+
+.c-stack-bar__empty {
+  flex-grow: 1;
+  background: var(--color-surface-muted);
+}
+
+.c-stack-bar__segment--good     { background: var(--srd-good); }
+.c-stack-bar__segment--warning  { background: var(--srd-warning); }
+.c-stack-bar__segment--critical { background: var(--srd-critical); }
+.c-stack-bar__segment--neutral  { background: var(--srd-neutral); }
+
+.c-stack-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+}
+
+.c-stack-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-half);
+}
+
+.c-stack-legend__swatch {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 2px;
+}
+
+.c-stack-legend__label {
+  color: var(--color-text-secondary);
+}
+
+.c-stack-legend__value {
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.c-stack-legend__share {
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.c-stack__stat {
+  padding-top: var(--space-1);
+  border-top: var(--border-width) solid var(--color-border);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.c-stack__stat strong {
+  color: var(--color-text);
+}
+
+/* ── Listas com barra ─────────────────────────────────────── */
+
+.c-bar-list {
+  display: grid;
+  gap: 2px;
+}
+
+.c-bar-list__title {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-xs);
+  color: var(--color-text);
+}
+
+.c-bar-list__extra-header {
+  justify-self: end;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.c-bar-list__rows {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* nome | barra | valor | extra */
+.c-bar-list__row {
+  display: grid;
+  grid-template-columns: minmax(0, 9rem) minmax(2rem, 1fr) 2.5rem auto;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 1.375rem;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+}
+
+.c-bar-list__row:not(:has(.c-bar-list__extra)) {
+  grid-template-columns: minmax(0, 9rem) minmax(2rem, 1fr) 2.5rem;
+}
+
+.c-bar-list__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-bar-list__track {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* Barras das listas contam abertos: mesmo azul da série "Abertos" do gráfico */
+.c-bar-list__fill {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--srd-opened);
+}
+
+.c-bar-list__value {
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.c-bar-list__extra {
+  min-width: 2.75rem;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.l-srd-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-1) var(--space-3);
+}
+
+/* ── Tabela por responsável ───────────────────────────────── */
+
+.c-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.c-mini-table th,
+.c-mini-table td {
+  padding: 3px var(--space-1);
+  border-top: var(--border-width) solid var(--color-border);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.c-mini-table thead th {
+  position: sticky;
+  top: 0;
+  border-top: 0;
+  font-weight: var(--weight-semibold);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.c-mini-table th:first-child {
+  max-width: 11rem;
+  overflow: hidden;
+  padding-left: 0;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+.c-mini-table tbody th {
+  font-weight: var(--weight-medium);
+}
+
+.c-mini-table__alert {
+  color: var(--color-error);
+}
+
+/* ── Breakpoints ──────────────────────────────────────────── */
+
+@media (max-width: 37.49em) {
+  .l-srd-period {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .l-srd-period > .c-field:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 37.5em) {
+  .l-srd-kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .l-srd-split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 60em) {
+  .l-srd-middle {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+
+  .l-srd-bottom {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-1);
+  }
+}
+
+@media (max-width: 59.99em) {
+  .l-srd-middle,
+  .l-srd-bottom {
+    display: grid;
+    gap: var(--space-1);
+  }
+}
+
+/* Tela larga: seis indicadores numa linha só, divididos por linhas verticais */
+@media (min-width: 80em) {
+  .l-srd-kpis {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .c-kpi {
+    border-top: 0;
+  }
+
+  .c-kpi + .c-kpi {
+    border-left: var(--border-width) solid var(--color-border);
+  }
+}
+
+/* Uma tela só: a grade ocupa a altura útil e os dois blocos de baixo dividem o resto.
+   Só com altura suficiente; em telas baixas a página volta a rolar normalmente */
+@media (min-width: 80em) and (min-height: 46em) {
+  .l-srd-page .l-main {
+    height: calc(100dvh - var(--topbar-height));
+    overflow: hidden;
+  }
+
+  .l-srd {
+    height: 100%;
+    grid-template-rows: auto auto minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+
+  .l-srd-middle,
+  .l-srd-bottom {
+    min-height: 0;
+  }
+
+  .l-srd-middle > .c-panel,
+  .l-srd-bottom > .c-panel {
+    min-height: 0;
+  }
+
+  .c-panel__chart {
+    min-height: 0;
+  }
+}
