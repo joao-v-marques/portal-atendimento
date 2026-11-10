@@ -35,7 +35,7 @@ const AUTHORIZATION_FIELD_RULES = {
     return null;
   },
   authorizationTypeId(value) {
-    return value ? null : 'Preencha o tipo da autorização';
+    return value ? null : 'Escolha o procedimento na lista';
   },
   authorizationStatusId(value) {
     return value ? null : 'Preencha o status da autorização';

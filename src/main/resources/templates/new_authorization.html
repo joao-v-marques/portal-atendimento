@@ -271,22 +271,37 @@
                   <p class="c-field__error" id="request-date-error" hidden></p>
                 </div>
 
-                <div class="c-field">
+                <div class="c-field l-field-grid__full">
                   <label class="c-field__label" for="authorization-type">
-                    Tipo <span class="c-field__required" aria-hidden="true">*</span>
+                    Procedimento <span class="c-field__required" aria-hidden="true">*</span>
                   </label>
-                  <div class="c-select-wrapper">
-                    <select
-                      class="c-select"
-                      id="authorization-type"
-                      name="authorizationTypeId"
-                      aria-describedby="authorization-type-error"
-                      required
-                      disabled
-                    >
-                      <option value="">Carregando…</option>
-                    </select>
+                  <div class="c-combobox js-procedure-combobox">
+                    <div class="c-combobox__control">
+                      <span class="c-combobox__code-chip js-combobox-code" aria-hidden="true"></span>
+                      <input
+                        class="c-input c-combobox__input js-combobox-input"
+                        id="authorization-type"
+                        name="authorizationTypeId"
+                        type="text"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded="false"
+                        aria-controls="authorization-type-listbox"
+                        aria-describedby="authorization-type-deadline authorization-type-error"
+                        placeholder="Carregando procedimentos…"
+                        autocomplete="off"
+                        spellcheck="false"
+                        required
+                        disabled
+                      >
+                      <button class="c-combobox__clear js-combobox-clear" type="button" aria-label="Limpar procedimento" title="Limpar" hidden>
+                        <span class="c-icon c-icon--sm c-icon--close" aria-hidden="true"></span>
+                      </button>
+                    </div>
+                    <ul class="c-combobox__listbox js-combobox-listbox" id="authorization-type-listbox" role="listbox" aria-label="Procedimentos" hidden></ul>
+                    <p class="u-visually-hidden js-combobox-status" aria-live="polite"></p>
                   </div>
+                  <p class="c-field__hint js-type-deadline" id="authorization-type-deadline">Digite o código TUSS ou parte do nome e escolha na lista.</p>
                   <p class="c-field__error" id="authorization-type-error" hidden></p>
                 </div>
 

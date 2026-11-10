@@ -340,6 +340,216 @@
   box-shadow: inset 0 0 0 1px var(--color-error);
 }
 
+/* ==========================================================================
+   Combobox (busca + lista, ex.: procedimento por código ou nome)
+   Sem escolha: lupa à esquerda. Com escolha: o código ocupa o lugar da lupa,
+   para conferir de relance o que foi selecionado.
+   ========================================================================== */
+
+.c-combobox {
+  --combobox-code-width: calc(8ch + var(--space-2)); /* 8 dígitos mono + respiro do selo */
+  position: relative;
+}
+
+.c-combobox__control {
+  position: relative;
+}
+
+.c-combobox__control::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: var(--space-1);
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  background: var(--color-text-secondary);
+  mask: url("img/icon-search.svg") center / contain no-repeat;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.c-combobox__input {
+  padding-right: var(--control-height-md);
+  padding-left: var(--space-4);
+  text-overflow: ellipsis;
+}
+
+.c-combobox__code-chip {
+  position: absolute;
+  top: 50%;
+  left: var(--space-half);
+  display: none;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  font: var(--weight-medium) var(--text-sm) / var(--leading-sm) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.c-combobox[data-selected] .c-combobox__control::before {
+  display: none;
+}
+
+.c-combobox[data-selected] .c-combobox__code-chip {
+  display: block;
+}
+
+.c-combobox[data-selected] .c-combobox__input {
+  padding-left: calc(var(--combobox-code-width) + var(--space-1));
+}
+
+.c-combobox__clear {
+  position: absolute;
+  top: 50%;
+  right: var(--space-half);
+  display: grid;
+  place-items: center;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  transform: translateY(-50%);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.c-combobox__clear:hover {
+  color: var(--color-text);
+}
+
+.c-combobox__clear:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.c-combobox__clear[hidden] {
+  display: none;
+}
+
+.c-combobox__listbox {
+  position: absolute;
+  top: calc(100% + var(--space-half));
+  right: 0;
+  left: 0;
+  z-index: var(--z-dropdown);
+  max-height: min(24rem, 60vh);
+  margin: 0;
+  padding: var(--space-half);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  list-style: none;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  animation: dropdown-in var(--duration-base) var(--ease-standard);
+}
+
+.c-combobox__listbox[hidden] {
+  display: none;
+}
+
+/* Código | nome | prazo. O código tem largura fixa: as linhas formam uma coluna legível */
+.c-combobox__option {
+  display: grid;
+  grid-template-columns: var(--combobox-code-width) minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.c-combobox__option[data-active] {
+  background: var(--color-surface-muted);
+  box-shadow: inset 2px 0 0 var(--color-primary);
+}
+
+.c-combobox__option[aria-selected="true"] .c-combobox__name {
+  font-weight: var(--weight-semibold);
+}
+
+.c-combobox__code {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+.c-combobox__name {
+  /* Nomes de procedimento chegam a centenas de caracteres: até 2 linhas, o resto no title do campo */
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.c-combobox__deadline {
+  font-size: var(--text-xs);
+  line-height: var(--leading-sm);
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.c-combobox__deadline--now {
+  font-weight: var(--weight-semibold);
+  color: var(--color-warning);
+}
+
+.c-combobox__match {
+  border-radius: 2px;
+  font-weight: var(--weight-semibold);
+  background: var(--color-primary-subtle);
+  color: inherit;
+}
+
+.c-combobox__code .c-combobox__match {
+  color: var(--color-primary);
+}
+
+.c-combobox__group {
+  padding: var(--space-1) var(--space-1) var(--space-half);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.c-combobox__message {
+  padding: var(--space-1);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+.c-combobox__option + .c-combobox__message {
+  margin-top: var(--space-half);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* Celular: prazo vai para baixo do código, o nome ganha a largura toda */
+@media (max-width: 37.49em) {
+  .c-combobox__option {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "code deadline"
+      "name name";
+    row-gap: 0;
+  }
+
+  .c-combobox__code { grid-area: code; }
+  .c-combobox__name { grid-area: name; }
+  .c-combobox__deadline { grid-area: deadline; justify-self: end; }
+}
+
 /* Campo de busca com ícone à esquerda */
 .c-search {
   position: relative;
