@@ -8,9 +8,15 @@ const DATE_KEYS = new Set(['requestDate', 'createdAt']);
 const COLUMN_COUNT = 7;
 const SKELETON_ROWS = 5;
 
-// Prazo da ANS: 10 dias úteis desde a solicitação. A partir de 8 o aviso é preventivo; em 10 já venceu
-export const DEADLINE_WARNING_BUSINESS_DAYS = 8;
-export const DEADLINE_LIMIT_BUSINESS_DAYS = 10;
+// Prazo da ANS: max_days do tipo, em dias úteis desde a solicitação (0 = imediato).
+// O aviso preventivo começa 2 dias úteis antes do limite; no limite já venceu
+export const DEFAULT_DEADLINE_BUSINESS_DAYS = 10;
+export const DEADLINE_WARNING_LEAD_BUSINESS_DAYS = 2;
+
+// Sem o campo (resposta antiga), mantém o prazo padrão
+function deadlineLimit(item) {
+  return item.authorizationTypeMaxDays ?? DEFAULT_DEADLINE_BUSINESS_DAYS;
+}
 
 const collator = new Intl.Collator('pt-BR', { sensitivity: 'base', numeric: true });
 
@@ -26,14 +32,16 @@ function compareValues(key, a, b) {
 
 /**
  * Situação da autorização diante do prazo da ANS, contado em dias úteis desde a solicitação.
- * @param {{ requestDate?: string, authorizationStatusName?: string }} item
+ * @param {{ requestDate?: string, authorizationStatusName?: string, authorizationTypeMaxDays?: number | null }} item
  * @returns {'done' | 'overdue' | 'warning' | 'ok'}
  */
 export function deadlineLevel(item) {
   if (statusVariant(item.authorizationStatusName) === 'done') return 'done';
   const days = businessDaysSince(item.requestDate) ?? 0;
-  if (days >= DEADLINE_LIMIT_BUSINESS_DAYS) return 'overdue';
-  if (days >= DEADLINE_WARNING_BUSINESS_DAYS) return 'warning';
+  // Imediato (0) vence no dia útil seguinte: no próprio dia ainda é aviso
+  const limit = Math.max(deadlineLimit(item), 1);
+  if (days >= limit) return 'overdue';
+  if (days >= Math.max(limit - DEADLINE_WARNING_LEAD_BUSINESS_DAYS, 0)) return 'warning';
   return 'ok';
 }
 
@@ -47,11 +55,20 @@ export function finishLead(item) {
   if (!item.finishDate) return null;
   const [y, m, d] = item.finishDate.split('-').map(Number);
   const used = businessDaysSince(item.requestDate, new Date(y, m - 1, d)) ?? 0;
-  return { used, early: DEADLINE_LIMIT_BUSINESS_DAYS - used };
+  return { used, early: deadlineLimit(item) - used };
 }
 
-function businessDaysLabel(days) {
+export function businessDaysLabel(days) {
   return `${days} ${days === 1 ? 'dia útil' : 'dias úteis'}`;
+}
+
+/**
+ * Prazo do tipo para exibição: "Imediato" ou "10 dias úteis".
+ * @param {number | null | undefined} maxDays
+ */
+export function deadlineLimitText(maxDays) {
+  const days = maxDays ?? DEFAULT_DEADLINE_BUSINESS_DAYS;
+  return days === 0 ? 'Imediato' : businessDaysLabel(days);
 }
 
 /**

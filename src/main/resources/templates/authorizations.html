@@ -292,8 +292,8 @@
               <div class="c-select-wrapper">
                 <select class="c-select" id="filtro-prazo" name="prazo">
                   <option value="">Todos</option>
-                  <option value="avencer">Prestes a vencer (8 ou 9 dias úteis)</option>
-                  <option value="vencida">Vencidas (10+ dias úteis)</option>
+                  <option value="avencer">Prestes a vencer (até 2 dias úteis)</option>
+                  <option value="vencida">Vencidas (prazo do tipo esgotado)</option>
                 </select>
               </div>
             </div>
@@ -320,7 +320,7 @@
                 Ver autorizações
               </button>
             </p>
-            <p class="c-deadline-card__text">Não finalizadas há 8 ou 9 dias úteis.</p>
+            <p class="c-deadline-card__text">Não finalizadas que vencem em até 2 dias úteis.</p>
           </section>
 
           <section class="c-card c-deadline-card c-deadline-card--overdue js-card-overdue" aria-labelledby="prazo-vencidas-title">
@@ -334,7 +334,7 @@
                 Ver autorizações
               </button>
             </p>
-            <p class="c-deadline-card__text">Passaram dos 10 dias úteis do prazo da ANS.</p>
+            <p class="c-deadline-card__text">Passaram do prazo da ANS definido para o tipo.</p>
           </section>
         </div>
 

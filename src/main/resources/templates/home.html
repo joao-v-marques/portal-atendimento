@@ -287,7 +287,7 @@
               <span class="c-deadline-card__count js-warning-count" aria-live="polite" aria-busy="true"><span class="c-skeleton" aria-hidden="true"></span></span>
               <a class="c-deadline-card__action" href="autorizacoes?prazo=avencer" aria-label="Ver autorizações prestes a vencer">Ver autorizações</a>
             </p>
-            <p class="c-deadline-card__text">Não finalizadas há 8 ou 9 dias úteis (vencem em até 2 dias úteis).</p>
+            <p class="c-deadline-card__text">Não finalizadas que vencem em até 2 dias úteis, conforme o prazo do tipo.</p>
           </section>
 
           <section class="c-card c-deadline-card c-deadline-card--overdue" aria-labelledby="indicador-vencidas-title">
@@ -299,7 +299,7 @@
               <span class="c-deadline-card__count js-overdue-count" aria-live="polite" aria-busy="true"><span class="c-skeleton" aria-hidden="true"></span></span>
               <a class="c-deadline-card__action" href="autorizacoes?prazo=vencida" aria-label="Ver autorizações vencidas">Ver autorizações</a>
             </p>
-            <p class="c-deadline-card__text">Passaram dos 10 dias úteis do prazo da ANS.</p>
+            <p class="c-deadline-card__text">Passaram do prazo da ANS definido para o tipo.</p>
           </section>
         </div>
       </section>
@@ -331,8 +331,8 @@
             <li class="c-steps__item">
               <h3 class="c-steps__title">Prazo da ANS</h3>
               <p class="c-steps__text">
-                São 10 dias úteis contados a partir da data da solicitação. Com 8 dias úteis a autorização aparece como
-                “prestes a vencer”; com 10, como “vencida”.
+                Cada tipo tem seu prazo em dias úteis, contados a partir da data da solicitação. Faltando 2 dias úteis
+                a autorização aparece como “prestes a vencer”; ao atingir o prazo, como “vencida”.
               </p>
             </li>
             <li class="c-steps__item">

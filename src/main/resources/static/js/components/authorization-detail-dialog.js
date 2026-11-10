@@ -3,7 +3,7 @@ import { el, saveBlob } from '../core/dom.js';
 import { handleError } from '../core/errors.js';
 import { fileTypeLabel, formatDate, formatDateTime, formatFileSize, formatPhone } from '../core/format.js';
 import { notify } from '../core/notify.js';
-import { deadlineLevel, finishLead, finishLeadText, statusBadge } from './authorization-table.js';
+import { deadlineLevel, deadlineLimitText, finishLead, finishLeadText, statusBadge } from './authorization-table.js';
 
 const SKELETON_DOCUMENTS = 2;
 
@@ -111,6 +111,7 @@ export function initAuthorizationDetailDialog(dialog) {
     details.replaceChildren(
       descriptionItem('Data da solicitação', formatDate(item.requestDate)),
       descriptionItem('Tipo', item.authorizationTypeName),
+      descriptionItem('Prazo do tipo', deadlineLimitText(item.authorizationTypeMaxDays)),
       descriptionItem('Beneficiário', item.beneficiaryName),
       descriptionItem('Telefone', formatPhone(item.beneficiaryPhone)),
       descriptionItem('Cadastrado em', formatDateTime(item.createdAt)),
