@@ -136,6 +136,7 @@ public class AuthorizationRequestService {
                 authorizationRequest.getRequestDate(),
                 authorizationRequest.getFinishDate(),
                 authorizationRequest.getAuthorizationType().getName(),
+                authorizationRequest.getAuthorizationType().getMaxDays(),
                 authorizationRequest.getAuthorizationStatus().getName(),
                 authorizationRequest.getBeneficiaryName(),
                 authorizationRequest.getBeneficiaryPhone(),

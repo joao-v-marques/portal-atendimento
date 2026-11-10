@@ -9,6 +9,7 @@ public record AuthorizationRequestResponse(
         LocalDate requestDate,
         LocalDate finishDate,
         String authorizationTypeName,
+        Integer authorizationTypeMaxDays,
         String authorizationStatusName,
         String beneficiaryName,
         String beneficiaryPhone,

@@ -91,7 +91,9 @@ public class AuthorizationTypeService {
     private AuthorizationTypeResponse toResponse(AuthorizationType authorizationType) {
         return new AuthorizationTypeResponse(
                 authorizationType.getId(),
+                authorizationType.getCode(),
                 authorizationType.getName(),
+                authorizationType.getMaxDays(),
                 authorizationType.isActive()
         );
     }
