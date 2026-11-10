@@ -1,5 +1,5 @@
 import { initAppShell } from '../components/app-shell.js';
-import { descriptionItem, initAuthorizationDetailDialog } from '../components/authorization-detail-dialog.js';
+import { initAuthorizationDetailDialog, renderFinishSummary } from '../components/authorization-detail-dialog.js';
 import {
   FILTER_KEYS,
   applyFilters,
@@ -21,7 +21,6 @@ import { initPagination, paginate } from '../components/pagination.js';
 import { api } from '../core/api.js';
 import { el } from '../core/dom.js';
 import { handleError } from '../core/errors.js';
-import { businessDaysSince, formatDate, formatPhone } from '../core/format.js';
 import { notify } from '../core/notify.js';
 
 const numberFormatter = new Intl.NumberFormat('pt-BR');
@@ -33,7 +32,6 @@ const deadlineCards = document.querySelector('.js-deadline-cards');
 const warningCard = deadlineCards.querySelector('.js-card-warning');
 const overdueCard = deadlineCards.querySelector('.js-card-overdue');
 const finishDialogEl = document.querySelector('.js-finish-dialog');
-const finishDetails = finishDialogEl.querySelector('.js-finish-details');
 
 // ── Estado (espelhado na query string) ───────────────────────
 
@@ -69,7 +67,13 @@ const state = {
 
 initAppShell().catch(() => {}); // erros do usuário logado já são tratados no shell
 
-const detailDialog = initAuthorizationDetailDialog(document.querySelector('.js-detail-dialog'));
+const detailDialog = initAuthorizationDetailDialog(document.querySelector('.js-detail-dialog'), {
+  // Finalizar a partir do detalhe usa o botão da linha: ele recebe o carregamento e o foco depois
+  onFinish(item) {
+    const rowButton = results.querySelector(`.js-finish[data-request-id="${item.id}"]`);
+    if (rowButton) finishAuthorization(item, rowButton);
+  },
+});
 
 const table = initAuthorizationTable(results, {
   onSort(key) {
@@ -205,28 +209,15 @@ function renderLoadError(error) {
 
 // ── Finalizar ────────────────────────────────────────────────
 
-function elapsedText(requestDate) {
-  const days = businessDaysSince(requestDate);
-  if (days === null) return '—';
-  return `${formatDate(requestDate)} (há ${days} ${days === 1 ? 'dia útil' : 'dias úteis'})`;
-}
-
 async function finishAuthorization(item, opener) {
   if (!item) return;
 
-  finishDetails.replaceChildren(
-    descriptionItem('Nº da transação', item.transactionNumber),
-    descriptionItem('Beneficiário', item.beneficiaryName),
-    descriptionItem('Telefone', formatPhone(item.beneficiaryPhone)),
-    descriptionItem('Tipo', item.authorizationTypeName),
-    descriptionItem('Status atual', item.authorizationStatusName),
-    descriptionItem('Solicitada em', elapsedText(item.requestDate)),
-  );
+  renderFinishSummary(finishDialogEl, item, 'finish');
 
   const confirmed = await finishDialog.ask({
-    title: `Finalizar a autorização ${item.transactionNumber}?`,
-    description: `A autorização de ${item.beneficiaryName || 'beneficiário não informado'} será marcada como finalizada `
-      + 'e deixará de contar no prazo da ANS. Não é possível desfazer essa ação pelo portal.',
+    title: 'Finalizar autorização?',
+    description: 'A contagem do prazo da ANS para aqui e a mensagem para o beneficiário fica pronta no Detalhes. '
+      + 'Se precisar, você pode reabrir depois.',
     confirmLabel: 'Finalizar autorização',
     opener,
   });
@@ -260,19 +251,12 @@ async function finishAuthorization(item, opener) {
 async function reopenAuthorization(item, opener) {
   if (!item) return;
 
-  finishDetails.replaceChildren(
-    descriptionItem('Nº da transação', item.transactionNumber),
-    descriptionItem('Beneficiário', item.beneficiaryName),
-    descriptionItem('Tipo', item.authorizationTypeName),
-    descriptionItem('Status atual', item.authorizationStatusName),
-    descriptionItem('Finalizada em', formatDate(item.finishDate)),
-  );
-
   // Mesmo diálogo do Finalizar: título, descrição e botão são trocados a cada ask
+  renderFinishSummary(finishDialogEl, item, 'reopen');
+
   const confirmed = await finishDialog.ask({
-    title: `Reabrir a autorização ${item.transactionNumber}?`,
-    description: `A autorização de ${item.beneficiaryName || 'beneficiário não informado'} voltará a ficar em aberto `
-      + 'e a contar no prazo da ANS. A data de finalização será removida.',
+    title: 'Reabrir autorização?',
+    description: 'A data de finalização será removida e a autorização volta para as abertas.',
     confirmLabel: 'Reabrir autorização',
     opener,
   });

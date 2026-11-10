@@ -3,7 +3,8 @@ import { el, saveBlob } from '../core/dom.js';
 import { handleError } from '../core/errors.js';
 import { fileTypeLabel, formatDate, formatDateTime, formatFileSize, formatPhone } from '../core/format.js';
 import { notify } from '../core/notify.js';
-import { deadlineLevel, deadlineLimitText, finishLead, finishLeadText, statusBadge } from './authorization-table.js';
+import { deadlinePanel } from './authorization-deadline.js';
+import { deadlineLevel, finishLead, finishLeadText, statusBadge } from './authorization-table.js';
 
 const SKELETON_DOCUMENTS = 2;
 
@@ -32,6 +33,72 @@ export function descriptionItem(term, value) {
     el('dt', { className: 'c-description-list__term', text: term }),
     el('dd', { className: 'c-description-list__value', text: value || '—' }),
   ]);
+}
+
+/**
+ * Nº da transação em grupos de 4 para ler e conferir (ex.: ao telefone). Os grupos são só
+ * espaçamento visual: copiar o título continua dando os 12 dígitos juntos.
+ * @param {string} code
+ */
+export function groupedCode(code) {
+  const value = String(code ?? '');
+  const groups = value.match(/.{1,4}/g) ?? [value];
+  return groups.map((group) => el('span', { className: 'c-auth-code__group', text: group }));
+}
+
+/**
+ * Beneficiário em destaque e telefone clicável (abre o discador no celular).
+ * @param {{ beneficiaryName?: string, beneficiaryPhone?: string }} item
+ */
+export function beneficiaryLine(item) {
+  const nodes = [el('span', { className: 'c-auth-dialog__beneficiary', text: item.beneficiaryName || 'Beneficiário não informado' })];
+  const digits = String(item.beneficiaryPhone ?? '').replace(/\D/g, '');
+  if (digits) {
+    nodes.push(el('a', {
+      className: 'c-auth-dialog__phone',
+      text: formatPhone(item.beneficiaryPhone),
+      attrs: { href: `tel:+55${digits}`, 'aria-label': `Ligar para ${formatPhone(item.beneficiaryPhone)}` },
+    }));
+  }
+  return nodes;
+}
+
+/**
+ * Par rótulo → valor do bloco de dados; `note` vira uma segunda linha discreta.
+ * @param {string} term
+ * @param {string | null | undefined} value
+ * @param {{ wide?: boolean, note?: string }} [options]
+ */
+export function fact(term, value, { wide = false, note } = {}) {
+  return el('div', { className: `c-auth-facts__item${wide ? ' c-auth-facts__item--wide' : ''}` }, [
+    el('dt', { className: 'c-auth-facts__term', text: term }),
+    el('dd', { className: 'c-auth-facts__value' }, [
+      value || '—',
+      ...(note ? [el('span', { className: 'c-auth-facts__note', text: note })] : []),
+    ]),
+  ]);
+}
+
+/**
+ * Conteúdo da confirmação de Finalizar/Reabrir (js-finish-dialog): quem é, como fica o prazo
+ * da ANS com a ação e os dados para conferir. Título, texto e botão ficam com o confirm-dialog.
+ * @param {HTMLDialogElement} dialog
+ * @param {object} item
+ * @param {'finish' | 'reopen'} mode
+ */
+export function renderFinishSummary(dialog, item, mode) {
+  dialog.querySelector('.js-finish-subject').replaceChildren(
+    el('span', { className: 'c-auth-code' }, groupedCode(item.transactionNumber)),
+    ...beneficiaryLine(item),
+  );
+  dialog.querySelector('.js-finish-deadline').replaceChildren(deadlinePanel(item, { mode, compact: true }));
+  dialog.querySelector('.js-finish-details').replaceChildren(
+    fact('Procedimento', item.authorizationTypeName, { wide: true }),
+    mode === 'finish'
+      ? fact('Solicitada em', formatDate(item.requestDate))
+      : fact('Finalizada em', item.finishDate ? formatDate(item.finishDate) : 'Data não registrada'),
+    fact('Status atual', item.authorizationStatusName),
+  );
 }
 
 function compactState({ icon, title, text, actions = [] }) {
@@ -83,12 +150,16 @@ function documentSkeleton() {
 /**
  * Modal de detalhe de uma autorização, com documentos e download.
  * @param {HTMLDialogElement} dialog
+ * @param {{ onFinish?: (item: object) => void }} [options] com onFinish, o rodapé oferece finalizar as abertas
  * @returns {{ open: (item: object, opener: HTMLElement) => void }}
  */
-export function initAuthorizationDetailDialog(dialog) {
+export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
   const code = dialog.querySelector('.js-detail-code');
   const status = dialog.querySelector('.js-detail-status');
+  const subtitle = dialog.querySelector('.js-detail-subtitle');
+  const deadline = dialog.querySelector('.js-detail-deadline');
   const details = dialog.querySelector('.js-detail-list');
+  const finishButton = dialog.querySelector('.js-detail-finish');
   const documentsSection = dialog.querySelector('.js-documents');
   const documentsCount = dialog.querySelector('.js-documents-count');
   const documentsArea = dialog.querySelector('.js-documents-area');
@@ -105,25 +176,22 @@ export function initAuthorizationDetailDialog(dialog) {
   // ── Renderização ───────────────────────────────────────────
 
   function renderDetails(item) {
-    code.textContent = item.transactionNumber;
+    code.replaceChildren(...groupedCode(item.transactionNumber));
     status.replaceChildren(statusBadge(item.authorizationStatusName));
-    const lead = finishLead(item);
+    subtitle.replaceChildren(...beneficiaryLine(item));
+    deadline.replaceChildren(deadlinePanel(item));
+
+    const isDone = deadlineLevel(item) === 'done';
     details.replaceChildren(
-      descriptionItem('Data da solicitação', formatDate(item.requestDate)),
-      descriptionItem('Tipo', item.authorizationTypeName),
-      descriptionItem('Prazo do tipo', deadlineLimitText(item.authorizationTypeMaxDays)),
-      descriptionItem('Beneficiário', item.beneficiaryName),
-      descriptionItem('Telefone', formatPhone(item.beneficiaryPhone)),
-      descriptionItem('Cadastrado em', formatDateTime(item.createdAt)),
-      descriptionItem('Cadastrado por', item.insertedByName),
-      ...(lead ? [
-        descriptionItem('Finalizado em', formatDate(item.finishDate)),
-        descriptionItem('Prazo da ANS', finishLeadText(lead)),
-      ] : []),
+      fact('Procedimento', item.authorizationTypeName, { wide: true }),
+      // Solicitação e finalização já aparecem na régua do prazo; só sem data de finalização não há régua
+      ...(isDone && !item.finishDate ? [fact('Solicitada em', formatDate(item.requestDate))] : []),
+      fact('Cadastrada em', formatDateTime(item.createdAt), { note: item.insertedByName ? `por ${item.insertedByName}` : undefined }),
     );
 
+    finishButton.hidden = !onFinish || isDone;
+
     // Mensagem só faz sentido depois de finalizada: em análise não há o que comunicar
-    const isDone = deadlineLevel(item) === 'done';
     messageSection.hidden = !isDone;
     messageText.textContent = isDone ? beneficiaryMessage(item) : '';
   }
@@ -139,7 +207,7 @@ export function initAuthorizationDetailDialog(dialog) {
   function renderDocuments(documents) {
     documentsSection.removeAttribute('aria-busy');
     documentsById = new Map(documents.map((doc) => [doc.id, doc]));
-    documentsCount.textContent = `(${documents.length})`;
+    documentsCount.textContent = String(documents.length);
 
     if (documents.length === 0) {
       documentsArea.replaceChildren(compactState({
@@ -238,6 +306,13 @@ export function initAuthorizationDetailDialog(dialog) {
     dialog.close();
     finishClosing();
   }
+
+  // Finalizar daqui: fecha o detalhe e segue o mesmo fluxo de confirmação da linha
+  finishButton.addEventListener('click', () => {
+    const item = current;
+    close();
+    onFinish?.(item);
+  });
 
   dialog.querySelectorAll('.js-detail-dismiss').forEach((button) => {
     button.addEventListener('click', close);

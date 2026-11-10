@@ -391,13 +391,19 @@
     </div>
   </main>
 
-  <dialog class="c-dialog js-detail-dialog" aria-labelledby="detalhe-title">
-    <header class="c-dialog__header">
-      <div class="c-dialog__heading">
-        <h2 class="c-dialog__title" id="detalhe-title">
-          Autorização <span class="c-dialog__title-code js-detail-code"></span>
-        </h2>
-        <div class="js-detail-status"></div>
+  <!-- Detalhe: identificação no topo (nº, status, beneficiário), régua do prazo da ANS, dados,
+       mensagem (só finalizadas) e documentos. Conteúdo montado em authorization-detail-dialog.js -->
+  <dialog class="c-dialog c-auth-dialog js-detail-dialog" aria-labelledby="detalhe-title" aria-describedby="detalhe-subtitle">
+    <header class="c-dialog__header c-auth-dialog__header">
+      <div class="c-auth-dialog__identity">
+        <div class="c-auth-dialog__title-row">
+          <h2 class="c-dialog__title c-auth-dialog__title" id="detalhe-title">
+            <span class="u-visually-hidden">Autorização </span>
+            <span class="c-auth-dialog__code js-detail-code"></span>
+          </h2>
+          <div class="js-detail-status"></div>
+        </div>
+        <p class="c-auth-dialog__subtitle js-detail-subtitle" id="detalhe-subtitle"></p>
       </div>
       <button
         class="c-icon-button js-detail-close js-detail-dismiss"
@@ -409,16 +415,18 @@
       </button>
     </header>
 
-    <div class="c-dialog__body">
-      <section class="c-dialog__section" aria-labelledby="detalhe-dados-title">
-        <h3 class="c-dialog__section-title" id="detalhe-dados-title">Dados da autorização</h3>
-        <dl class="c-description-list js-detail-list"></dl>
+    <div class="c-dialog__body c-auth-dialog__body">
+      <section class="js-detail-deadline" aria-label="Prazo da ANS"></section>
+
+      <section class="c-auth-dialog__section" aria-labelledby="detalhe-dados-title">
+        <h3 class="c-auth-dialog__section-title" id="detalhe-dados-title">Dados da autorização</h3>
+        <dl class="c-auth-facts js-detail-list"></dl>
       </section>
 
       <!-- Só para autorizações finalizadas; texto montado em authorization-detail-dialog.js -->
-      <section class="c-dialog__section js-beneficiary-message" aria-labelledby="detalhe-mensagem-title" hidden>
+      <section class="c-auth-dialog__section js-beneficiary-message" aria-labelledby="detalhe-mensagem-title" hidden>
         <div class="c-dialog__section-heading">
-          <h3 class="c-dialog__section-title" id="detalhe-mensagem-title">Mensagem para o beneficiário</h3>
+          <h3 class="c-auth-dialog__section-title" id="detalhe-mensagem-title">Mensagem para o beneficiário</h3>
           <button class="c-button c-button--secondary c-button--sm js-copy-message" type="button">
             <span class="c-icon c-icon--sm c-icon--copy" aria-hidden="true"></span>
             Copiar mensagem
@@ -427,9 +435,9 @@
         <p class="c-message-preview js-message-text"></p>
       </section>
 
-      <section class="c-dialog__section js-documents" aria-labelledby="detalhe-documentos-title">
-        <h3 class="c-dialog__section-title" id="detalhe-documentos-title">
-          Documentos <span class="js-documents-count"></span>
+      <section class="c-auth-dialog__section js-documents" aria-labelledby="detalhe-documentos-title">
+        <h3 class="c-auth-dialog__section-title" id="detalhe-documentos-title">
+          Documentos <span class="c-auth-dialog__count js-documents-count"></span>
         </h3>
         <div class="js-documents-area"></div>
       </section>
@@ -437,22 +445,28 @@
 
     <footer class="c-dialog__footer">
       <button class="c-button c-button--secondary js-detail-dismiss" type="button">Fechar</button>
+      <button class="c-button c-button--primary js-detail-finish" type="button" hidden>
+        <span class="c-icon c-icon--sm c-icon--check-circle" aria-hidden="true"></span>
+        Finalizar
+      </button>
     </footer>
   </dialog>
 
   <!-- Confirmação de finalização e de reabertura: mesmo confirm-dialog.js do settings.html; os dados do
        pedido (js-finish-details), o título e o botão são preenchidos em authorizations.js antes de abrir -->
-  <dialog class="c-dialog c-dialog--confirm js-finish-dialog" aria-labelledby="finalizar-title" aria-describedby="finalizar-description">
+  <dialog class="c-dialog c-dialog--form c-auth-dialog js-finish-dialog" aria-labelledby="finalizar-title" aria-describedby="finalizar-description">
     <div class="c-dialog__form">
-      <header class="c-dialog__header">
-        <div class="c-dialog__heading">
-          <h2 class="c-dialog__title js-confirm-title" id="finalizar-title">Finalizar autorização?</h2>
+      <header class="c-dialog__header c-auth-dialog__header">
+        <div class="c-auth-dialog__identity">
+          <h2 class="c-dialog__title c-auth-dialog__confirm-title js-confirm-title" id="finalizar-title">Finalizar autorização?</h2>
+          <p class="c-auth-dialog__subtitle js-finish-subject"></p>
         </div>
       </header>
 
-      <div class="c-dialog__body">
-        <p class="js-confirm-description" id="finalizar-description"></p>
-        <dl class="c-description-list js-finish-details"></dl>
+      <div class="c-dialog__body c-auth-dialog__body">
+        <div class="js-finish-deadline"></div>
+        <dl class="c-auth-facts js-finish-details"></dl>
+        <p class="c-auth-dialog__note js-confirm-description" id="finalizar-description"></p>
       </div>
 
       <footer class="c-dialog__footer">
