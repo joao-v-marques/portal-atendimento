@@ -3,7 +3,6 @@ import { deadlineLimitText } from '../components/authorization-table.js';
 import { initProcedureCombobox } from '../components/procedure-combobox.js';
 import { initFileUpload } from '../components/file-upload.js';
 import { api } from '../core/api.js';
-import { el } from '../core/dom.js';
 import { handleError } from '../core/errors.js';
 import { clearFieldError, clearFieldErrors, setFieldError, setSubmitting, showFieldErrors } from '../core/form.js';
 import { maskPhone, onlyDigits } from '../core/format.js';
@@ -26,7 +25,6 @@ const fields = {
   transactionNumber: form.elements.namedItem('transactionNumber'),
   requestDate: form.elements.namedItem('requestDate'),
   authorizationTypeId: form.elements.namedItem('authorizationTypeId'),
-  authorizationStatusId: form.elements.namedItem('authorizationStatusId'),
   beneficiaryName: form.elements.namedItem('beneficiaryName'),
   beneficiaryPhone: form.elements.namedItem('beneficiaryPhone'),
 };
@@ -35,10 +33,11 @@ const typeDeadline = document.querySelector('.js-type-deadline');
 const submitButton = form.querySelector('[type="submit"]');
 const submitStatus = document.querySelector('.js-submit-status');
 
-let options = { types: [], statuses: [] };
+let options = { types: [] };
+let defaultStatusId = null; // todo lançamento nasce "Em análise"; não há campo de status
 let isDirty = false;
 
-// ── Procedimento (combobox) e status (select) ────────────────
+// ── Procedimento (combobox) e status inicial ─────────────────
 
 const TYPE_HINT = typeDeadline.textContent;
 
@@ -49,19 +48,6 @@ const procedure = initProcedureCombobox(document.querySelector('.js-procedure-co
     if (procedure.selected) clearFieldError(fields.authorizationTypeId);
   },
 });
-
-function fillSelect(select, items, placeholder) {
-  select.replaceChildren(
-    el('option', { text: placeholder, attrs: { value: '' } }),
-    ...items.map((item) => el('option', { text: item.name, attrs: { value: String(item.id) } })),
-  );
-  select.disabled = false;
-}
-
-function markSelectUnavailable(select) {
-  select.replaceChildren(el('option', { text: 'Não foi possível carregar', attrs: { value: '' } }));
-  select.disabled = true;
-}
 
 // Só tipos/status ativos podem ser usados num lançamento (o backend recusa inativos)
 function activeSorted(items) {
@@ -76,15 +62,22 @@ async function loadOptions() {
       api.get('api/authorization-types'),
       api.get('api/authorization-status'),
     ]);
-    options = { types: activeSorted(types), statuses: activeSorted(statuses) };
+    const defaultStatus = activeSorted(statuses)
+      .find((status) => status.name.trim().toLowerCase() === DEFAULT_STATUS_NAME);
+    if (!defaultStatus) {
+      procedure.setUnavailable();
+      submitButton.disabled = true;
+      notify.error('O status "Em análise" não está cadastrado ou está inativo. Reative-o nas configurações para lançar autorizações.');
+      return;
+    }
+    defaultStatusId = defaultStatus.id;
+    options = { types: activeSorted(types) };
     procedure.setItems(options.types);
-    fillSelect(fields.authorizationStatusId, options.statuses, 'Selecione o status');
     applyDefaults();
     submitButton.disabled = false;
   } catch (error) {
     procedure.setUnavailable();
-    markSelectUnavailable(fields.authorizationStatusId);
-    submitButton.disabled = true; // sem tipo e status o cadastro não passa no backend
+    submitButton.disabled = true; // sem procedimento e status inicial o cadastro não passa no backend
     handleError(error);
   }
 }
@@ -94,11 +87,9 @@ async function loadOptions() {
 function applyDefaults() {
   fields.requestDate.value = todayIso();
 
-  // Procedimento: pré-seleciona quando só existe uma opção; status: "Em análise"
+  // Procedimento: pré-seleciona quando só existe uma opção
   if (options.types.length === 1) procedure.select(options.types[0].id);
   else procedure.clear();
-  const defaultStatus = options.statuses.find((status) => status.name.trim().toLowerCase() === DEFAULT_STATUS_NAME);
-  if (defaultStatus) fields.authorizationStatusId.value = String(defaultStatus.id);
 
   updateCounter();
   updateTypeDeadline();
@@ -179,7 +170,7 @@ function readValues() {
     transactionNumber: fields.transactionNumber.value.trim(),
     requestDate: fields.requestDate.value,
     authorizationTypeId: procedure.selected?.id ?? null,
-    authorizationStatusId: Number(fields.authorizationStatusId.value) || null,
+    authorizationStatusId: defaultStatusId,
     beneficiaryName: fields.beneficiaryName.value.trim(),
     beneficiaryPhone: onlyDigits(fields.beneficiaryPhone.value),
   };
