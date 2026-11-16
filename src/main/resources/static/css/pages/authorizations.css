@@ -9,6 +9,17 @@
   gap: var(--space-half);
 }
 
+/* Editar (ADMIN e gestor): só ícone, quadrado na altura dos botões vizinhos, para a coluna não alargar */
+.c-row-actions .c-button--icon-only {
+  width: var(--control-height-sm);
+  padding: 0;
+  color: var(--color-text-secondary);
+}
+
+.c-row-actions .c-button--icon-only:hover:not(:disabled) {
+  color: var(--color-primary);
+}
+
 .l-filters {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -391,4 +402,39 @@
 .c-deadline--compact .c-deadline__headline {
   font-size: var(--text-md);
   line-height: var(--leading-md);
+}
+
+/* ── Editar autorização (modal de formulário) ──
+   Mesmos campos do Lançar; < 37.5em um campo por linha, depois dois */
+
+.c-auth-edit__group {
+  gap: var(--space-2);
+}
+
+/* A legend não é item do grid: o espaço até os campos vem da margem */
+.c-auth-edit__legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+}
+
+.c-auth-edit__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-2) var(--space-3);
+}
+
+/* O body do modal rola: a lista do procedimento precisa caber nele sem empurrar o rodapé */
+.c-auth-edit .c-combobox__listbox {
+  max-height: min(16rem, 40vh);
+}
+
+@media (min-width: 37.5em) {
+  .c-auth-edit__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .c-auth-edit__full {
+    grid-column: 1 / -1;
+  }
 }

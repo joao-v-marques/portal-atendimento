@@ -152,16 +152,18 @@ function documentSkeleton() {
 /**
  * Modal de detalhe de uma autorização, com documentos e download.
  * @param {HTMLDialogElement} dialog
- * @param {{ onFinish?: (item: object) => void }} [options] com onFinish, o rodapé oferece finalizar as abertas
- * @returns {{ open: (item: object, opener: HTMLElement) => void }}
+ * @param {{ onFinish?: (item: object) => void, onEdit?: (item: object, opener: HTMLElement) => void }} [options]
+ *   com onFinish, o rodapé oferece finalizar as abertas; com onEdit e setCanEdit(true), oferece editar
+ * @returns {{ open: (item: object, opener: HTMLElement) => void, setCanEdit: (value: boolean) => void }}
  */
-export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
+export function initAuthorizationDetailDialog(dialog, { onFinish, onEdit } = {}) {
   const code = dialog.querySelector('.js-detail-code');
   const status = dialog.querySelector('.js-detail-status');
   const subtitle = dialog.querySelector('.js-detail-subtitle');
   const deadline = dialog.querySelector('.js-detail-deadline');
   const details = dialog.querySelector('.js-detail-list');
   const finishButton = dialog.querySelector('.js-detail-finish');
+  const editButton = dialog.querySelector('.js-detail-edit');
   const documentsSection = dialog.querySelector('.js-documents');
   const documentsCount = dialog.querySelector('.js-documents-count');
   const documentsArea = dialog.querySelector('.js-documents-area');
@@ -185,6 +187,7 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
   let controller = null;
   let documentsById = new Map();
   let pointerDownOnBackdrop = false;
+  let canEdit = false; // liberado pela página depois de saber a role do usuário
 
   // ── Renderização ───────────────────────────────────────────
 
@@ -203,6 +206,7 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
     );
 
     finishButton.hidden = !onFinish || isDone;
+    editButton.hidden = !onEdit || !canEdit;
 
     // Mensagem só faz sentido depois de finalizada: em análise não há o que comunicar
     messageSection.hidden = !isDone;
@@ -406,6 +410,14 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
     onFinish?.(item);
   });
 
+  // Editar daqui: fecha o detalhe e abre a edição com o botão da linha como opener (o foco volta para ele)
+  editButton.addEventListener('click', () => {
+    const item = current;
+    const target = opener;
+    close();
+    onEdit?.(item, target);
+  });
+
   dialog.querySelectorAll('.js-detail-dismiss').forEach((button) => {
     button.addEventListener('click', close);
   });
@@ -426,6 +438,10 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
   dialog.addEventListener('close', finishClosing);
 
   return {
+    setCanEdit(value) {
+      canEdit = value;
+    },
+
     open(item, openerElement) {
       if (!item) return;
       current = item;

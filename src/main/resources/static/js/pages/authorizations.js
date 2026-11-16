@@ -1,5 +1,6 @@
 import { initAppShell } from '../components/app-shell.js';
 import { initAuthorizationDetailDialog, renderFinishSummary } from '../components/authorization-detail-dialog.js';
+import { initAuthorizationEditDialog } from '../components/authorization-edit-dialog.js';
 import {
   FILTER_KEYS,
   applyFilters,
@@ -24,6 +25,9 @@ import { handleError } from '../core/errors.js';
 import { notify } from '../core/notify.js';
 
 const numberFormatter = new Intl.NumberFormat('pt-BR');
+
+// Mesmas roles do PUT /api/authorization-requests/* no SecurityConfig. Esconder aqui é só UX: quem barra é o backend
+const EDIT_ROLES = ['ADMIN', 'MANAGER_SERVICE'];
 
 const form = document.querySelector('.js-filters');
 const results = document.querySelector('.js-results');
@@ -61,11 +65,18 @@ const state = {
   items: [],
   itemsById: new Map(),
   loaded: false,
+  canEdit: false, // só vira true quando a role do usuário logado chega: a opção nunca pisca para quem não pode
 };
 
 // ── Componentes ──────────────────────────────────────────────
 
-initAppShell().catch(() => {}); // erros do usuário logado já são tratados no shell
+const editDialog = initAuthorizationEditDialog(document.querySelector('.js-edit-dialog'), {
+  onSaved(updated) {
+    replaceItem(updated);
+    // A linha pode ter saído do filtro (ex.: novo nº não bate com a busca): foco nos resultados
+    if (!table.focusRowAction(updated.id, '.js-edit')) table.focusResults();
+  },
+});
 
 const detailDialog = initAuthorizationDetailDialog(document.querySelector('.js-detail-dialog'), {
   // Finalizar a partir do detalhe usa o botão da linha: ele recebe o carregamento e o foco depois
@@ -73,7 +84,18 @@ const detailDialog = initAuthorizationDetailDialog(document.querySelector('.js-d
     const rowButton = results.querySelector(`.js-finish[data-request-id="${item.id}"]`);
     if (rowButton) finishAuthorization(item, rowButton);
   },
+  onEdit(item, opener) {
+    editDialog.open(state.itemsById.get(item.id) ?? item, opener);
+  },
 });
+
+initAppShell()
+  .then((user) => {
+    state.canEdit = EDIT_ROLES.includes(user?.role);
+    detailDialog.setCanEdit(state.canEdit);
+    render();
+  })
+  .catch(() => {}); // erros do usuário logado já são tratados no shell
 
 const table = initAuthorizationTable(results, {
   onSort(key) {
@@ -83,6 +105,9 @@ const table = initAuthorizationTable(results, {
   },
   onView(id, opener) {
     detailDialog.open(state.itemsById.get(id), opener);
+  },
+  onEdit(id, opener) {
+    if (state.canEdit) editDialog.open(state.itemsById.get(id), opener);
   },
   onFinish(id, opener) {
     finishAuthorization(state.itemsById.get(id), opener);
@@ -187,7 +212,7 @@ function render() {
 
   const pageInfo = paginate(sortItems(filtered, state.sort), state.page);
   state.page = pageInfo.page;
-  table.renderRows(pageInfo.pageItems);
+  table.renderRows(pageInfo.pageItems, { canEdit: state.canEdit });
   pagination.render(pageInfo);
   writeStateToUrl(state);
 }
@@ -205,6 +230,15 @@ function renderLoadError(error) {
     actions: [retry],
   }));
   handleError(error);
+}
+
+// Troca a autorização na lista pela versão que o backend devolveu e redesenha cards e tabela
+function replaceItem(updated) {
+  const index = state.items.findIndex((entry) => entry.id === updated.id);
+  if (index >= 0) state.items[index] = updated;
+  state.itemsById.set(updated.id, updated);
+  renderDeadlineCards();
+  render();
 }
 
 // ── Finalizar ────────────────────────────────────────────────
@@ -228,13 +262,8 @@ async function finishAuthorization(item, opener) {
   try {
     const updated = await api.patch(`api/authorization-requests/${encodeURIComponent(item.id)}/finish`);
 
-    const index = state.items.findIndex((entry) => entry.id === updated.id);
-    if (index >= 0) state.items[index] = updated;
-    state.itemsById.set(updated.id, updated);
-
     notify.success(`Autorização ${updated.transactionNumber} finalizada.`);
-    renderDeadlineCards();
-    render();
+    replaceItem(updated);
 
     // O botão Finalizar sumiu da linha: o foco vai para o Detalhes dela ou, se a linha
     // saiu do filtro (ex.: prazo vencido), para os resultados — senão cairia no <body>
@@ -267,13 +296,8 @@ async function reopenAuthorization(item, opener) {
   try {
     const updated = await api.patch(`api/authorization-requests/${encodeURIComponent(item.id)}/reopen`);
 
-    const index = state.items.findIndex((entry) => entry.id === updated.id);
-    if (index >= 0) state.items[index] = updated;
-    state.itemsById.set(updated.id, updated);
-
     notify.success(`Autorização ${updated.transactionNumber} reaberta.`);
-    renderDeadlineCards();
-    render();
+    replaceItem(updated);
 
     // O Reabrir virou Finalizar na mesma linha; se ela saiu do filtro, foco nos resultados
     if (!table.focusRowAction(updated.id, '.js-finish')) table.focusResults();
@@ -306,6 +330,7 @@ async function load() {
   state.itemsById = new Map(state.items.map((item) => [item.id, item]));
   state.loaded = true;
   renderDeadlineCards();
+  if (types.status === 'fulfilled') editDialog.setTypes(types.value);
 
   // Opções = cadastro oficial + nomes presentes na lista (inclui tipos/status já desativados).
   // Falha nos auxiliares não é notificada: os nomes da própria lista bastam para filtrar.

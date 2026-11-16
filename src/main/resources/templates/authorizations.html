@@ -491,11 +491,162 @@
 
     <footer class="c-dialog__footer">
       <button class="c-button c-button--secondary js-detail-dismiss" type="button">Fechar</button>
+      <!-- Só para ADMIN e gestor do atendimento (PUT liberado só para eles no SecurityConfig) -->
+      <button class="c-button c-button--secondary js-detail-edit" type="button" hidden>
+        <span class="c-icon c-icon--sm c-icon--pencil" aria-hidden="true"></span>
+        Editar
+      </button>
       <button class="c-button c-button--primary js-detail-finish" type="button" hidden>
         <span class="c-icon c-icon--sm c-icon--check-circle" aria-hidden="true"></span>
         Finalizar
       </button>
     </footer>
+  </dialog>
+
+  <!-- Edição (PUT, só ADMIN e gestor do atendimento): mesmos campos do Lançar autorização, sem status
+       e sem documentos. A régua do prazo é recalculada ao trocar data ou procedimento (authorization-edit-dialog.js) -->
+  <dialog class="c-dialog c-dialog--form c-auth-dialog c-auth-edit js-edit-dialog" aria-labelledby="editar-title" aria-describedby="editar-subtitle">
+    <!-- Sem method="dialog": ele fecharia no submit e descartaria a requisição -->
+    <form class="c-dialog__form js-edit-form" novalidate>
+      <header class="c-dialog__header c-auth-dialog__header">
+        <div class="c-auth-dialog__identity">
+          <h2 class="c-dialog__title c-auth-dialog__confirm-title" id="editar-title">Editar autorização</h2>
+          <p class="c-auth-dialog__subtitle js-edit-subject" id="editar-subtitle"></p>
+        </div>
+        <button class="c-icon-button js-edit-dismiss" type="button" aria-label="Fechar edição" title="Fechar">
+          <span class="c-icon c-icon--close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="c-dialog__body c-auth-dialog__body">
+        <fieldset class="c-fieldset c-auth-edit__group">
+          <legend class="c-auth-dialog__section-title c-auth-edit__legend">Dados da autorização</legend>
+
+          <div class="c-auth-edit__grid">
+            <div class="c-field">
+              <label class="c-field__label" for="editar-transacao">
+                Nº da transação <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <input
+                class="c-input c-input--code"
+                id="editar-transacao"
+                name="transactionNumber"
+                type="text"
+                aria-describedby="editar-transacao-hint editar-transacao-error"
+                inputmode="numeric"
+                autocomplete="off"
+                spellcheck="false"
+                required
+              >
+              <div class="c-field__row">
+                <p class="c-field__hint" id="editar-transacao-hint">12 números, conforme a guia.</p>
+                <p class="c-field__counter js-edit-counter" aria-live="off">0/12</p>
+              </div>
+              <p class="c-field__error" id="editar-transacao-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="editar-data">
+                Data da solicitação <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <input
+                class="c-input c-input--code"
+                id="editar-data"
+                name="requestDate"
+                type="date"
+                aria-describedby="editar-data-error"
+                required
+              >
+              <p class="c-field__error" id="editar-data-error" hidden></p>
+            </div>
+
+            <div class="c-field c-auth-edit__full">
+              <label class="c-field__label" for="editar-procedimento">
+                Procedimento <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <div class="c-combobox js-edit-procedure">
+                <div class="c-combobox__control">
+                  <span class="c-combobox__code-chip js-combobox-code" aria-hidden="true"></span>
+                  <input
+                    class="c-input c-combobox__input js-combobox-input"
+                    id="editar-procedimento"
+                    name="authorizationTypeId"
+                    type="text"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded="false"
+                    aria-controls="editar-procedimento-listbox"
+                    aria-describedby="editar-procedimento-hint editar-procedimento-error"
+                    placeholder="Carregando procedimentos…"
+                    autocomplete="off"
+                    spellcheck="false"
+                    required
+                    disabled
+                  >
+                  <button class="c-combobox__clear js-combobox-clear" type="button" aria-label="Limpar procedimento" title="Limpar" hidden>
+                    <span class="c-icon c-icon--sm c-icon--close" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <ul class="c-combobox__listbox js-combobox-listbox" id="editar-procedimento-listbox" role="listbox" aria-label="Procedimentos" hidden></ul>
+                <p class="u-visually-hidden js-combobox-status" aria-live="polite"></p>
+              </div>
+              <p class="c-field__hint js-edit-procedure-hint" id="editar-procedimento-hint">Digite o código TUSS ou parte do nome e escolha na lista.</p>
+              <p class="c-field__error" id="editar-procedimento-error" hidden></p>
+            </div>
+          </div>
+
+          <!-- Prévia: como fica o prazo da ANS com a data e o procedimento escolhidos -->
+          <div class="js-edit-preview" aria-live="polite"></div>
+        </fieldset>
+
+        <fieldset class="c-fieldset c-auth-edit__group">
+          <legend class="c-auth-dialog__section-title c-auth-edit__legend">Beneficiário</legend>
+
+          <div class="c-auth-edit__grid">
+            <div class="c-field c-auth-edit__full">
+              <label class="c-field__label" for="editar-beneficiario">
+                Nome do beneficiário <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <input
+                class="c-input"
+                id="editar-beneficiario"
+                name="beneficiaryName"
+                type="text"
+                aria-describedby="editar-beneficiario-error"
+                maxlength="255"
+                autocomplete="off"
+                required
+              >
+              <p class="c-field__error" id="editar-beneficiario-error" hidden></p>
+            </div>
+
+            <div class="c-field">
+              <label class="c-field__label" for="editar-telefone">
+                Telefone <span class="c-field__required" aria-hidden="true">*</span>
+              </label>
+              <input
+                class="c-input c-input--code"
+                id="editar-telefone"
+                name="beneficiaryPhone"
+                type="tel"
+                inputmode="tel"
+                aria-describedby="editar-telefone-hint editar-telefone-error"
+                placeholder="(11) 91234-5678"
+                autocomplete="off"
+                required
+              >
+              <p class="c-field__hint" id="editar-telefone-hint">Com DDD.</p>
+              <p class="c-field__error" id="editar-telefone-error" hidden></p>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <footer class="c-dialog__footer">
+        <button class="c-button c-button--secondary js-edit-dismiss" type="button">Cancelar</button>
+        <button class="c-button c-button--primary" type="submit">Salvar alterações</button>
+      </footer>
+    </form>
   </dialog>
 
   <!-- Confirmação de finalização e de reabertura: mesmo confirm-dialog.js do settings.html; os dados do

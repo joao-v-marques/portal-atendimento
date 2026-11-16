@@ -187,7 +187,7 @@ function deadlineInfo(item) {
   ]);
 }
 
-function renderRow(item) {
+function renderRow(item, { canEdit = false } = {}) {
   const viewButton = el('button', {
     className: 'c-button c-button--ghost c-button--sm js-view',
     attrs: {
@@ -225,6 +225,21 @@ function renderRow(item) {
     }, [
       el('span', { className: 'c-icon c-icon--sm c-icon--rotate-ccw', attrs: { 'aria-hidden': 'true' } }),
       'Reabrir',
+    ]));
+  }
+
+  // Editar por último, só para quem o backend libera o PUT (ADMIN e MANAGER_SERVICE), em aberta ou finalizada
+  if (canEdit) {
+    actions.push(el('button', {
+      className: 'c-button c-button--ghost c-button--sm c-button--icon-only js-edit',
+      attrs: {
+        type: 'button',
+        'data-request-id': String(item.id),
+        'aria-label': `Editar a autorização ${item.transactionNumber}`,
+        title: 'Editar',
+      },
+    }, [
+      el('span', { className: 'c-icon c-icon--sm c-icon--pencil', attrs: { 'aria-hidden': 'true' } }),
     ]));
   }
 
@@ -271,11 +286,12 @@ function renderSkeletonRow() {
  * @param {{
  *   onSort: (key: string) => void,
  *   onView: (id: number, opener: HTMLElement) => void,
+ *   onEdit?: (id: number, opener: HTMLElement) => void,
  *   onFinish: (id: number, opener: HTMLElement) => void,
  *   onReopen: (id: number, opener: HTMLElement) => void,
  * }} callbacks
  */
-export function initAuthorizationTable(root, { onSort, onView, onFinish, onReopen }) {
+export function initAuthorizationTable(root, { onSort, onView, onEdit, onFinish, onReopen }) {
   const wrapper = root.querySelector('.js-table-wrapper');
   const tbody = root.querySelector('.js-table-body');
   const stateArea = root.querySelector('.js-table-state');
@@ -290,6 +306,9 @@ export function initAuthorizationTable(root, { onSort, onView, onFinish, onReope
   tbody.addEventListener('click', (event) => {
     const viewButton = event.target.closest('.js-view');
     if (viewButton) onView(Number(viewButton.dataset.requestId), viewButton);
+
+    const editButton = event.target.closest('.js-edit');
+    if (editButton && onEdit) onEdit(Number(editButton.dataset.requestId), editButton);
 
     const finishButton = event.target.closest('.js-finish');
     if (finishButton && !finishButton.disabled) onFinish(Number(finishButton.dataset.requestId), finishButton);
@@ -320,11 +339,12 @@ export function initAuthorizationTable(root, { onSort, onView, onFinish, onReope
       tbody.replaceChildren(fragment);
     },
 
-    renderRows(items) {
+    /** @param {object[]} items @param {{ canEdit?: boolean }} [options] */
+    renderRows(items, options = {}) {
       showTable();
       wrapper.removeAttribute('aria-busy');
       const fragment = document.createDocumentFragment();
-      items.forEach((item) => fragment.append(renderRow(item)));
+      items.forEach((item) => fragment.append(renderRow(item, options)));
       tbody.replaceChildren(fragment);
     },
 
