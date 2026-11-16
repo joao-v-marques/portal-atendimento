@@ -1,14 +1,19 @@
 import { initAppShell } from '../components/app-shell.js';
+import {
+  applyPhoneMask,
+  bindTransactionNumberInput,
+  sanitizeTransactionNumber,
+  updateTransactionCounter,
+} from '../components/authorization-fields.js';
 import { deadlineLimitText } from '../components/authorization-table.js';
 import { initProcedureCombobox } from '../components/procedure-combobox.js';
 import { initFileUpload } from '../components/file-upload.js';
 import { api } from '../core/api.js';
 import { handleError } from '../core/errors.js';
 import { clearFieldError, clearFieldErrors, setFieldError, setSubmitting, showFieldErrors } from '../core/form.js';
-import { maskPhone, onlyDigits } from '../core/format.js';
+import { onlyDigits } from '../core/format.js';
 import { notify } from '../core/notify.js';
 import {
-  TRANSACTION_NUMBER_LENGTH,
   todayIso,
   validateAuthorizationField,
   validateAuthorizationRequest,
@@ -18,7 +23,6 @@ import {
 // para também destacar o campo. Se a mensagem mudar no AuthorizationRequestService, atualize aqui.
 const DUPLICATE_TRANSACTION_MESSAGE = 'Já existe uma autorização com este número de transação.';
 const DEFAULT_STATUS_NAME = 'em análise';
-const COUNTER_ANNOUNCE_FROM = 10;
 
 const form = document.querySelector('.js-authorization-form');
 const fields = {
@@ -106,61 +110,7 @@ function updateTypeDeadline() {
 // ── Contador e máscara ───────────────────────────────────────
 
 function updateCounter() {
-  const length = fields.transactionNumber.value.length;
-  counter.textContent = `${length}/${TRANSACTION_NUMBER_LENGTH}`;
-  // Leitor de tela só é avisado perto do limite, para não anunciar cada tecla
-  counter.setAttribute('aria-live', length >= COUNTER_ANNOUNCE_FROM ? 'polite' : 'off');
-}
-
-// Nº da transação é só numérico. Sem maxlength no HTML de propósito: ele cortaria um valor
-// colado com separadores ("1234-5678-9012") antes de os dígitos serem aproveitados.
-function filterTransactionTyping(event) {
-  if (!event.inputType?.startsWith('insert') || event.data == null) return; // colar/arrastar: tratado no input
-  const input = event.target;
-  const start = input.selectionStart ?? input.value.length;
-  const end = input.selectionEnd ?? start;
-  const room = TRANSACTION_NUMBER_LENGTH - (input.value.length - (end - start));
-  const digits = onlyDigits(event.data).slice(0, Math.max(0, room));
-  if (digits === event.data) return; // só dígitos e cabe: o navegador insere normalmente
-
-  // Texto com letras (ou que passa de 12): insere só os dígitos que cabem.
-  // Não recusar tudo: autocorretor/voz inserem blocos inteiros e os números se perderiam.
-  event.preventDefault();
-  if (!digits) return;
-  input.setRangeText(digits, start, end, 'end');
-  input.dispatchEvent(new Event('input', { bubbles: true }));
-}
-
-// Rede de segurança para colar, arrastar e autocompletar: mantém só dígitos e o cursor no lugar
-function sanitizeTransactionNumber() {
-  const input = fields.transactionNumber;
-  const caret = input.selectionStart ?? input.value.length;
-  const digitsBeforeCaret = onlyDigits(input.value.slice(0, caret)).length;
-
-  const digits = onlyDigits(input.value).slice(0, TRANSACTION_NUMBER_LENGTH);
-  if (digits === input.value) return;
-  input.value = digits;
-  const position = Math.min(digitsBeforeCaret, digits.length);
-  input.setSelectionRange(position, position);
-}
-
-// Reaplica a máscara mantendo o cursor depois do mesmo dígito (editar no meio não joga o cursor para o fim)
-function applyPhoneMask() {
-  const input = fields.beneficiaryPhone;
-  const caret = input.selectionStart ?? input.value.length;
-  const digitsBeforeCaret = onlyDigits(input.value.slice(0, caret)).length;
-
-  const masked = maskPhone(input.value);
-  if (masked === input.value) return;
-  input.value = masked;
-
-  let position = 0;
-  let seen = 0;
-  while (position < masked.length && seen < digitsBeforeCaret) {
-    if (/\d/.test(masked[position])) seen++;
-    position++;
-  }
-  input.setSelectionRange(position, position);
+  updateTransactionCounter(counter, fields.transactionNumber);
 }
 
 // ── Validação (§10.2) ────────────────────────────────────────
@@ -189,10 +139,10 @@ function handleEdit(event) {
   if (!(field.name in fields)) return;
   isDirty = true;
   if (field === fields.transactionNumber) {
-    if (event.type === 'input') sanitizeTransactionNumber();
+    if (event.type === 'input') sanitizeTransactionNumber(field);
     updateCounter();
   }
-  if (field === fields.beneficiaryPhone && event.type === 'input') applyPhoneMask();
+  if (field === fields.beneficiaryPhone && event.type === 'input') applyPhoneMask(field);
   // Enquanto digita, só remove o erro quando o valor fica válido; nunca mostra erro novo
   if (field.getAttribute('aria-invalid') === 'true' && !validateAuthorizationField(field.name, readValues()[field.name])) {
     clearFieldError(field);
@@ -262,7 +212,7 @@ const upload = initFileUpload(document.querySelector('.js-upload'), {
   },
 });
 
-fields.transactionNumber.addEventListener('beforeinput', filterTransactionTyping);
+bindTransactionNumberInput(fields.transactionNumber);
 form.addEventListener('focusout', handleBlur);
 form.addEventListener('input', handleEdit);
 form.addEventListener('change', handleEdit);
