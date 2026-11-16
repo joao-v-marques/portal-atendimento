@@ -12,6 +12,8 @@ public interface AuthorizationRequestRepository extends JpaRepository<Authorizat
 
     boolean existsByTransactionNumber(String transactionNumber);
 
+    boolean existsByTransactionNumberAndIdNot(String transactionNumber, Integer id);
+
     // SELECT ... FOR UPDATE: serializa os uploads da mesma autorização até o fim da transação.
     // Protege o limite de documentos (count) e a escolha do nome do arquivo (existsByStoredPath).
     @Lock(LockModeType.PESSIMISTIC_WRITE)

@@ -47,6 +47,12 @@ public class AuthorizationRequestController {
         return created(authorizationRequestService.create(request, files, currentUser.getId()));
     }
 
+    // Edição dos dados da autorização (sem documentos e sem status). Só ADMIN e MANAGER_SERVICE (SecurityConfig)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AuthorizationRequestResponse> update(@PathVariable Integer id, @Valid @RequestBody AuthorizationRequestRequest request) {
+        return ResponseEntity.ok(authorizationRequestService.update(id, request));
+    }
+
     // Atualização da situação da autorização para finalizado
     @PatchMapping("/{id}/finish")
     public ResponseEntity<AuthorizationRequestResponse> finishAuthorization(@PathVariable Integer id) {

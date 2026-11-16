@@ -53,6 +53,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, LOOKUP_PATHS).hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
                         .requestMatchers(HttpMethod.PATCH, LOOKUP_PATHS).hasAnyRole("ADMIN", "EMPLOYEE_RELATIONSHIP")
 
+                        // Edição de autorização: só ADMIN e gestor do atendimento. Precisa vir antes da regra geral abaixo
+                        .requestMatchers(HttpMethod.PUT, "/api/authorization-requests/*").hasAnyRole("ADMIN", "MANAGER_SERVICE")
+
                         // Autorizações: o colaborador do relacionamento só usa Início e o registro de atendimentos
                         .requestMatchers("/autorizacoes", "/lancar-autorizacao",
                                 "/api/authorization-requests/**", "/api/authorization-status/**", "/api/authorization-types/**").hasAnyRole("ADMIN", "EMPLOYEE_SERVICE", "MANAGER_SERVICE")

@@ -129,6 +129,37 @@ public class AuthorizationRequestService {
         return toResponse(authorizationRequest);
     }
 
+    // Função para atualizar as informações da autorização (Não incluí documentos)
+    @Transactional
+    public AuthorizationRequestResponse update(Integer authorizationId, AuthorizationRequestRequest request) {
+        // Validar se de fato a autorização existe
+        AuthorizationRequest authorizationRequest = authorizationRequestRepository.findById(authorizationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado autorização com o ID informado."));
+        AuthorizationType authorizationType = authorizationTypeRepository.findById(request.authorizationTypeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado tipo de autorização com o ID informado."));
+
+        // Só bloqueia tipo inativo quando ele está sendo trocado; manter o tipo atual é permitido
+        if (!authorizationType.isActive() && !authorizationType.getId().equals(authorizationRequest.getAuthorizationType().getId())) {
+            throw new IllegalArgumentException("Não é possível alterar a autorização para um tipo inativo.");
+        }
+
+        String transactionNumber = request.transactionNumber().trim();
+
+        // Ignora a própria autorização para permitir salvar sem alterar o número da transação
+        if (authorizationRequestRepository.existsByTransactionNumberAndIdNot(transactionNumber, authorizationId)) {
+            throw new ConflictException("Já existe uma autorização com este número de transação.");
+        }
+
+        // Status e data de finalização não mudam aqui: ficam com /finish e /reopen
+        authorizationRequest.setTransactionNumber(transactionNumber);
+        authorizationRequest.setRequestDate(request.requestDate());
+        authorizationRequest.setAuthorizationType(authorizationType);
+        authorizationRequest.setBeneficiaryName(request.beneficiaryName().trim());
+        authorizationRequest.setBeneficiaryPhone(request.beneficiaryPhone().trim());
+
+        return toResponse(authorizationRequest);
+    }
+
     private AuthorizationRequestResponse toResponse(AuthorizationRequest authorizationRequest) {
         return new AuthorizationRequestResponse(
                 authorizationRequest.getId(),
