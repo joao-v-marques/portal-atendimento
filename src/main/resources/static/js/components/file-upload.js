@@ -37,7 +37,7 @@ function megabytes(bytes) {
  * Seleção de documentos com validação no cliente (tipo, tamanho, quantidade e soma).
  * @param {HTMLElement} root elemento .js-upload
  * @param {{ onChange?: (files: File[]) => void }} [callbacks]
- * @returns {{ getFiles: () => File[], clear: () => void, setDisabled: (disabled: boolean) => void }}
+ * @returns {{ getFiles: () => File[], clear: () => void, setDisabled: (disabled: boolean) => void, setMaxFiles: (max: number) => void }}
  */
 export function initFileUpload(root, { onChange } = {}) {
   const input = root.querySelector('.js-upload-input');
@@ -48,6 +48,7 @@ export function initFileUpload(root, { onChange } = {}) {
   /** @type {File[]} */
   let files = [];
   let disabled = false;
+  let maxFiles = MAX_FILES; // menor quando a autorização já tem documentos
 
   // ── Renderização ───────────────────────────────────────────
 
@@ -58,7 +59,7 @@ export function initFileUpload(root, { onChange } = {}) {
   function renderSummary() {
     // Total usado com a unidade adequada (arquivos pequenos apareceriam como "0 MB")
     const used = files.length === 0 ? '0 MB' : formatFileSize(totalBytes());
-    summary.textContent = `${files.length} de ${MAX_FILES} arquivos · ${used} de ${megabytes(MAX_REQUEST_BYTES)}`;
+    summary.textContent = `${files.length} de ${maxFiles} arquivos · ${used} de ${megabytes(MAX_REQUEST_BYTES)}`;
   }
 
   function renderItem(file, index) {
@@ -110,8 +111,8 @@ export function initFileUpload(root, { onChange } = {}) {
         rejected.push(`${file.name} (formato não aceito)`);
       } else if (file.size > MAX_FILE_BYTES) {
         rejected.push(`${file.name} (maior que 10MB)`);
-      } else if (accepted.length >= MAX_FILES) {
-        rejected.push(`${file.name} (limite de ${MAX_FILES} arquivos)`);
+      } else if (accepted.length >= maxFiles) {
+        rejected.push(`${file.name} (limite de ${maxFiles} arquivos)`);
       } else if (totalBytes(accepted) + file.size > MAX_REQUEST_BYTES) {
         rejected.push(`${file.name} (ultrapassa 50MB no total)`);
       } else {
@@ -190,6 +191,10 @@ export function initFileUpload(root, { onChange } = {}) {
       input.disabled = value;
       root.classList.toggle('is-disabled', value);
       list.querySelectorAll('.js-upload-remove').forEach((button) => { button.disabled = value; });
+    },
+    setMaxFiles(value) {
+      maxFiles = value;
+      renderSummary();
     },
   };
 }

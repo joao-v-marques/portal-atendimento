@@ -436,9 +436,55 @@
       </section>
 
       <section class="c-auth-dialog__section js-documents" aria-labelledby="detalhe-documentos-title">
-        <h3 class="c-auth-dialog__section-title" id="detalhe-documentos-title">
-          Documentos <span class="c-auth-dialog__count js-documents-count"></span>
-        </h3>
+        <div class="c-dialog__section-heading">
+          <h3 class="c-auth-dialog__section-title" id="detalhe-documentos-title">
+            Documentos <span class="c-auth-dialog__count js-documents-count"></span>
+          </h3>
+          <!-- Só para autorizações em andamento e abaixo do limite; controlado em authorization-detail-dialog.js -->
+          <button
+            class="c-button c-button--secondary c-button--sm js-documents-add"
+            type="button"
+            aria-expanded="false"
+            aria-controls="detalhe-documentos-envio"
+            hidden
+          >
+            <span class="c-icon c-icon--sm c-icon--upload" aria-hidden="true"></span>
+            Inserir documentos
+          </button>
+        </div>
+
+        <!-- Mesmo c-upload do Lançar autorização (file-upload.js) -->
+        <div class="c-auth-dialog__upload js-documents-upload" id="detalhe-documentos-envio" hidden>
+          <div class="c-upload js-upload">
+            <label class="c-upload__dropzone js-upload-dropzone" for="detalhe-documentos-input">
+              <span class="c-upload__icon" aria-hidden="true">
+                <span class="c-icon c-icon--upload"></span>
+              </span>
+              <span class="c-upload__title">Arraste os documentos aqui ou <span class="c-upload__action">escolha arquivos</span></span>
+              <span class="c-upload__hint" id="detalhe-documentos-hint">PDF, JPG ou PNG · até 10MB cada · máximo 10 por autorização (50MB por envio)</span>
+            </label>
+            <input
+              class="u-visually-hidden js-upload-input"
+              id="detalhe-documentos-input"
+              type="file"
+              aria-describedby="detalhe-documentos-hint detalhe-documentos-summary"
+              accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+              multiple
+            >
+            <p class="c-upload__summary js-upload-summary" id="detalhe-documentos-summary"></p>
+            <ul class="c-document-list js-upload-list" aria-label="Documentos selecionados" aria-live="polite" hidden></ul>
+          </div>
+
+          <div class="c-auth-dialog__upload-actions">
+            <button class="c-button c-button--secondary c-button--sm js-documents-cancel" type="button">Cancelar</button>
+            <button class="c-button c-button--primary c-button--sm js-documents-send" type="button" disabled>
+              <span class="c-icon c-icon--sm c-icon--upload" aria-hidden="true"></span>
+              Enviar documentos
+            </button>
+          </div>
+          <p class="u-visually-hidden js-documents-status" aria-live="polite"></p>
+        </div>
+
         <div class="js-documents-area"></div>
       </section>
     </div>

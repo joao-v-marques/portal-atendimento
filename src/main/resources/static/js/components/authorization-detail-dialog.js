@@ -3,8 +3,10 @@ import { el, saveBlob } from '../core/dom.js';
 import { handleError } from '../core/errors.js';
 import { fileTypeLabel, formatDate, formatDateTime, formatFileSize, formatPhone } from '../core/format.js';
 import { notify } from '../core/notify.js';
+import { MAX_FILES } from '../core/validators.js';
 import { deadlinePanel } from './authorization-deadline.js';
 import { deadlineLevel, finishLead, finishLeadText, statusBadge } from './authorization-table.js';
+import { initFileUpload } from './file-upload.js';
 
 const SKELETON_DOCUMENTS = 2;
 
@@ -166,6 +168,17 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
   const closeButton = dialog.querySelector('.js-detail-close');
   const messageSection = dialog.querySelector('.js-beneficiary-message');
   const messageText = dialog.querySelector('.js-message-text');
+  const addButton = dialog.querySelector('.js-documents-add');
+  const uploadPanel = dialog.querySelector('.js-documents-upload');
+  const sendButton = uploadPanel.querySelector('.js-documents-send');
+  const uploadStatus = uploadPanel.querySelector('.js-documents-status');
+
+  let uploading = false; // antes do initFileUpload: ele já chama o onChange ao iniciar
+  const upload = initFileUpload(uploadPanel.querySelector('.js-upload'), {
+    onChange(files) {
+      if (!uploading) sendButton.disabled = files.length === 0;
+    },
+  });
 
   let current = null;
   let opener = null;
@@ -196,9 +209,70 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
     messageText.textContent = isDone ? beneficiaryMessage(item) : '';
   }
 
+  // ── Inserir documentos ─────────────────────────────────────
+
+  // Só em andamento (o backend recusa finalizada) e com espaço no limite; sem a lista carregada, escondido
+  function renderAddButton() {
+    const remaining = MAX_FILES - documentsById.size;
+    addButton.hidden = !current || deadlineLevel(current) === 'done' || remaining <= 0;
+    upload.setMaxFiles(Math.max(remaining, 0));
+  }
+
+  function toggleUpload(open) {
+    uploadPanel.hidden = !open;
+    addButton.setAttribute('aria-expanded', String(open));
+    if (!open) {
+      upload.clear();
+      uploadStatus.textContent = '';
+    }
+  }
+
+  function resetUpload() {
+    toggleUpload(false);
+    addButton.hidden = true;
+  }
+
+  function setUploading(isBusy) {
+    uploading = isBusy;
+    upload.setDisabled(isBusy);
+    sendButton.disabled = isBusy || upload.getFiles().length === 0;
+    sendButton.classList.toggle('is-loading', isBusy);
+    uploadPanel.querySelector('.js-documents-cancel').disabled = isBusy;
+    uploadStatus.textContent = isBusy ? 'Enviando documentos…' : '';
+  }
+
+  async function sendDocuments() {
+    const files = upload.getFiles();
+    if (uploading || files.length === 0) return;
+
+    const item = current;
+    const body = new FormData();
+    files.forEach((file) => body.append('files', file));
+
+    setUploading(true);
+    try {
+      const created = await api.post(`api/authorization-requests/${encodeURIComponent(item.id)}/documents`, body);
+      notify.success(created.length === 1 ? '1 documento inserido.' : `${created.length} documentos inseridos.`);
+      setUploading(false);
+
+      // Modal fechado ou outra autorização aberta durante o envio: a lista não é desta
+      if (current?.id !== item.id) return;
+      // Por id: se a lista foi recarregada durante o envio, os novos já podem estar nela
+      const merged = new Map(documentsById);
+      created.forEach((doc) => merged.set(doc.id, doc));
+      renderDocuments([...merged.values()]);
+      toggleUpload(false);
+      addButton.focus();
+    } catch (error) {
+      setUploading(false);
+      handleError(error); // mantém os arquivos para tentar de novo
+    }
+  }
+
   function renderDocumentsLoading() {
     documentsSection.setAttribute('aria-busy', 'true');
     documentsCount.textContent = '';
+    addButton.hidden = true;
     const list = el('ul', { className: 'c-document-list' });
     for (let i = 0; i < SKELETON_DOCUMENTS; i++) list.append(documentSkeleton());
     documentsArea.replaceChildren(list);
@@ -208,12 +282,15 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
     documentsSection.removeAttribute('aria-busy');
     documentsById = new Map(documents.map((doc) => [doc.id, doc]));
     documentsCount.textContent = String(documents.length);
+    renderAddButton();
 
     if (documents.length === 0) {
       documentsArea.replaceChildren(compactState({
         icon: 'file-text',
         title: 'Nenhum documento anexado',
-        text: 'Esta autorização não tem documentos enviados.',
+        text: addButton.hidden
+          ? 'Esta autorização não tem documentos enviados.'
+          : 'Use Inserir documentos para anexar PDF, JPG ou PNG.',
       }));
       return;
     }
@@ -280,6 +357,20 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
     if (button) downloadDocument(button);
   });
 
+  // Abre o painel e já leva o foco para a escolha de arquivos; clicar de novo fecha
+  addButton.addEventListener('click', () => {
+    const open = uploadPanel.hidden;
+    toggleUpload(open);
+    if (open) uploadPanel.querySelector('.js-upload-input').focus();
+  });
+
+  uploadPanel.querySelector('.js-documents-cancel').addEventListener('click', () => {
+    toggleUpload(false);
+    addButton.focus();
+  });
+
+  sendButton.addEventListener('click', sendDocuments);
+
   // Clipboard exige contexto seguro (HTTPS/localhost); se falhar, o texto tem user-select: all
   messageSection.querySelector('.js-copy-message').addEventListener('click', async () => {
     try {
@@ -296,6 +387,7 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
     if (!current) return;
     controller?.abort();
     current = null;
+    if (!uploading) resetUpload(); // envio em andamento termina sozinho; o painel é resetado no próximo open
     const target = opener;
     opener = null;
     // Firefox/Safari não focam o botão no clique, então a restauração nativa não basta
@@ -338,6 +430,9 @@ export function initAuthorizationDetailDialog(dialog, { onFinish } = {}) {
       if (!item) return;
       current = item;
       opener = openerElement;
+      if (uploading) setUploading(false); // envio da autorização anterior: o resultado será ignorado
+      resetUpload();
+      documentsById = new Map();
       renderDetails(item);
       dialog.showModal();
       closeButton.focus();
