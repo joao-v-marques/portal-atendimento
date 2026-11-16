@@ -48,17 +48,17 @@ public class AuthorizationRequestDocumentController {
                 .body(download.resource());
     }
 
-    // POST avulso, para o documento que chega depois da autorização já criada
+    // POST para um ou mais documentos que chegam depois da autorização já criada
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AuthorizationRequestDocumentResponse> upload(
+    public ResponseEntity<List<AuthorizationRequestDocumentResponse>> upload(
             @PathVariable Integer requestId,
-            @RequestPart("file") MultipartFile file,
+            @RequestPart("files") List<MultipartFile> files,
             @AuthenticationPrincipal UserPrincipal currentUser) {
 
-        AuthorizationRequestDocumentResponse created =
-                authorizationRequestDocumentService.upload(requestId, file, currentUser.getId());
+        List<AuthorizationRequestDocumentResponse> created =
+                authorizationRequestDocumentService.upload(requestId, files, currentUser.getId());
 
-        URI location = URI.create("/api/authorization-requests/" + requestId + "/documents/" + created.id());
+        URI location = URI.create("/api/authorization-requests/" + requestId + "/documents");
 
         return ResponseEntity.created(location).body(created);
     }

@@ -125,21 +125,33 @@ public class AuthorizationRequestDocumentService {
         return candidate;
     }
 
-    // Anexo avulso: carrega as entidades por id e delega para o attach
+    // Anexo após o lançamento: um ou mais arquivos, atômico. O lock serializa a contagem do limite.
     @Transactional
-    public AuthorizationRequestDocumentResponse upload(Integer requestId, MultipartFile file, Integer currentUserId) {
+    public List<AuthorizationRequestDocumentResponse> upload(Integer requestId, List<MultipartFile> files, Integer currentUserId) {
         AuthorizationRequest request = authorizationRequestRepository.findByIdForUpdate(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada autorização com o ID informado."));
 
         User user = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado usuário com o ID informado."));
 
-        if (documentRepository.countByAuthorizationRequestId(requestId) >= storageProperties.maxFilesPerRequest()) {
-            throw new IllegalArgumentException(
-                    "Esta autorização já atingiu o limite de " + storageProperties.maxFilesPerRequest() + " documentos.");
+        // Só aceita documento enquanto a autorização está em andamento (status 1)
+        if (!request.getAuthorizationStatus().getId().equals(1)) {
+            throw new IllegalArgumentException("Não é possível inserir documentos em uma autorização finalizada.");
         }
 
-        return toResponse(attach(request, file, user));
+        if (files == null || files.isEmpty()) {
+            throw new IllegalArgumentException("Envie ao menos um arquivo.");
+        }
+
+        // Limite total: o que já existe + o lote novo
+        if (documentRepository.countByAuthorizationRequestId(requestId) + files.size() > storageProperties.maxFilesPerRequest()) {
+            throw new IllegalArgumentException(
+                    "Esta autorização permite no máximo " + storageProperties.maxFilesPerRequest() + " documentos.");
+        }
+
+        return files.stream()
+                .map(file -> toResponse(attach(request, file, user)))
+                .toList();
     }
 
     // Usado pela criação atômica. Documentos são opcionais, por isso o retorno silencioso.
