@@ -49,9 +49,9 @@ function revealSatisfactionSurveyItems(user) {
   document.querySelectorAll('.js-satisfaction-survey-only').forEach((node) => { node.hidden = false; });
 }
 
-// Configurar procedimentos: mesmo grupo da pesquisa (backend: hasAnyRole("ADMIN", "MANAGER_SERVICE"))
+// Configurar procedimentos: mesmos perfis das autorizações (backend: hasAnyRole("ADMIN", "EMPLOYEE_SERVICE", "MANAGER_SERVICE"))
 function revealProcedureSettingsItems(user) {
-  if (!SATISFACTION_SURVEY_ROLES.includes(user.role)) return;
+  if (!AUTHORIZATION_ROLES.includes(user.role)) return;
   document.querySelectorAll('.js-procedure-settings-only').forEach((node) => { node.hidden = false; });
 }
 

@@ -56,15 +56,8 @@ public class SecurityConfig {
                         // Edição de autorização: só ADMIN e gestor do atendimento. Precisa vir antes da regra geral abaixo
                         .requestMatchers(HttpMethod.PUT, "/api/authorization-requests/*").hasAnyRole("ADMIN", "MANAGER_SERVICE")
 
-                        // Cadastro de procedimentos: tela e escrita só para ADMIN e gestor do atendimento.
-                        // A leitura (GET) segue a regra geral abaixo, porque preenche o campo de procedimento
-                        .requestMatchers("/configurar-procedimentos").hasAnyRole("ADMIN", "MANAGER_SERVICE")
-                        .requestMatchers(HttpMethod.POST, "/api/authorization-types/**").hasAnyRole("ADMIN", "MANAGER_SERVICE")
-                        .requestMatchers(HttpMethod.PUT, "/api/authorization-types/**").hasAnyRole("ADMIN", "MANAGER_SERVICE")
-                        .requestMatchers(HttpMethod.PATCH, "/api/authorization-types/**").hasAnyRole("ADMIN", "MANAGER_SERVICE")
-
                         // Autorizações: o colaborador do relacionamento só usa Início e o registro de atendimentos
-                        .requestMatchers("/autorizacoes", "/lancar-autorizacao",
+                        .requestMatchers("/autorizacoes", "/lancar-autorizacao", "/configurar-procedimentos",
                                 "/api/authorization-requests/**", "/api/authorization-status/**", "/api/authorization-types/**").hasAnyRole("ADMIN", "EMPLOYEE_SERVICE", "MANAGER_SERVICE")
 
                         // Pesquisa de satisfação: só ADMIN e gestores do atendimento (tela, listagem, dashboard e exportação)
