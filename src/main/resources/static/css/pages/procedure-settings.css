@@ -1,0 +1,367 @@
+/* ==========================================================================
+   Configurar procedimentos
+
+   Usa l-filters, l-results, c-row-actions e c-code de pages/settings.css.
+   ========================================================================== */
+
+.l-procedures {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* Busca larga e os dois selects na mesma linha em telas largas: são poucos filtros */
+@media (min-width: 60em) {
+  .l-procedures__filters {
+    grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)) auto;
+  }
+
+  .l-procedures__filters .l-filters__search {
+    grid-column: auto;
+  }
+}
+
+/* ==========================================================================
+   Tabela
+   ========================================================================== */
+
+.c-procedures-table td {
+  vertical-align: middle;
+}
+
+/* O nome do procedimento é longo (até 500 caracteres): quebra linha em vez de cortar,
+   porque é ele que diferencia procedimentos parecidos */
+.c-procedures-table__name {
+  min-width: 16rem;
+  max-width: 40rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.c-procedures-table .c-code {
+  font-size: var(--text-sm);
+}
+
+.c-procedures-table tbody tr.is-inactive .c-procedures-table__name,
+.c-procedures-table tbody tr.is-inactive .c-code {
+  color: var(--color-text-secondary);
+}
+
+/* Coluna de ações fixa à direita: em telas estreitas a tabela rola e as ações continuam à mão */
+.c-procedures-table th:last-child,
+.c-procedures-table td:last-child {
+  position: sticky;
+  right: 0;
+}
+
+.c-procedures-table tbody tr {
+  background: var(--color-surface);
+}
+
+.c-procedures-table tbody tr:hover {
+  background: var(--color-bg);
+}
+
+.c-procedures-table td:last-child {
+  background: inherit;
+}
+
+.c-procedures-table thead th:last-child {
+  z-index: 2;
+}
+
+/* ==========================================================================
+   Prazo da ANS na tabela
+
+   Régua curta: o número diz o prazo, a barra mostra de relance onde ele fica na
+   escala de 1 a 21 dias úteis (o maior prazo comum da RN 566)
+   ========================================================================== */
+
+.c-ans-deadline {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  column-gap: var(--space-half);
+  row-gap: var(--space-half);
+  white-space: nowrap;
+}
+
+.c-ans-deadline__value {
+  font-family: var(--font-mono);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.c-ans-deadline__unit {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.c-ans-deadline__track {
+  grid-column: 1 / -1;
+  position: relative;
+  width: 5.25rem;
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+}
+
+.c-ans-deadline__track::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--fill, 0) * 100%);
+  border-radius: inherit;
+  background: var(--color-primary);
+}
+
+/* Imediato: a urgência é a informação, então ganha o tom de alerta (o texto continua dizendo) */
+.c-ans-deadline--now {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-half);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-xs);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.c-ans-deadline--now::before {
+  content: "";
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  background: currentColor;
+  mask: url("../img/icon-alert.svg") center / contain no-repeat;
+}
+
+/* Celular: cada procedimento vira um cartão — código e prazo no topo, nome, ações embaixo */
+@media (max-width: 37.49em) {
+  .c-procedures-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .c-procedures-table,
+  .c-procedures-table tbody {
+    display: block;
+  }
+
+  .c-procedures-table tbody tr {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-2);
+    align-items: center;
+    padding: var(--space-2);
+    border-top: var(--border-width) solid var(--color-border);
+  }
+
+  .c-procedures-table tbody tr:first-child {
+    border-top: 0;
+  }
+
+  .c-procedures-table td {
+    padding: 0;
+    border: 0;
+  }
+
+  /* Ordem: código | prazo | situação, depois nome e ações na linha inteira */
+  .c-procedures-table td:nth-child(1) { order: 1; }
+  .c-procedures-table td:nth-child(3) { order: 2; }
+  .c-procedures-table td:nth-child(4) { order: 3; justify-self: end; }
+  .c-procedures-table td:nth-child(2) { order: 4; grid-column: 1 / -1; }
+  .c-procedures-table td:nth-child(5) { order: 5; grid-column: 1 / -1; position: static; }
+
+  .c-procedures-table__name {
+    min-width: 0;
+  }
+
+  .c-procedures-table .c-row-actions > * {
+    flex: 1;
+  }
+
+  .c-procedures-table .c-ans-deadline__track {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Diálogo de procedimento
+   ========================================================================== */
+
+.c-procedure-form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* Código tem tamanho fixo (8 dígitos): o campo não precisa da largura toda */
+.c-procedure-form__code .c-input {
+  max-width: 12rem;
+  font-size: var(--text-lg);
+  letter-spacing: 0.12em;
+}
+
+.c-procedure-deadline {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+
+.c-procedure-deadline > legend {
+  float: left; /* tira a legend da borda do fieldset; vira o primeiro item do grid */
+  width: 100%;
+  padding: 0;
+}
+
+.c-procedure-deadline__days {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.c-procedure-deadline__input {
+  width: 6.5rem;
+  text-align: center;
+  font-size: var(--text-lg);
+}
+
+.c-procedure-deadline__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-half);
+}
+
+.js-days-field[hidden] {
+  display: none;
+}
+
+/* ── Escolha segmentada (rádios nativos com visual de botões) ─────────── */
+
+.c-segmented {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: var(--space-half);
+  border-radius: var(--radius-md);
+  background: var(--color-border);
+}
+
+.c-segmented__option {
+  position: relative;
+  cursor: pointer;
+}
+
+/* O rádio continua no DOM e focável (setas trocam a opção); só o desenho é o rótulo */
+.c-segmented__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.c-segmented__label {
+  display: grid;
+  place-items: center;
+  min-height: var(--control-height-md);
+  padding: 0 var(--space-2);
+  border-radius: calc(var(--radius-md) - var(--space-half));
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-sm);
+  text-align: center;
+  color: var(--color-text-secondary);
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.c-segmented__option:hover .c-segmented__label {
+  color: var(--color-text);
+}
+
+.c-segmented__input:checked + .c-segmented__label {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+  box-shadow: var(--shadow-sm);
+}
+
+.c-segmented__input:focus-visible + .c-segmented__label {
+  box-shadow: var(--focus-ring);
+}
+
+/* ── Atalhos de prazo ─────────────────────────────────────────────────── */
+
+.c-chip {
+  min-width: 2.5rem;
+  min-height: var(--control-height-sm, 2rem);
+  padding: 0 var(--space-1);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.c-chip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.c-chip[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.c-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ── Prévia do vencimento ─────────────────────────────────────────────── */
+
+.c-procedure-preview {
+  display: flex;
+  gap: var(--space-1);
+  align-items: flex-start;
+  padding: var(--space-1) var(--space-2);
+  border-left: var(--border-width-thick) solid var(--color-info);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.c-procedure-preview:empty {
+  display: none;
+}
+
+.c-procedure-preview strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.c-procedure-preview--now {
+  border-left-color: var(--color-warning);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c-segmented__label {
+    transition: none;
+  }
+}
