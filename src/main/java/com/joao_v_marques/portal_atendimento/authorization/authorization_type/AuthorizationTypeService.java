@@ -28,15 +28,22 @@ public class AuthorizationTypeService {
 
     @Transactional
     public AuthorizationTypeResponse create(AuthorizationTypeRequest request) {
+        String code = request.code().trim();
         String name = request.name().trim();
 
+        if (authorizationTypeRepository.existsByCode(code)) {
+            throw new ConflictException("Já existe um procedimento com o código informado.");
+        }
+
         if (authorizationTypeRepository.existsByNameIgnoreCase(name)) {
-            throw new ConflictException("Já existe um tipo de autorização com o nome informado.");
+            throw new ConflictException("Já existe um procedimento com o nome informado.");
         }
 
         // Montar entidade com base na DTO
         AuthorizationType authorizationType = new AuthorizationType();
+        authorizationType.setCode(code);
         authorizationType.setName(name);
+        authorizationType.setMaxDays(request.maxDays());
 
         AuthorizationType saved = authorizationTypeRepository.save(authorizationType);
 
@@ -45,6 +52,7 @@ public class AuthorizationTypeService {
 
     @Transactional
     public AuthorizationTypeResponse update(Integer id, AuthorizationTypeRequest request) {
+        String code = request.code().trim();
         String name = request.name().trim();
 
         // Validar se a AuthorizationType realmente existe
@@ -55,7 +63,17 @@ public class AuthorizationTypeService {
             throw new IllegalArgumentException("Não é possível editar um tipo de autorização inativo.");
         }
 
+        if (authorizationTypeRepository.existsByCodeAndIdNot(code, id)) {
+            throw new ConflictException("Já existe um procedimento com o código informado.");
+        }
+
+        if (authorizationTypeRepository.existsByNameIgnoreCaseAndIdNot(name, id)) {
+            throw new ConflictException("Já existe um procedimento com o nome informado.");
+        }
+
+        authorizationType.setCode(code);
         authorizationType.setName(name);
+        authorizationType.setMaxDays(request.maxDays());
 
         return toResponse(authorizationType);
     }
