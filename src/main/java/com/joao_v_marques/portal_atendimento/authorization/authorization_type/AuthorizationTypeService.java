@@ -98,7 +98,7 @@ public class AuthorizationTypeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum tipo de autorização com o ID informado."));
 
         if (authorizationType.isActive()) {
-            throw new IllegalArgumentException("O tipo de autorização já está inativo");
+            throw new IllegalArgumentException("O tipo de autorização já está ativo.");
         }
 
         authorizationType.setActive(true);
