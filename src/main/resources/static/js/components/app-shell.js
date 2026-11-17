@@ -49,6 +49,12 @@ function revealSatisfactionSurveyItems(user) {
   document.querySelectorAll('.js-satisfaction-survey-only').forEach((node) => { node.hidden = false; });
 }
 
+// Configurar procedimentos: mesmo grupo da pesquisa (backend: hasAnyRole("ADMIN", "MANAGER_SERVICE"))
+function revealProcedureSettingsItems(user) {
+  if (!SATISFACTION_SURVEY_ROLES.includes(user.role)) return;
+  document.querySelectorAll('.js-procedure-settings-only').forEach((node) => { node.hidden = false; });
+}
+
 function renderUser(chip, user) {
   const name = displayName(user);
   chip.querySelector('.js-user-avatar').textContent = getInitials(name);
@@ -59,6 +65,7 @@ function renderUser(chip, user) {
   revealServiceRequestItems(user);
   revealAuthorizationItems(user);
   revealSatisfactionSurveyItems(user);
+  revealProcedureSettingsItems(user);
 }
 
 function renderUserUnavailable(chip) {
